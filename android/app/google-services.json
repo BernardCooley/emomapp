@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "704882942754",
+    "firebase_url": "https://emom-84ee4.firebaseio.com",
+    "project_id": "emom-84ee4",
+    "storage_bucket": "emom-84ee4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:704882942754:android:0a44af4700323742ce3b7b",
+        "android_client_info": {
+          "package_name": "com.emomrn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "704882942754-vvml84dt9qjo2dlgobk1jst6jfceg4s7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVsHbbQXyDsqYlHKaZctsQnKb-YNgf3Lk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "704882942754-vvml84dt9qjo2dlgobk1jst6jfceg4s7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
