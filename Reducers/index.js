@@ -14,7 +14,8 @@ const allReducers = combineReducers({
     trackComments: musicReducers.trackComments,
     commentType: musicReducers.commentType,
     newComment: musicReducers.newComment,
-    commentIndex: musicReducers.commentIndex
+    commentIndex: musicReducers.commentIndex,
+    trackListFilters: musicReducers.trackListFilters
 });
 
 const rootReducer = (state, action) => {

@@ -1,5 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import RNTrackPlayer, { State as TrackPlayerState, STATE_PAUSED, STATE_PLAYING, STATE_STOPPED, Track } from 'react-native-track-player';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+import { useSelector } from 'react-redux';
 
 interface PlayerContextType {
     isPlaying: boolean;
@@ -14,6 +17,7 @@ interface PlayerContextType {
     previous: () => void;
     seekTo: (seconds: number) => void;
     clearQueue: () => void;
+    shuffle: () => void;
 }
 
 export const PlayerContext = React.createContext<PlayerContextType>({
@@ -28,13 +32,16 @@ export const PlayerContext = React.createContext<PlayerContextType>({
     next: () => null,
     previous: () => null,
     seekTo: () => null,
-    clearQueue: () => null
+    clearQueue: () => null,
+    shuffle: () => null
 })
 
 export const PlayerContextProvider: React.FC = props => {
     const [playerState, setPlayerState] = useState<null | TrackPlayerState>(null);
     const [currentTrack, setCurrentTrack] = useState<null | Track>(null);
     const [trackQueue, setTrackQueue] = useState<Array<null | Track>>(null);
+    const tracksRef = firestore().collection('tracks');
+    const trackFilters = useSelector(state => state.trackListFilters);
 
     useEffect(() => {
         const listener = RNTrackPlayer.addEventListener(
@@ -171,6 +178,71 @@ export const PlayerContextProvider: React.FC = props => {
         })
     }
 
+    const getShuffleTrackIds = async queryList => {
+        const ids = await Promise.all(
+            queryList.map(async query => {
+                let idResponse = await query;
+                return idResponse.docs.map((doc: any) => doc.data().id);
+            })
+        )
+
+        const flattened = [];
+
+        ids.forEach(id => {
+            id.forEach(i => {
+                flattened.push(i);
+            });
+        })
+
+        return flattened;
+    }
+
+    const shuffle = async () => {
+        const queryList = [];
+        const activeFilters = [];
+
+        trackFilters.forEach(filter => {
+            if (filter['value'].length > 0) {
+                activeFilters.push(filter)
+            }
+        });
+
+        if (activeFilters.length > 0) {
+            activeFilters.forEach((filter: Object) => {
+                queryList.push(tracksRef.where(filter['key'], '==', filter['value']).get());
+            })
+        } else {
+            queryList.push(tracksRef.get());
+        }
+
+        await getShuffleTrackIds(queryList).then(async (ids: Array<string>) => {
+            const index = ids.indexOf(currentTrack.id);
+            if (index > -1) {
+                ids.splice(index, 1);
+            }
+
+            playRandomTrack(ids);
+        })
+    }
+
+    const playRandomTrack = async (ids: Array<string>) => {
+        await tracksRef.doc(ids[Math.floor(Math.random() * Math.floor(ids.length))]).get().then(async resp => {
+            const track = resp.data();
+
+            await storage().ref(`trackImages/${track.id}.jpg`).getDownloadURL().then(async url => {
+                track['trackImage'] = url;
+
+                await storage().ref(`tracks/${track.id}.mp3`).getDownloadURL().then(url => {
+                    track['url'] = url;
+                    // still works
+                    play(track);
+                });
+            }).catch(error => {
+                console.log('GET TRACK IMAGE =========>', error)
+            });
+        })
+    }
+
     const value: PlayerContextType = {
         isPlaying: playerState === STATE_PLAYING,
         isPaused: playerState === STATE_PAUSED,
@@ -183,7 +255,8 @@ export const PlayerContextProvider: React.FC = props => {
         next,
         previous,
         seekTo,
-        clearQueue
+        clearQueue,
+        shuffle
     }
 
     return (

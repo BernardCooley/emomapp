@@ -62,6 +62,14 @@ const musicReducers = {
             default:
                 return state;
         }
+    },
+    trackListFilters: (state = [{key: '', value: ''}], action) => {
+        switch (action.type) {
+            case 'TRACK_LIST_FILTERS':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

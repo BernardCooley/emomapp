@@ -74,3 +74,10 @@ export const commentIndex = commentIndex => {
         payload: commentIndex
     };
 };
+
+export const trackListFilters = trackListFilters => {
+    return {
+        type: 'TRACK_LIST_FILTERS',
+        payload: trackListFilters
+    };
+};

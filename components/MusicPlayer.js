@@ -98,7 +98,7 @@ const MusicPlayer = ({ navigation }) => {
                             <Progress />
                         </View>
                         <View style={{ ...styles.trackControlsContainer, ...styles.sectionContainer }}>
-                            <IconButton animated icon="shuffle" size={30} onPress={e => openMenu(e, tracks[key])} />
+                            <IconButton animated icon="shuffle" size={30} onPress={playerContext.shuffle} />
                             <IconButton animated icon="skip-previous" disabled={previousDisabled} size={40} onPress={previousTrack} />
                             <IconButton animated icon={playerContext.isPlaying ? "pause" : "play-circle-outline"} size={60} onPress={playPause} />
                             <IconButton animated icon="skip-next" disabled={nextDisabled} size={40} onPress={nextTrack} />
