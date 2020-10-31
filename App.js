@@ -14,6 +14,7 @@ const App = () => {
       ...DefaultTheme.colors,
       primary: '#329C97',
       accent: '#f1c40f',
+      secondary: '#f2f4f3',
     },
   };
 

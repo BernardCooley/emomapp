@@ -86,15 +86,15 @@ const MusicPlayer = ({ navigation }) => {
         <>
             <SafeAreaView>
                 <ScrollView contentContainerStyle={styles.scrollView}>
-                    <LinearGradient colors={['#3A6E7A', '#318E8F', '#C5E3E5']} style={styles.playerContainer}>
-                        <View style={{ ...styles.trackImageContainer, ...styles.sectionContainer }}>
-                            <Avatar.Image source={{ uri: playerContext.currentTrack.trackImage }} size={300} style={styles.image}></Avatar.Image>
-                        </View>
-                        <View style={styles.sectionContainer}>
+                    <LinearGradient colors={['#C5E3E5', '#318E8F', '#3A6E7A']} style={styles.playerContainer}>
+                        <View style={{...styles.sectionContainer, ...styles.trackInfoContainer}}>
                             <Title>{playerContext.currentTrack.title}</Title>
                             <Text>{playerContext.currentTrack.artist}</Text>
                         </View>
-                        <View style={styles.sectionContainer}>
+                        <View style={{ ...styles.trackImageContainer, ...styles.sectionContainer }}>
+                            <Avatar.Image source={{ uri: playerContext.currentTrack.trackImage }} size={350} style={styles.image}></Avatar.Image>
+                        </View>
+                        <View style={{ ...styles.sectionContainer, ...styles.circularProgressContainer }}>
                             <Progress />
                         </View>
                         <View style={{ ...styles.trackControlsContainer, ...styles.sectionContainer }}>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     },
     playerContainer: {
         display: 'flex',
-        alignItems: 'stretch',
+        alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
         paddingHorizontal: 30,
@@ -165,6 +165,18 @@ const styles = StyleSheet.create({
     },
     queueIcon: {
         marginLeft: 50
+    },
+    circularProgressContainer: {
+        position: 'absolute',
+        top: 80,
+        margin: 'auto',
+        display: 'flex',
+        alignItems: 'center'
+    },
+    trackInfoContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
 
