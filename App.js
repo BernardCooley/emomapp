@@ -15,6 +15,8 @@ const App = () => {
       primary: '#329C97',
       accent: '#f1c40f',
       secondary: '#f2f4f3',
+      lightgray70Tr: 'rgba(241, 243, 242, 0.7)',
+      dark: '#2e2c2f'
     },
   };
 
