@@ -12,6 +12,7 @@ import { commentsModalVisible, queueModalVisible, trackComments } from '../Actio
 import Progress from './Progress';
 import QueueModal from '../components/QueueModal';
 import CommentsModal from '../components/CommentsModal';
+import Grid from '../components/Grid';
 
 const MusicPlayer = ({ navigation }) => {
     const { colors } = useTheme();
@@ -109,6 +110,9 @@ const MusicPlayer = ({ navigation }) => {
                             <View style={styles.timeContainer}>
                                 <Text style={{ ...styles.timeText, backgroundColor: colors.lightgray70Tr, borderColor: colors.dark, color: colors.dark}}>{convertToMins(parseInt(Math.round(position)))}</Text>
                             </View>
+                            <View style={{...styles.sectionContainer, ...styles.grid}}>
+                                <Grid />
+                            </View>
                         </View>
                         <View style={{ ...styles.trackControlsContainer, ...styles.sectionContainer }}>
                             <IconButton animated icon="shuffle" size={30} onPress={playerContext.shuffle} />
@@ -176,8 +180,8 @@ const styles = StyleSheet.create({
     },
     circularProgressContainer: {
         position: 'absolute',
-        top: -5,
-        right: 5
+        top: 0,
+        right: -2
     },
     timeContainer: {
         position: 'absolute',
@@ -203,6 +207,12 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    grid: {
+        position: 'absolute',
+        top: -5,
+        right: 5,
+        zIndex: 20
     }
 });
 
