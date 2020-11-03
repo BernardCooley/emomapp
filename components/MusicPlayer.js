@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView } from 'react-native';
-import { Title, Text, Avatar, IconButton, useTheme, IonIcon } from 'react-native-paper';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { Title, Text, Avatar, IconButton, useTheme } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
-import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 import { commentsModalVisible, queueModalVisible, trackComments } from '../Actions/index';
 import Progress from './Progress';
