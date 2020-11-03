@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView } from 'react-native';
-import { Title, Text, Avatar, IconButton, useTheme } from 'react-native-paper';
+import { Title, Text, Avatar, IconButton, useTheme, IonIcon } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
+import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 import { commentsModalVisible, queueModalVisible, trackComments } from '../Actions/index';
 import Progress from './Progress';
@@ -24,6 +25,7 @@ const MusicPlayer = ({ navigation }) => {
     const [previousDisabled, setPreviousDisabled] = useState(false);
     const [filteredQueue, setFilteredQueue] = useState([]);
     const playerContext = usePlayerContext();
+    const isQueueModalVisible = useSelector(state => state.queueModalVisible);
 
     useEffect(() => {
         if (playerContext.trackQueue && playerContext.currentTrack) {
@@ -94,45 +96,45 @@ const MusicPlayer = ({ navigation }) => {
 
     return (
         <>
-            <SafeAreaView>
-                <ScrollView contentContainerStyle={styles.scrollView}>
-                    <LinearGradient colors={['#C5E3E5', '#318E8F', '#3A6E7A']} style={styles.playerContainer}>
-                        <View style={{ ...styles.sectionContainer, ...styles.trackInfoContainer }}>
-                            <Title>{playerContext.currentTrack.title}</Title>
-                            <Text>{playerContext.currentTrack.artist}</Text>
+            <ScrollView contentContainerStyle={styles.scrollView}>
+                <LinearGradient colors={['#C5E3E5', '#318E8F', '#3A6E7A']} style={styles.playerContainer}>
+                    <View style={{ ...styles.sectionContainer, ...styles.trackInfoContainer }}>
+                        <Title>{playerContext.currentTrack.title}</Title>
+                        <Text>{playerContext.currentTrack.artist}</Text>
+                    </View>
+                    <View style={{ ...styles.imageAndProgressContainer, ...styles.sectionContainer, height: playerImageSize, width: playerImageSize }}>
+                        <View style={{ ...styles.trackImageContainer }}>
+                            <Avatar.Image source={{ uri: playerContext.currentTrack.trackImage }} size={playerImageSize} style={styles.image}></Avatar.Image>
                         </View>
-                        <View style={{ ...styles.imageAndProgressContainer, ...styles.sectionContainer, height: playerImageSize, width: playerImageSize }}>
-                            <View style={{ ...styles.trackImageContainer }}>
-                                <Avatar.Image source={{ uri: playerContext.currentTrack.trackImage }} size={playerImageSize} style={styles.image}></Avatar.Image>
-                            </View>
-                            <View style={{ ...styles.circularProgressContainer, width: playerImageSize, height: playerImageSize }}>
-                                <Progress />
-                            </View>
-                            <View style={styles.timeContainer}>
-                                <Text style={{ ...styles.timeText, backgroundColor: colors.lightgray70Tr, borderColor: colors.dark, color: colors.dark }}>{
-                                    playerContext.isPlaying ?
-                                        convertToMins(parseInt(Math.round(position))) : 'Loading'}</Text>
-                            </View>
-                            <View style={{ ...styles.grid, height: playerImageSize, width: playerImageSize }}>
-                                <Grid />
-                            </View>
+                        <View style={{ ...styles.circularProgressContainer, width: playerImageSize, height: playerImageSize }}>
+                            <Progress />
                         </View>
-                        <View style={{ ...styles.trackControlsContainer, ...styles.sectionContainer }}>
-                            <IconButton animated icon="shuffle" size={30} onPress={playerContext.shuffle} />
-                            <IconButton animated icon="skip-previous" disabled={previousDisabled} size={40} onPress={previousTrack} />
-                            <IconButton animated icon={playerContext.isPlaying ? "pause" : "play-circle-outline"} size={60} onPress={playPause} />
-                            <IconButton animated icon="skip-next" disabled={nextDisabled} size={40} onPress={nextTrack} />
-                            <IconButton animated icon="repeat" size={30} onPress={e => openMenu(e, tracks[key])} />
+                        <View style={styles.timeContainer}>
+                            <Text style={{ ...styles.timeText, backgroundColor: colors.lightgray70Tr, borderColor: colors.dark, color: colors.dark }}>{
+                                playerContext.isPlaying ?
+                                    convertToMins(parseInt(Math.round(position))) : 'Loading'}</Text>
                         </View>
-                        <View style={{ ...styles.otherControlsContainer, ...styles.sectionContainer }}>
-                            <IconButton animated icon="comment" size={20} onPress={() => dispatch(commentsModalVisible(true))} />
-                            <IconButton disabled={filteredQueue.length === 0} animated icon="playlist-play" size={20} onPress={() => dispatch(queueModalVisible(true))} />
+                        <View style={{ ...styles.grid, height: playerImageSize, width: playerImageSize }}>
+                            <Grid />
                         </View>
-                    </LinearGradient>
-                </ScrollView>
-            </SafeAreaView>
-            <QueueModal tracks={filteredQueue} navigation={navigation} />
-            <CommentsModal />
+                    </View>
+                    <View style={{ ...styles.trackControlsContainer, ...styles.sectionContainer }}>
+                        <IconButton animated icon="skip-previous" disabled={previousDisabled} size={50} onPress={previousTrack} />
+                        <IconButton animated icon={playerContext.isPlaying ? "pause" : "play-circle-outline"} size={80} onPress={playPause} />
+                        <IconButton animated icon="skip-next" disabled={nextDisabled} size={50} onPress={nextTrack} />
+                    </View>
+                    <View style={{ ...styles.otherControlsContainer, ...styles.sectionContainer }}>
+                        <IconButton animated icon="comment" size={20} onPress={() => dispatch(commentsModalVisible(true))} />
+                        <IconButton disabled={filteredQueue.length === 0} animated icon="playlist-play" size={20} onPress={() => dispatch(queueModalVisible(true))} />
+                    </View>
+                </LinearGradient>
+            </ScrollView>
+            {isQueueModalVisible &&
+                <>
+                    <QueueModal tracks={filteredQueue} navigation={navigation} />
+                    <CommentsModal />
+                </>
+            }
         </>
     )
 }
@@ -144,11 +146,7 @@ MusicPlayer.propTypes = {
 
 const styles = StyleSheet.create({
     scrollView: {
-        flexGrow: 1,
-        justifyContent: 'space-between',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center'
+        flex: 1
     },
     playerContainer: {
         display: 'flex',
@@ -222,7 +220,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         borderRadius: 50,
         paddingHorizontal: 30
-    },
+    }
 });
 
 export default MusicPlayer;
