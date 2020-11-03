@@ -70,6 +70,14 @@ const musicReducers = {
             default:
                 return state;
         }
+    },
+    playerImageSize: (state = 300, action) => {
+        switch (action.type) {
+            case 'PLAYER_IMAGE_SIZE':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

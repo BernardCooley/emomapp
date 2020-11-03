@@ -5,18 +5,20 @@ import { usePlayerContext } from '../contexts/PlayerContext';
 import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { Circle } from 'react-native-svg';
+import { useSelector } from 'react-redux';
 
 const Progress = ({ }) => {
     const { colors } = useTheme();
     const { position, bufferedPosition, duration } = useTrackPlayerProgress();
     const playerContext = usePlayerContext();
+    const playerImageSize = useSelector(state => state.playerImageSize);
 
     return (
         <View style={styles.progressBarContainer}>
             <AnimatedCircularProgress
                 rotation={0}
                 tintTransparency
-                size={350}
+                size={playerImageSize + 10}
                 renderCap={({ center }) => <Circle cx={center.x} cy={center.y} r="10" fill={colors.secondary} />}
                 width={5}
                 lineCap='round'

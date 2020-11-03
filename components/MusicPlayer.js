@@ -4,7 +4,7 @@ import { Title, Text, Avatar, IconButton, useTheme } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
 
@@ -15,6 +15,7 @@ import CommentsModal from '../components/CommentsModal';
 import Grid from '../components/Grid';
 
 const MusicPlayer = ({ navigation }) => {
+    const playerImageSize = useSelector(state => state.playerImageSize);
     const { colors } = useTheme();
     const { position, bufferedPosition, duration } = useTrackPlayerProgress();
     const tracksRef = firestore().collection('tracks');
@@ -100,17 +101,17 @@ const MusicPlayer = ({ navigation }) => {
                             <Title>{playerContext.currentTrack.title}</Title>
                             <Text>{playerContext.currentTrack.artist}</Text>
                         </View>
-                        <View style={styles.imageAndProgressContainer}>
-                            <View style={{ ...styles.trackImageContainer, ...styles.sectionContainer }}>
-                                <Avatar.Image source={{ uri: playerContext.currentTrack.trackImage }} size={350} style={styles.image}></Avatar.Image>
+                        <View style={{...styles.imageAndProgressContainer, ...styles.sectionContainer, height: playerImageSize, width: playerImageSize}}>
+                            <View style={{ ...styles.trackImageContainer }}>
+                                <Avatar.Image source={{ uri: playerContext.currentTrack.trackImage }} size={playerImageSize} style={styles.image}></Avatar.Image>
                             </View>
-                            <View style={{ ...styles.sectionContainer, ...styles.circularProgressContainer }}>
+                            <View style={{...styles.circularProgressContainer, width: playerImageSize, height: playerImageSize }}>
                                 <Progress />
                             </View>
                             <View style={styles.timeContainer}>
                                 <Text style={{ ...styles.timeText, backgroundColor: colors.lightgray70Tr, borderColor: colors.dark, color: colors.dark}}>{convertToMins(parseInt(Math.round(position)))}</Text>
                             </View>
-                            <View style={{...styles.sectionContainer, ...styles.grid}}>
+                            <View style={{...styles.grid, height: playerImageSize, width: playerImageSize}}>
                                 <Grid />
                             </View>
                         </View>
@@ -180,8 +181,26 @@ const styles = StyleSheet.create({
     },
     circularProgressContainer: {
         position: 'absolute',
+        top: -5,
+        right: 5
+    },
+    trackInfoContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    trackImageContainer: {
+
+    },
+    grid: {
+        position: 'absolute',
         top: 0,
-        right: -2
+        right: -3,
+        zIndex: 20,
+        margin: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     timeContainer: {
         position: 'absolute',
@@ -200,20 +219,8 @@ const styles = StyleSheet.create({
         fontSize: 30,
         textAlign: 'center',
         borderRadius: 50,
-        paddingHorizontal: 30,
-        borderWidth: 1
+        paddingHorizontal: 30
     },
-    trackInfoContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    grid: {
-        position: 'absolute',
-        top: -5,
-        right: 5,
-        zIndex: 20
-    }
 });
 
 export default MusicPlayer;
