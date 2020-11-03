@@ -101,17 +101,19 @@ const MusicPlayer = ({ navigation }) => {
                             <Title>{playerContext.currentTrack.title}</Title>
                             <Text>{playerContext.currentTrack.artist}</Text>
                         </View>
-                        <View style={{...styles.imageAndProgressContainer, ...styles.sectionContainer, height: playerImageSize, width: playerImageSize}}>
+                        <View style={{ ...styles.imageAndProgressContainer, ...styles.sectionContainer, height: playerImageSize, width: playerImageSize }}>
                             <View style={{ ...styles.trackImageContainer }}>
                                 <Avatar.Image source={{ uri: playerContext.currentTrack.trackImage }} size={playerImageSize} style={styles.image}></Avatar.Image>
                             </View>
-                            <View style={{...styles.circularProgressContainer, width: playerImageSize, height: playerImageSize }}>
+                            <View style={{ ...styles.circularProgressContainer, width: playerImageSize, height: playerImageSize }}>
                                 <Progress />
                             </View>
                             <View style={styles.timeContainer}>
-                                <Text style={{ ...styles.timeText, backgroundColor: colors.lightgray70Tr, borderColor: colors.dark, color: colors.dark}}>{convertToMins(parseInt(Math.round(position)))}</Text>
+                                <Text style={{ ...styles.timeText, backgroundColor: colors.lightgray70Tr, borderColor: colors.dark, color: colors.dark }}>{
+                                    playerContext.isPlaying ?
+                                        convertToMins(parseInt(Math.round(position))) : 'Loading'}</Text>
                             </View>
-                            <View style={{...styles.grid, height: playerImageSize, width: playerImageSize}}>
+                            <View style={{ ...styles.grid, height: playerImageSize, width: playerImageSize }}>
                                 <Grid />
                             </View>
                         </View>
@@ -195,7 +197,7 @@ const styles = StyleSheet.create({
     grid: {
         position: 'absolute',
         top: 0,
-        right: -3,
+        right: 0,
         zIndex: 20,
         margin: 'auto',
         display: 'flex',

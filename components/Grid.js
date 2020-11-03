@@ -1,12 +1,14 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { usePlayerContext } from '../contexts/PlayerContext';
+import { useTheme } from 'react-native-paper';
 
 import ClickGridCoordinates from '../data/ClickGridCoordinates';
 
 const Grid = () => {
-    const range = 10;
+    const { colors } = useTheme();
+    const range = 20;
     const playerContext = usePlayerContext();
     const playerImageSize = useSelector(state => state.playerImageSize);
 
@@ -14,32 +16,23 @@ const Grid = () => {
         clickedOnBar(Math.round(e.nativeEvent.locationX), Math.round(e.nativeEvent.locationY));
     }
 
-    const clickedOnBar = (x, y) => {
-        const validClickCoordinates = ClickGridCoordinates.filter(coord => coord.x > x - range && coord.x < x + range && coord.y > y - range && coord.y < y + range);
+    const clickedOnBar = (clickedX, clickedY) => {
+        const validClickCoordinates = ClickGridCoordinates.filter(coord => coord.x > clickedX - range && coord.x < clickedX + range && coord.y > clickedY - range && coord.y < clickedY + range);
 
-        const clickedIndex = validClickCoordinates.length === 1 ? ClickGridCoordinates.indexOf(validClickCoordinates[0]) : ClickGridCoordinates.indexOf(getClosest(validClickCoordinates));
-
-        playerContext.seekTo(playerContext.currentTrack.duration * clickedIndex / 100);
-    }
-
-    const distance = point => {
-        return Math.pow(point.x, 2) + Math.pow(point.y, 2);
-    }
-
-    const getClosest = points => {
-        const closest = points.slice(1).reduce(function (min, p) {
-            if (distance(p) < min.d) min.point = p;
-            return min;
-        }, { point: points[0], d: distance(points[0]) }).point;
-
-        return closest;
+        playerContext.seekTo(playerContext.currentTrack.duration * ClickGridCoordinates.indexOf(validClickCoordinates[0]) / 100);
     }
 
     return (
         <>
-            <View onTouchStart={(e) => clickProgressBar(e)} style={{ width: playerImageSize, height: playerImageSize }}></View>
+            <View onTouchStart={(e) => clickProgressBar(e)} style={{ ...styles.grid, width: playerImageSize, height: playerImageSize, borderColor: colors.secondary }}></View>
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    grid: {
+        borderRadius: 500
+    }
+});
 
 export default Grid;
