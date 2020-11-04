@@ -28,7 +28,7 @@ const Grid = () => {
 
     return (
         <>
-            <View onTouchStart={(e) => clickProgressBar(e)} style={{ ...styles.grid, width: playerImageSize, height: playerImageSize, borderColor: colors.secondary }}></View>
+            <View onTouchStart={(e) => clickProgressBar(e)} style={{ ...styles.grid, width: playerImageSize, height: playerImageSize, borderColor: colors.lightIconsAndText }}></View>
         </>
     )
 }

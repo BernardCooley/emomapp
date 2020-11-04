@@ -28,7 +28,7 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
         await storage().ref(`tracks/${track.id}.mp3`).getDownloadURL().then(url => {
             track['url'] = url;
             playerContext.play(track);
-            navigation.navigate('Tabs', { screen: 'Music' });
+            navigation.push('Music');
         });
     }
 

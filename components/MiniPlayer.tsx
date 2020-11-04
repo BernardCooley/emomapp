@@ -17,7 +17,7 @@ const MiniPlayer = () => {
     }
 
     const openPlayer = () => {
-        navigation.navigate('Tabs', { screen: 'Music' });
+        navigation.push('Music');
     }
 
     return (

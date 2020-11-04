@@ -19,11 +19,11 @@ const Progress = ({ }) => {
                 rotation={0}
                 tintTransparency
                 size={playerImageSize + 10}
-                renderCap={({ center }) => <Circle cx={center.x} cy={center.y} r="10" fill={colors.secondary} />}
+                renderCap={({ center }) => <Circle cx={center.x} cy={center.y} r="10" fill={colors.lightIconsAndText} />}
                 width={5}
                 lineCap='round'
                 fill={Math.round(position) / playerContext.currentTrack.duration * 100}
-                tintColor={colors.secondary} />
+                tintColor={colors.lightIconsAndText} />
         </View>
     )
 }

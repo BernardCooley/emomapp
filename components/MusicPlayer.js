@@ -96,10 +96,11 @@ const MusicPlayer = ({ navigation }) => {
     return (
         <>
             <ScrollView contentContainerStyle={styles.scrollView}>
-                <LinearGradient colors={['#C5E3E5', '#318E8F', '#3A6E7A']} style={styles.playerContainer}>
+                <LinearGradient colors={['#595F70', '#07102A']} style={styles.playerContainer}>
+                <IconButton style={styles.closeIcon} onPress={() => navigation.goBack()} color={colors.lightIconsAndText} animated icon="chevron-down" size={30}/>
                     <View style={{ ...styles.sectionContainer, ...styles.trackInfoContainer }}>
-                        <Title>{playerContext.currentTrack.title}</Title>
-                        <Text>{playerContext.currentTrack.artist}</Text>
+                        <Title style={{color: colors.lightIconsAndText}}>{playerContext.currentTrack.title}</Title>
+                        <Text style={{color: colors.lightIconsAndText}}>{playerContext.currentTrack.artist}</Text>
                     </View>
                     <View style={{ ...styles.imageAndProgressContainer, ...styles.sectionContainer, height: playerImageSize, width: playerImageSize }}>
                         <View style={{ ...styles.trackImageContainer }}>
@@ -118,13 +119,13 @@ const MusicPlayer = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={{ ...styles.trackControlsContainer, ...styles.sectionContainer }}>
-                        <IconButton animated icon="skip-previous" disabled={previousDisabled} size={50} onPress={previousTrack} />
-                        <IconButton animated icon={playerContext.isPlaying ? "pause" : "play-circle-outline"} size={80} onPress={playPause} />
-                        <IconButton animated icon="skip-next" disabled={nextDisabled} size={50} onPress={nextTrack} />
+                        <IconButton color={colors.lightIconsAndText} animated icon="skip-previous" disabled={previousDisabled} size={50} onPress={previousTrack} />
+                        <IconButton color={colors.lightIconsAndText} animated icon={playerContext.isPlaying ? "pause" : "play-circle-outline"} size={80} onPress={playPause} />
+                        <IconButton color={colors.lightIconsAndText} animated icon="skip-next" disabled={nextDisabled} size={50} onPress={nextTrack} />
                     </View>
                     <View style={{ ...styles.otherControlsContainer, ...styles.sectionContainer }}>
-                        <IconButton animated icon="comment" size={20} onPress={() => dispatch(commentsModalVisible(true))} />
-                        <IconButton disabled={filteredQueue.length === 0} animated icon="playlist-play" size={20} onPress={() => dispatch(queueModalVisible(true))} />
+                        <IconButton color={colors.lightIconsAndText} animated icon="comment" size={20} onPress={() => dispatch(commentsModalVisible(true))} />
+                        <IconButton color={colors.lightIconsAndText} disabled={filteredQueue.length === 0} animated icon="playlist-play" size={20} onPress={() => dispatch(queueModalVisible(true))} />
                     </View>
                 </LinearGradient>
             </ScrollView>
@@ -144,6 +145,11 @@ MusicPlayer.propTypes = {
 }
 
 const styles = StyleSheet.create({
+    closeIcon: {
+        position: 'absolute',
+        top: 0,
+        left: 0
+    },
     scrollView: {
         flex: 1
     },
@@ -170,7 +176,7 @@ const styles = StyleSheet.create({
     otherControlsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'space-between'
     },
     commentIcon: {
         marginRight: 50

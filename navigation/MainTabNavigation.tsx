@@ -4,22 +4,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { createBottomTabNavigator, BottomTabBar } from '@react-navigation/bottom-tabs';
 import { useTheme } from 'react-native-paper';
 
-import MusicScreen from '../screens/Music';
 import ExploreScreen from '../screens/Explore';
 import AccountScreen from '../screens/Account';
 import MiniPlayer from '../components/MiniPlayer';
 
-const MusicScreenStack = createStackNavigator();
 const ExploreScreenStack = createStackNavigator();
 const AccountScreenStack = createStackNavigator();
-
-const MusicScreenStackNavigator = () => {
-  return (
-    <MusicScreenStack.Navigator headerMode='none'>
-      <MusicScreenStack.Screen name='Music' component={MusicScreen} />
-    </MusicScreenStack.Navigator>
-  )
-}
 
 const ExploreScreenStackNavigator = () => {
   return (
@@ -59,12 +49,6 @@ const MainTabNavigator = () => {
         tabBarLabel: 'Explore',
         tabBarIcon: ({color}) => (
           <MaterialCommunityIcons name="music-box-multiple" color={color} size={30} />
-        ),
-      }} />
-      <MainTab.Screen name="Music" component={MusicScreenStackNavigator} options={{
-        tabBarLabel: 'Music',
-        tabBarIcon: ({color}) => (
-          <MaterialCommunityIcons name="music" color={color} size={30} />
         ),
       }} />
       <MainTab.Screen name="Account" component={AccountScreenStackNavigator} options={{
