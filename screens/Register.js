@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, View, SafeAreaView, ScrollView, LogBox } from 'react-native';
 import { TextInput, Button, Text, Avatar, IconButton, Snackbar, ActivityIndicator, Switch, Divider, useTheme } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import ImagePicker from 'react-native-image-picker';
 import { Box } from 'react-native-design-utility';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import formStyles from '../styles/FormStyles';
 
 
 const RegisterScreen = ({ navigation }) => {
+    LogBox.ignoreLogs([
+        'VirtualizedLists should never be nested' // TODO: Remove when fixed
+    ]);
+
     const [artistName, setArtistName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [artistImage, setArtistImage] = useState({});
     const [bio, setBio] = useState('');
     const [website, setWebsite] = useState('');
+    const [location, setLocation] = useState('');
     const [isRegistering, setIsRegistering] = useState(false);
     const [showSocials, setShowSocials] = useState(false);
     const { colors } = useTheme();
@@ -111,7 +117,8 @@ const RegisterScreen = ({ navigation }) => {
                 artistName: artistName,
                 bio: bio,
                 socials: socials,
-                website: website
+                website: website,
+                location: location
             }).then(async () => {
                 let reference = null;
 
@@ -224,6 +231,52 @@ const RegisterScreen = ({ navigation }) => {
                                         </View> :
                                         <IconButton style={styles.uploadButton} animated icon="camera" size={30} onPress={lauchFileUploader} />
                                     }
+                                    <Divider />
+
+                                    <GooglePlacesAutocomplete
+                                        suppressDefaultStyles
+                                        styles={{
+                                            textInputContainer: {
+                                                width: "100%"
+                                            },
+                                            description: {
+                                                fontWeight: "bold"
+                                            },
+                                            predefinedPlacesDescription: {
+                                                color: "#1faadb"
+                                            },
+                                            textInput: {
+                                                backgroundColor: 'white',
+                                                padding: 5,
+                                                borderRadius: 4,
+                                                margin: 10,
+                                                fontSize: 20
+                                            },
+                                            row: {
+                                                backgroundColor: '#FFFFFF',
+                                                padding: 13,
+                                                height: 44,
+                                                flexDirection: 'row',
+                                                marginLeft: 15,
+                                                fontSize: 20
+                                            },
+                                            separator: {
+                                                height: 0.5,
+                                                backgroundColor: '#c8c7cc',
+                                            },
+                                        }}
+                                        disableScroll
+                                        placeholder='City'
+                                        onPress={(data, details = null) => {
+                                            setLocation(details.description);
+                                        }}
+                                        query={{
+                                            key: 'AIzaSyCLP-1eAvH9SK8Q-Gf7UgLqojEoD_NBQeM',
+                                            language: 'en',
+                                            types: '(cities)'
+                                        }}
+                                    />
+
                                     <Divider />
 
                                     <View style={styles.switchContainer}>
