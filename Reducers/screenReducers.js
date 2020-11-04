@@ -14,6 +14,14 @@ const screenReducers = {
             default:
                 return state;
         }
+    },
+    navigation: (state = {}, action) => {
+        switch (action.type) {
+            case 'NAVIGATION':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

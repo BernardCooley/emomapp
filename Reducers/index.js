@@ -16,7 +16,8 @@ const allReducers = combineReducers({
     newComment: musicReducers.newComment,
     commentIndex: musicReducers.commentIndex,
     trackListFilters: musicReducers.trackListFilters,
-    playerImageSize: musicReducers.playerImageSize
+    playerImageSize: musicReducers.playerImageSize,
+    navigation: screenReducers.navigation
 });
 
 const rootReducer = (state, action) => {

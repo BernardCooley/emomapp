@@ -81,3 +81,10 @@ export const trackListFilters = trackListFilters => {
         payload: trackListFilters
     };
 };
+
+export const setNavigation = navigation => {
+    return {
+        type: 'NAVIGATION',
+        payload: navigation
+    };
+};

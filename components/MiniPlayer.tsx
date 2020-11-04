@@ -9,15 +9,21 @@ import { Avatar } from 'react-native-paper';
 
 const MiniPlayer = () => {
     const currentScreen = useSelector(state => state.currentScreen);
+    const navigation = useSelector(state => state.navigation);
     const playerContext = usePlayerContext();
 
     if (playerContext.isEmpty || !playerContext.currentTrack || currentScreen === 'Music') {
         return null;
     }
 
+    const openPlayer = () => {
+        navigation.navigate('Tabs', { screen: 'Music' });
+    }
+
     return (
+
         <Box style={styles.outerBox} px='sm'>
-            <Box style={styles.innerBox}>
+            <TouchableOpacity style={styles.imageAndDetails} onPress={openPlayer}>
                 <Avatar.Image style={styles.avatar} size={40} source={{
                     uri: playerContext.currentTrack.trackImage
                 }} />
@@ -25,41 +31,52 @@ const MiniPlayer = () => {
                     <Text>{playerContext.currentTrack.artist}</Text>
                     <Text>{playerContext.currentTrack.title}</Text>
                 </Box>
-                <Box>
-                    {playerContext.isPaused && 
-                        <TouchableOpacity onPress={() => playerContext.play()}>
-                            <MaterialCommunityIcons name="play" size={30} />
-                        </TouchableOpacity>
-                    }
-                    {playerContext.isPlaying && 
-                        <TouchableOpacity onPress={playerContext.pause}>
-                            <MaterialCommunityIcons name="pause" size={30} />
-                        </TouchableOpacity>
-                    }
-                    {playerContext.isStopped && 
-                        <TouchableOpacity onPress={() => playerContext.play()}>
-                            <MaterialCommunityIcons name="play" size={30} />
-                        </TouchableOpacity>
-                    }
-                </Box>
+            </TouchableOpacity>
+            <Box>
+                {playerContext.isPaused &&
+                    <TouchableOpacity onPress={() => playerContext.play()}>
+                        <MaterialCommunityIcons name="play" size={30} />
+                    </TouchableOpacity>
+                }
+                {playerContext.isPlaying &&
+                    <TouchableOpacity onPress={playerContext.pause}>
+                        <MaterialCommunityIcons name="pause" size={30} />
+                    </TouchableOpacity>
+                }
+                {playerContext.isStopped &&
+                    <TouchableOpacity onPress={() => playerContext.play()}>
+                        <MaterialCommunityIcons name="play" size={30} />
+                    </TouchableOpacity>
+                }
             </Box>
         </Box>
+
     )
 }
 
 const styles = StyleSheet.create({
+    imageAndDetails: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
     outerBox: {
         height: 75,
-        backgroundColor:'white'
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     innerBox: {
-        flex:1,
+        display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between'
     },
     titleArtistBox: {
-        flex: 1
+        display: 'flex',
     },
     avatar: {
         marginRight: 10
