@@ -110,45 +110,10 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     const register = async () => {
-        setIsRegistering(true);
-        auth().createUserWithEmailAndPassword(email, password).then(async newUserData => {
-            await firestore().collection('users').doc(newUserData.user.uid).set({
-                userId: newUserData.user.uid,
-                artistName: artistName,
-                bio: bio,
-                socials: socials,
-                website: website,
-                location: location
-            }).then(async () => {
-                let reference = null;
-
-                if (artistImage.name) {
-                    reference = storage().ref(`/artistImages/${newUserData.user.uid}.${artistImage.ext}`);
-
-                    await reference.putFile(`file://${artistImage.path}`).then(async response => {
-                        await getDownloadUrl(response).then(url => {
-                            storeArtistDetails(url, newUserData).then(result => {
-                                if (result) {
-                                    setIsRegistering(false);
-                                    navigation.navigate('Tabs', { screen: 'Ecplore' });
-                                }
-                            })
-                        })
-                    }).catch(error => {
-                        console.log('IMAGE UPLOAD ============>', error);
-                    });
-                } else {
-                    reference = storage().ref(`default.png`);
-
-                    await getDownloadUrl().then(url => {
-                        storeArtistDetails(url, newUserData).then(result => {
-                            if (result) {
-                                setIsRegistering(false);
-                                navigation.navigate('Tabs', { screen: 'Ecplore' });
-                            }
-                        })
-                    })
-                }
+        auth().createUserWithEmailAndPassword(email, password).then(async () => {
+            await auth().currentUser.sendEmailVerification().then(() => {
+                navigation.push('EmailVerification');
+                // TODO store register details and pass to login page
             });
         }).catch(error => {
             console.log('REGISTER USER =============>', error);
@@ -165,17 +130,6 @@ const RegisterScreen = ({ navigation }) => {
             return url;
         }).catch(error => {
             console.log('GET DOWNLOAD URL =============>', error);
-        })
-    }
-
-    const storeArtistDetails = async (url, newUserData) => {
-        return await firestore().collection('users').doc(newUserData.user.uid).update({
-            artistImageUrl: url
-        }).then(() => {
-            return true;
-        }).catch(error => {
-            console.log('STORE ARTIST DETAILS =============>', error);
-            return false
         })
     }
 
@@ -313,7 +267,9 @@ const RegisterScreen = ({ navigation }) => {
                                 </View>
                                 <View style={styles.registerLinkContainer}>
                                     <Text style={styles.registerText}>Already registered?.....</Text>
-                                    <Button style={styles.registerLink} mode="text" onPress={() => navigation.navigate('Login')}>
+                                    <Button style={styles.registerLink} mode="text" onPress={() => navigation.navigate('Login', {
+                                        fromVerificationPage: false
+                                    })}>
                                         log in
                                     </Button>
                                 </View>

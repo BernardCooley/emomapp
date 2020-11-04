@@ -31,6 +31,11 @@ const formStyles = {
         borderRadius: 4,
         margin: 10,
         fontSize: 20
+    },
+    verificationLabel: {
+        textAlign: 'center',
+        marginTop: 50,
+        fontSize: 20
     }
 }
 

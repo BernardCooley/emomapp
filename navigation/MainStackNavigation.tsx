@@ -7,6 +7,7 @@ import RegisterScreen from '../screens/Register';
 import ArtistProfileScreen from '../screens/ArtistProfile';
 import HomeScreen from '../screens/Home';
 import MusicScreen from '../screens/Music';
+import EmailVerificationScreen from '../screens/EmailVerification';
 
 const MainStack = createStackNavigator();
 
@@ -17,6 +18,7 @@ const MainStackNavigator = () => {
             <MainStack.Screen name='Home' component={HomeScreen} />
             <MainStack.Screen name='Login' component={LoginScreen} />
             <MainStack.Screen name='Register' component={RegisterScreen} />
+            <MainStack.Screen name='EmailVerification' component={EmailVerificationScreen} />
             <MainStack.Screen name='Tabs' component={MainTabNavigator} />
             <MainStack.Screen name='Music' component={MusicScreen} />
             <MainStack.Screen name="Profile" component={ArtistProfileScreen} />

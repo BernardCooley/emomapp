@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, ImageBackground } from 'react-native';
-import { TextInput, Button, Text, Snackbar, Paragraph, Title } from 'react-native-paper';
+import React, { useEffect } from 'react';
+import { StyleSheet, View, ImageBackground } from 'react-native';
+import { Button, Text, Title } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 
 
 const HomeScreen = ({ navigation }) => {
 
     useEffect(() => {
-        if (auth().currentUser) {
+        if (auth().currentUser && auth().currentUser.emailVerified) {
             navigation.navigate('Tabs', { screen: 'Explore' });
         }
     }, []);
@@ -21,7 +21,9 @@ const HomeScreen = ({ navigation }) => {
                         <Text style={styles.description}>The electronic music open mic community</Text>
                     </View>
                     <View style={styles.buttonContainer}>
-                        <Button style={styles.button} onPress={() => navigation.navigate('Login')} mode='contained'>Log in</Button>
+                        <Button style={styles.button} onPress={() => navigation.navigate('Login', {
+                            fromVerificationPage: false
+                        })} mode='contained'>Log in</Button>
                         <Button style={styles.button} onPress={() => navigation.navigate('Register')} mode='contained'>Register</Button>
                     </View>
                 </View>
