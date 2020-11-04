@@ -20,6 +20,10 @@ const Grid = () => {
         const validClickCoordinates = ClickGridCoordinates.filter(coord => coord.x > clickedX - range && coord.x < clickedX + range && coord.y > clickedY - range && coord.y < clickedY + range);
 
         playerContext.seekTo(playerContext.currentTrack.duration * ClickGridCoordinates.indexOf(validClickCoordinates[0]) / 100);
+
+        if(playerContext.isPaused || playerContext.isStopped) {
+            playerContext.play();
+        }
     }
 
     return (

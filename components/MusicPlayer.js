@@ -110,7 +110,7 @@ const MusicPlayer = ({ navigation }) => {
                         </View>
                         <View style={styles.timeContainer}>
                             <Text style={{ ...styles.timeText, backgroundColor: colors.lightgray70Tr, borderColor: colors.dark, color: colors.dark }}>{
-                                playerContext.isPlaying ?
+                                playerContext.isPlaying || playerContext.isPaused ?
                                     convertToMins(parseInt(Math.round(position))) : 'Loading'}</Text>
                         </View>
                         <View style={{ ...styles.grid, height: playerImageSize, width: playerImageSize }}>
