@@ -1,34 +1,10 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { currentScreen } from '../Actions/index';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 
 import MusicPlayer from '../components/MusicPlayer';
 
 const MusicScreen = ({navigation}) => {
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            dispatch(currentScreen('Music'));
-        });
-
-        return(() => {
-            unsubscribe()
-        })
-    }, [navigation]);
-
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('blur', () => {
-            dispatch(currentScreen(''));
-        });
-
-        return (() => {
-            unsubscribe()
-        })
-    }, [navigation]);
-
     return (
         <View style={styles.playerContainer}>
             <MusicPlayer navigation={navigation}/>

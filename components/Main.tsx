@@ -8,9 +8,11 @@ import { PlayerContextProvider } from '../contexts/PlayerContext';
 import MainStackNavigator from '../navigation/MainStackNavigation';
 import { useDispatch } from 'react-redux';
 import auth from '@react-native-firebase/auth';
-import { user } from '../Actions/index';
+import { user, currentScreen } from '../Actions/index';
 
 const Main = () => {
+    const routeNameRef = React.useRef();
+    const navigationRef = React.useRef();
     const dispatch = useDispatch();
 
     const [isReady, setIsReady] = useState(false);
@@ -48,7 +50,15 @@ const Main = () => {
         <>
             {isReady ?
                 <PlayerContextProvider>
-                    <NavigationContainer>
+                    <NavigationContainer
+                        ref={navigationRef}
+                        onReady={() => routeNameRef.current = navigationRef.current.getCurrentRoute().name}
+                        onStateChange={() => {
+                            const currentRouteName = navigationRef.current.getCurrentRoute().name
+                            console.log(currentRouteName)
+                            dispatch(currentScreen(currentRouteName));
+                            routeNameRef.current = currentRouteName;
+                        }}>
                         <MainStackNavigator />
                     </NavigationContainer>
                 </PlayerContextProvider>

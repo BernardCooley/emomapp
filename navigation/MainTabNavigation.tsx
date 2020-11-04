@@ -1,36 +1,23 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { createBottomTabNavigator, BottomTabBar } from '@react-navigation/bottom-tabs';
-import { useTheme } from 'react-native-paper';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useTheme, IconButton } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { usePlayerContext } from '../contexts/PlayerContext';
 
 import ExploreScreen from '../screens/Explore';
 import AccountScreen from '../screens/Account';
 import MiniPlayer from '../components/MiniPlayer';
 
-const ExploreScreenStack = createStackNavigator();
-const AccountScreenStack = createStackNavigator();
-
-const ExploreScreenStackNavigator = () => {
-  return (
-    <ExploreScreenStack.Navigator headerMode='none'>
-      <ExploreScreenStack.Screen name='Explore' component={ExploreScreen} />
-    </ExploreScreenStack.Navigator>
-  )
-}
-
-const AccountScreenStackNavigator = () => {
-  return (
-    <AccountScreenStack.Navigator headerMode='none'>
-      <AccountScreenStack.Screen name='Account' component={AccountScreen} />
-    </AccountScreenStack.Navigator>
-  )
-}
-
 const MainTab = createBottomTabNavigator();
 
 const MainTabNavigator = () => {
+  const currScreen = useSelector(state => state.currentScreen);
+  const playerContext = usePlayerContext();
+  const navigation = useSelector(state => state.navigation);
   const { colors } = useTheme();
+
+  const iconLocation = playerContext.isEmpty || !playerContext.currentTrack ? 0 : 80;
 
   return (
     <MainTab.Navigator
@@ -41,24 +28,27 @@ const MainTabNavigator = () => {
       }}
       tabBar={tabsProps => (
         <>
-          <MiniPlayer />
-          <BottomTabBar {...tabsProps} />
-        </>
+          {currScreen === 'Account' ?
+            <IconButton style={{ ...styles.backIcon }} onPress={() => navigation.goBack()} animated icon="keyboard-backspace" size={30} /> : <IconButton style={{ ...styles.settingsIcon, bottom: iconLocation }} onPress={() => navigation.navigate('Account')} animated icon="cog-outline" size={30} />
+          }
+          <MiniPlayer /></>
       )}>
-      <MainTab.Screen name="Explore" component={ExploreScreenStackNavigator} options={{
-        tabBarLabel: 'Explore',
-        tabBarIcon: ({color}) => (
-          <MaterialCommunityIcons name="music-box-multiple" color={color} size={30} />
-        ),
-      }} />
-      <MainTab.Screen name="Account" component={AccountScreenStackNavigator} options={{
-        tabBarLabel: 'Account',
-        tabBarIcon: ({color}) => (
-          <MaterialCommunityIcons name="account" color={color} size={30} />
-        ),
-      }} />
+      <MainTab.Screen name="Explore" component={ExploreScreen} />
+      <MainTab.Screen name="Account" component={AccountScreen} />
     </MainTab.Navigator>
   )
 }
+
+const styles = StyleSheet.create({
+  settingsIcon: {
+    position: 'absolute',
+    right: 0
+  },
+  backIcon: {
+    position: 'absolute',
+    left: 0,
+    top: 0
+  }
+});
 
 export default MainTabNavigator;
