@@ -3,17 +3,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import TrackPlayer from 'react-native-track-player';
 import { Box } from 'react-native-design-utility';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, Snackbar } from 'react-native-paper';
 import { PlayerContextProvider } from '../contexts/PlayerContext';
 import MainStackNavigator from '../navigation/MainStackNavigation';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import auth from '@react-native-firebase/auth';
-import { user, currentScreen } from '../Actions/index';
+import { user, currentScreen, setSnackbarMessage } from '../Actions/index';
 
 const Main = () => {
     const routeNameRef = React.useRef();
     const navigationRef = React.useRef();
     const dispatch = useDispatch();
+    const snackbarMessage = useSelector(state => state.snackbarMessage);
 
     const [isReady, setIsReady] = useState(false);
 
@@ -58,6 +59,12 @@ const Main = () => {
                             dispatch(currentScreen(currentRouteName));
                             routeNameRef.current = currentRouteName;
                         }}>
+                        <Snackbar
+                            visible={snackbarMessage.length > 0}
+                            duration={2000}
+                            onDismiss={() => dispatch(setSnackbarMessage(''))}>
+                            {snackbarMessage}
+                        </Snackbar>
                         <MainStackNavigator />
                     </NavigationContainer>
                 </PlayerContextProvider>

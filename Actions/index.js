@@ -88,3 +88,10 @@ export const setNavigation = navigation => {
         payload: navigation
     };
 };
+
+export const setSnackbarMessage = snackbarMessage => {
+    return {
+        type: 'SNACKBAR_MESSAGE',
+        payload: snackbarMessage
+    };
+};

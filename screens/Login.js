@@ -1,13 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { TextInput, Button, Text, Snackbar, useTheme } from 'react-native-paper';
+import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import formStyles from '../styles/FormStyles';
+import { setSnackbarMessage } from '../Actions/index';
 
 
 const LoginScreen = ({ route, navigation }) => {
+    const dispatch = useDispatch();
     const { colors } = useTheme();
     const { fromVerificationPage, emailFromRoute, passwordFromRoute } = route.params;
     const user = useSelector(state => state.user);
@@ -18,7 +20,6 @@ const LoginScreen = ({ route, navigation }) => {
     const [password, setPassword] = useState(passwordFromRoute ? passwordFromRoute : '');
 
     const [formIsValid, setFormIsValid] = useState(false);
-    const [snackBarMessage, setSnackBarMessage] = useState('');
 
     const errors = {
         email: {
@@ -58,7 +59,7 @@ const LoginScreen = ({ route, navigation }) => {
             }
         }).catch(error => {
             if (error.code === 'auth/user-not-found') {
-                setSnackBarMessage('Email and/or password incorrect. Please try again')
+                dispatch(setSnackbarMessage('Email and/or password incorrect. Please try again'));
             }
         });
     }
@@ -101,11 +102,6 @@ const LoginScreen = ({ route, navigation }) => {
                             </Button>
                 </View>
             </View>
-            <Snackbar
-                visible={snackBarMessage.length > 0}
-                onDismiss={() => setSnackBarMessage('')}>
-                {snackBarMessage}
-            </Snackbar>
         </>
     );
 }

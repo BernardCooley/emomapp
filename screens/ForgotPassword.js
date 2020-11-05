@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Text, IconButton, TextInput, Snackbar } from 'react-native-paper';
+import { Button, Text, IconButton, TextInput } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
+import { useDispatch } from 'react-redux';
 
 import formStyles from '../styles/FormStyles';
+import { setSnackbarMessage } from '../Actions/index';
 
 const ForgotPasswordScreen = ({ navigation, route }) => {
-    const [snackBarMessage, setSnackBarMessage] = useState('');
+    const dispatch = useDispatch();
     const { emailFromLogin } = route.params;
     const [email, setEmail] = useState(emailFromLogin ? emailFromLogin : '');
     const [formIsValid, setFormIsValid] = useState(false);
 
     const resetPassword = () => {
         auth().sendPasswordResetEmail(email).then(function () {
-            setSnackBarMessage(`Password rest email sent to: ${email}`);
+            dispatch(setSnackbarMessage(`Password reset email sent to: ${email}`));
             navigation.push('Login', {
                 emailFromRoute: email
             });
         }).catch(function (error) {
             if (error.code === 'auth/user-not-found') {
-                setSnackBarMessage('Email address doesnt exist. Please try again.')
+                dispatch(setSnackbarMessage('Email address doesnt exist. Please try again.'));
             }
             console.log('PASSWORD RESET EMAIL ===============>', error);
         });
@@ -44,11 +46,6 @@ const ForgotPasswordScreen = ({ navigation, route }) => {
             <Button disabled={!formIsValid} style={{ ...styles.button, ...styles.forgotPasswordButton }} mode="contained" onPress={resetPassword}>
                 Reset password
             </Button>
-            <Snackbar
-                visible={snackBarMessage.length > 0}
-                onDismiss={() => setSnackBarMessage('')}>
-                {snackBarMessage}
-            </Snackbar>
         </View>
     )
 };

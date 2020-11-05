@@ -22,6 +22,14 @@ const screenReducers = {
             default:
                 return state;
         }
+    },
+    snackbarMessage: (state = '', action) => {
+        switch (action.type) {
+            case 'SNACKBAR_MESSAGE':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

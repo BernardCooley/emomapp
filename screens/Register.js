@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, LogBox } from 'react-native';
-import { TextInput, Button, Text, Avatar, IconButton, Snackbar, ActivityIndicator, Switch, Divider, useTheme } from 'react-native-paper';
+import { TextInput, Button, Text, Avatar, IconButton, ActivityIndicator, Switch, Divider, useTheme } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import ImagePicker from 'react-native-image-picker';
 import { Box } from 'react-native-design-utility';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { useDispatch } from 'react-redux';
 
 import formStyles from '../styles/FormStyles';
+import { setSnackbarMessage } from '../Actions/index';
 
 
 const RegisterScreen = ({ navigation }) => {
+    const dispatch = useDispatch();
     LogBox.ignoreLogs([
         'VirtualizedLists should never be nested' // TODO: Remove when fixed
     ]);
@@ -31,7 +34,6 @@ const RegisterScreen = ({ navigation }) => {
     ]);
 
     const [formIsValid, setFormIsValid] = useState(false);
-    const [snackBarMessage, setSnackBarMessage] = useState('');
 
     const options = {
         title: 'Select artist image',
@@ -91,7 +93,7 @@ const RegisterScreen = ({ navigation }) => {
                         ext: split
                     })
                 } else {
-                    setSnackBarMessage(`Only jpeg, jpg, png allowed.`);
+                    dispatch(setSnackbarMessage(`Only jpeg, jpg, png allowed.`));
                 }
             }
         });
@@ -172,7 +174,7 @@ const RegisterScreen = ({ navigation }) => {
             setIsRegistering(false);
             console.log('REGISTER USER =============>', error);
             if (error.code === 'auth/email-already-in-use') {
-                setSnackBarMessage('Email address already in use!')
+                dispatch(setSnackbarMessage('Email address already in use!'));
             }
         });
     }
@@ -339,15 +341,7 @@ const RegisterScreen = ({ navigation }) => {
                             </View>
                         </ScrollView>
                     </SafeAreaView>
-                    <Snackbar
-                        visible={snackBarMessage.length > 0}
-                        onDismiss={() => setSnackBarMessage('')}
-                        action={{
-                            label: 'Ok',
-                            onPress: () => { },
-                        }}>
-                        {snackBarMessage}
-                    </Snackbar></>
+                </>
             }
         </>
     );
