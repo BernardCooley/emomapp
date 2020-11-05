@@ -9,14 +9,13 @@ import useFirebaseCall from '../hooks/useFirebaseCall';
 const ArtistsScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const allArtists = useSelector(state => state.artists);
-    const allTracks = useSelector(state => state.tracks);
     const [refreshing, setRefreshing] = React.useState(false);
 
-    const [getArtists, error, getNextArtists] = useFirebaseCall('users', 'userId', 20);
+    const [getArtists, error, getNextArtists] = useFirebaseCall('users', 'artistName', 20);
 
     useEffect(() => {
         getArtists();
-    }, [allTracks]);
+    }, []);
 
     const wait = (timeout) => {
         return new Promise(resolve => {

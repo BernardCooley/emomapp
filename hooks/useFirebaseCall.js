@@ -25,7 +25,7 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
         try {
             await collectionRef.orderBy(orderBy).limit(limit).get().then(
                 response => {
-                    const data = response.docs.map(doc => doc.data());
+                    const data = [...response.docs.map(doc => doc.data())];
 
                     if(collectionName === 'tracks') {
                         setTracksState(data);
