@@ -17,10 +17,6 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
         getData();
     }, []);
 
-    useEffect(() => {
-        getTrackImages();
-    }, [tracksState]);
-
     const getData = async () => {
         try {
             await collectionRef.orderBy(orderBy).limit(limit).get().then(
@@ -29,6 +25,7 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
 
                     if(collectionName === 'tracks') {
                         setTracksState(data);
+                        getTrackImages(data);
                     }else if(collectionName === 'users') {
                         data.forEach((artist, index) => {
                             if (allTracks.length > 0) {
@@ -48,20 +45,26 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
         }
     };
 
-    const getTrackImages = () => {
-        const tr = [];
+    const getTrackImages = async trackData => {
+        const queryList = [];
 
-        tracksState.map(async (track, index) => {
-            await storage().ref(`trackImages/${track.id}.jpg`).getDownloadURL().then(url => {
-                track['trackImage'] = url;
-                tr.push(track);
-            }).catch(error => {
-                console.log('GET TRACK IMAGE =========>', error)
+        trackData.forEach(track => {
+            queryList.push(
+                {
+                    query: storage().ref(`trackImages/${track.id}.jpg`).getDownloadURL(),
+                    track: track
+                }
+            );
+        });
+
+        const updatedTracks = await Promise.all(
+            queryList.map(async query => {
+                query.track['trackImage'] = await query.query;
+                return query.track;
             })
-            if (index === tracksState.length - 1) {
-                dispatch(tracks(tr));
-            }
-        })
+        );
+
+        dispatch(tracks(updatedTracks));
     }
 
     const getNextItems = async () => {
@@ -74,6 +77,7 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
                         if (collectionName === 'tracks') {
                             concatData = [...tracksState, ...data];
                             setTracksState(concatData);
+                            getTrackImages(concatData);
                         } else if (collectionName === 'users') {
                             data.forEach((artist, index) => {
                                 if (allTracks.length > 0) {
