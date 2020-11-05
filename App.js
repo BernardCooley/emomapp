@@ -16,7 +16,9 @@ const App = () => {
       accent: '#f1c40f',
       lightIconsAndText: '#f2f4f3',
       lightgray70Tr: 'rgba(241, 243, 242, 0.7)',
-      dark: '#2e2c2f'
+      dark: '#2e2c2f',
+      playerDark: '#07102A',
+      playerLight: '#595F70'
     },
   };
 

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { TextInput, Button, Text, useTheme } from 'react-native-paper';
+import { TextInput, Button, Text } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -10,7 +10,6 @@ import { setSnackbarMessage } from '../Actions/index';
 
 const LoginScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
-    const { colors } = useTheme();
     const { fromVerificationPage, emailFromRoute, passwordFromRoute } = route.params;
     const user = useSelector(state => state.user);
 
@@ -33,6 +32,9 @@ const LoginScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (auth().currentUser && auth().currentUser.emailVerified) {
             navigation.push('Tabs', { screen: 'Explore' });
+        }
+        if(fromVerificationPage) {
+            dispatch(setSnackbarMessage('Verification email sent'));
         }
     }, []);
 
@@ -91,9 +93,6 @@ const LoginScreen = ({ route, navigation }) => {
                             emailFromLogin: email
                         })}>Fogot password</Button>
                     </View>
-                    {fromVerificationPage &&
-                        <Text style={{ ...styles.verificationLabel, color: colors.primary }}>Email verification email sent.</Text>
-                    }
                 </View>
                 <View style={styles.registerLinkContainer}>
                     <Text style={styles.registerText}>Dont have an accout?.....</Text>

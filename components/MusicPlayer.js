@@ -96,7 +96,7 @@ const MusicPlayer = ({ navigation }) => {
     return (
         <>
             <ScrollView contentContainerStyle={styles.scrollView}>
-                <LinearGradient colors={['#595F70', '#07102A']} style={styles.playerContainer}>
+                <LinearGradient colors={[colors.playerLight, colors.playerDark]} style={styles.playerContainer}>
                 <IconButton style={styles.closeIcon} onPress={() => navigation.goBack()} color={colors.lightIconsAndText} animated icon="chevron-down" size={30}/>
                     <View style={{ ...styles.sectionContainer, ...styles.trackInfoContainer }}>
                         <Title style={{color: colors.lightIconsAndText}}>{playerContext.currentTrack.title}</Title>

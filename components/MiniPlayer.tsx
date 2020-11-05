@@ -5,9 +5,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
-import { Avatar } from 'react-native-paper';
+import { Avatar, useTheme } from 'react-native-paper';
 
 const MiniPlayer = () => {
+    const { colors } = useTheme();
     const currentScreen = useSelector(state => state.currentScreen);
     const navigation = useSelector(state => state.navigation);
     const playerContext = usePlayerContext();
@@ -22,30 +23,30 @@ const MiniPlayer = () => {
 
     return (
 
-        <Box style={styles.outerBox} px='sm'>
+        <Box style={{...styles.outerBox, backgroundColor: colors.playerLight}} px='sm'>
             <TouchableOpacity style={styles.imageAndDetails} onPress={openPlayer}>
                 <Avatar.Image style={styles.avatar} size={40} source={{
                     uri: playerContext.currentTrack.trackImage
                 }} />
                 <Box style={styles.titleArtistBox}>
-                    <Text>{playerContext.currentTrack.artist}</Text>
-                    <Text>{playerContext.currentTrack.title}</Text>
+                    <Text style={{color: colors.lightIconsAndText}}>{playerContext.currentTrack.artist}</Text>
+                    <Text style={{color: colors.lightIconsAndText}}>{playerContext.currentTrack.title}</Text>
                 </Box>
             </TouchableOpacity>
             <Box>
                 {playerContext.isPaused &&
                     <TouchableOpacity onPress={() => playerContext.play()}>
-                        <MaterialCommunityIcons name="play" size={30} />
+                        <MaterialCommunityIcons color={colors.lightIconsAndText} name="play" size={30} />
                     </TouchableOpacity>
                 }
                 {playerContext.isPlaying &&
                     <TouchableOpacity onPress={playerContext.pause}>
-                        <MaterialCommunityIcons name="pause" size={30} />
+                        <MaterialCommunityIcons color={colors.lightIconsAndText} name="pause" size={30} />
                     </TouchableOpacity>
                 }
                 {playerContext.isStopped &&
                     <TouchableOpacity onPress={() => playerContext.play()}>
-                        <MaterialCommunityIcons name="play" size={30} />
+                        <MaterialCommunityIcons color={colors.lightIconsAndText} name="play" size={30} />
                     </TouchableOpacity>
                 }
             </Box>
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
     },
     outerBox: {
         height: 75,
-        backgroundColor: 'white',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
