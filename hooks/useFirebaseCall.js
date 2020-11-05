@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { tracks, artists } from '../Actions/index';
+import { tracks, artists, setActivityIndicator } from '../Actions/index';
 
 const useFirebaseCall = (collectionName, orderBy, limit) => {
     const dispatch = useDispatch();
@@ -18,6 +18,7 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
     }, []);
 
     const getData = async () => {
+        dispatch(setActivityIndicator(true));
         try {
             await collectionRef.orderBy(orderBy).limit(limit).get().then(
                 response => {
@@ -33,7 +34,7 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
                             } else {
                                 data[index]['trackAmount'] = 0;
                             }
-                        })
+                        });
                         setArtistsState(data);
                         dispatch(artists(data));
                     }
@@ -65,9 +66,11 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
         );
 
         dispatch(tracks(updatedTracks));
+        dispatch(setActivityIndicator(false));
     }
 
     const getNextItems = async () => {
+        dispatch(setActivityIndicator(true));
         if (tracksState.length > 0 || artistsState.length > 0) {
             try {
                 await collectionRef.orderBy(orderBy).startAfter(lastItem).limit(limit).get().then(
@@ -89,6 +92,7 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
                             concatData = [...artistsState, ...data];
                             setArtistsState(concatData);
                             dispatch(artists(concatData));
+                            dispatch(setActivityIndicator(false));
                         }
                         setLastItem(concatData[concatData.length - 1][orderBy]);
                     }

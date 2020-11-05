@@ -30,6 +30,14 @@ const screenReducers = {
             default:
                 return state;
         }
+    },
+    activityIndicator: (state = false, action) => {
+        switch (action.type) {
+            case 'ACTIVITY_INDICATOR':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

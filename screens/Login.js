@@ -1,23 +1,22 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, View, Keyboard } from 'react-native';
-import { TextInput, Button, Text } from 'react-native-paper';
+import { TextInput, Button, Text, ActivityIndicator } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import { useSelector, useDispatch } from 'react-redux';
 
 import formStyles from '../styles/FormStyles';
-import { setSnackbarMessage } from '../Actions/index';
+import { setSnackbarMessage, setActivityIndicator } from '../Actions/index';
 
 
 const LoginScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
     const { fromVerificationPage, emailFromRoute, passwordFromRoute } = route.params;
     const user = useSelector(state => state.user);
-
+    const activityIndicator = useSelector(state => state.activityIndicator);
     const emailRef = useRef();
     const passwordRef = useRef();
     const [email, setEmail] = useState(emailFromRoute ? emailFromRoute : '');
     const [password, setPassword] = useState(passwordFromRoute ? passwordFromRoute : '');
-
     const [formIsValid, setFormIsValid] = useState(false);
 
     const errors = {
@@ -53,6 +52,7 @@ const LoginScreen = ({ route, navigation }) => {
 
     const login = async () => {
         Keyboard.dismiss();
+        dispatch(setActivityIndicator(true));
         await auth().signInWithEmailAndPassword(email, password).then(async () => {
             if (auth().currentUser.emailVerified) {
                 navigation.navigate('Tabs', { screen: 'Explore' });
@@ -60,6 +60,7 @@ const LoginScreen = ({ route, navigation }) => {
                 console.log('NOT Verified');
                 navigation.push('EmailVerification');
             }
+            dispatch(setActivityIndicator(false));
         }).catch(error => {
             if (error.code === 'auth/user-not-found') {
                 dispatch(setSnackbarMessage('Email and/or password incorrect. Please try again'));
@@ -69,39 +70,43 @@ const LoginScreen = ({ route, navigation }) => {
 
     return (
         <>
-            <View style={styles.container}>
-                <View style={styles.formContainer}>
-                    <TextInput
-                        ref={emailRef}
-                        style={styles.input}
-                        label="Email"
-                        value={email}
-                        onChangeText={email => setEmail(email)}
-                    />
-                    <TextInput
-                        ref={passwordRef}
-                        style={styles.input}
-                        label="Password"
-                        value={password}
-                        onChangeText={password => setPassword(password)}
-                        secureTextEntry={true}
-                    />
-                    <Button disabled={!formIsValid} style={styles.button} mode="contained" onPress={login}>
-                        Log in
+            {activityIndicator ?
+                <ActivityIndicator style={styles.activityIndicatorContainer} size='large' />
+                :
+                <View style={styles.container}>
+                    <View style={styles.formContainer}>
+                        <TextInput
+                            ref={emailRef}
+                            style={styles.input}
+                            label="Email"
+                            value={email}
+                            onChangeText={email => setEmail(email)}
+                        />
+                        <TextInput
+                            ref={passwordRef}
+                            style={styles.input}
+                            label="Password"
+                            value={password}
+                            onChangeText={password => setPassword(password)}
+                            secureTextEntry={true}
+                        />
+                        <Button disabled={!formIsValid} style={styles.button} mode="contained" onPress={login}>
+                            Log in
                     </Button>
-                    <View style={styles.forgotPasswordButtonContainer}>
-                        <Button style={styles.forgotPasswordButton} onPress={() => navigation.push('ForgotPassword', {
-                            emailFromLogin: email
-                        })}>Forgot password</Button>
+                        <View style={styles.forgotPasswordButtonContainer}>
+                            <Button style={styles.forgotPasswordButton} onPress={() => navigation.push('ForgotPassword', {
+                                emailFromLogin: email
+                            })}>Forgot password</Button>
+                        </View>
+                    </View>
+                    <View style={styles.registerLinkContainer}>
+                        <Text style={styles.registerText}>Dont have an accout?.....</Text>
+                        <Button style={styles.registerLink} mode="text" onPress={() => navigation.push('Register')}>
+                            register
+                            </Button>
                     </View>
                 </View>
-                <View style={styles.registerLinkContainer}>
-                    <Text style={styles.registerText}>Dont have an accout?.....</Text>
-                    <Button style={styles.registerLink} mode="text" onPress={() => navigation.push('Register')}>
-                        register
-                            </Button>
-                </View>
-            </View>
+            }
         </>
     );
 }
@@ -114,6 +119,12 @@ const styles = StyleSheet.create({
     },
     forgotPasswordButton: {
         marginTop: 100
+    },
+    activityIndicatorContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%'
     }
 });
 

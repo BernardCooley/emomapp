@@ -109,3 +109,10 @@ export const setFavouritedTracks = favouritedTracks => {
         payload: favouritedTracks
     };
 };
+
+export const setActivityIndicator = activityIndicator => {
+    return {
+        type: 'ACTIVITY_INDICATOR',
+        payload: activityIndicator
+    };
+};

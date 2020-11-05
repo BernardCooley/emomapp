@@ -20,7 +20,8 @@ const allReducers = combineReducers({
     navigation: screenReducers.navigation,
     snackbarMessage: screenReducers.snackbarMessage,
     listenedTracks: musicReducers.listenedTracks,
-    favouritedTracks: musicReducers.favouritedTracks
+    favouritedTracks: musicReducers.favouritedTracks,
+    activityIndicator: screenReducers.activityIndicator
 });
 
 const rootReducer = (state, action) => {

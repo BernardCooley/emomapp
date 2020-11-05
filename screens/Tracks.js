@@ -54,7 +54,7 @@ const TracksScreen = ({ navigation }) => {
                 <SafeAreaView style={styles.container}>
                     <ScrollView
                         refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+                            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
                         }
                         style={styles.scrollView} contentContainerStyle={{
                             flexGrow: 1,

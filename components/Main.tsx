@@ -70,7 +70,7 @@ const Main = () => {
                 </PlayerContextProvider>
                 : (
                     <Box f={1} center>
-                        <ActivityIndicator />
+                        <ActivityIndicator size='large'  />
                     </Box>
                 )}
         </>
