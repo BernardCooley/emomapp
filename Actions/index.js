@@ -102,3 +102,10 @@ export const setListenedTracks = listenedTracks => {
         payload: listenedTracks
     };
 };
+
+export const setFavouritedTracks = favouritedTracks => {
+    return {
+        type: 'FAVOURITED_TRACKS',
+        payload: favouritedTracks
+    };
+};

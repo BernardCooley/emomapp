@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-import { artistProfileId, setListenedTracks, setSnackbarMessage } from '../Actions/index';
+import { artistProfileId, setListenedTracks, setSnackbarMessage, setFavouritedTracks } from '../Actions/index';
 import useListenedTracks from '../hooks/useListenedTracks';
 
 
@@ -25,7 +25,12 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
     useEffect(() => {
         const unsibscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
 
-        return () => unsibscribe();
+        const unsibscribe2 = usersRef.doc(auth().currentUser.uid).onSnapshot(onFavouritedTracksGetResult, onFavouritedTracksError);
+
+        return () => {
+            unsibscribe();
+            unsibscribe2();
+        };
     }, []);
 
     const trackListened = (trackId) => {
@@ -38,6 +43,15 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
     }
 
     const onListenedTracksError = error => {
+        console.error(error);
+    }
+
+    const onFavouritedTracksGetResult = QuerySnapshot => {
+        const favouritedTracks = QuerySnapshot.data().favourites ? QuerySnapshot.data().favourites : [];
+        dispatch(setFavouritedTracks(favouritedTracks));
+    }
+
+    const onFavouritedTracksError = error => {
         console.error(error);
     }
 

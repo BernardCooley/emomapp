@@ -19,7 +19,8 @@ const allReducers = combineReducers({
     playerImageSize: musicReducers.playerImageSize,
     navigation: screenReducers.navigation,
     snackbarMessage: screenReducers.snackbarMessage,
-    listenedTracks: musicReducers.listenedTracks
+    listenedTracks: musicReducers.listenedTracks,
+    favouritedTracks: musicReducers.favouritedTracks
 });
 
 const rootReducer = (state, action) => {

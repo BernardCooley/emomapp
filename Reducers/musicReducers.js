@@ -86,6 +86,14 @@ const musicReducers = {
             default:
                 return state;
         }
+    },
+    favouritedTracks: (state = [], action) => {
+        switch (action.type) {
+            case 'FAVOURITED_TRACKS':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

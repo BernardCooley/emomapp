@@ -10,15 +10,17 @@ import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import auth from '@react-native-firebase/auth';
 
-import { commentsModalVisible, queueModalVisible, trackComments, artistProfileId } from '../Actions/index';
+import { commentsModalVisible, queueModalVisible, trackComments, artistProfileId} from '../Actions/index';
 import Progress from './Progress';
 import QueueModal from '../components/QueueModal';
 import CommentsModal from '../components/CommentsModal';
 import Grid from '../components/Grid';
 import useListenedTracks from '../hooks/useListenedTracks';
+import useFavouritedTracks from '../hooks/useFavouritedTracks';
 
 const MusicPlayer = ({ navigation }) => {
-    const [addListenedTrack, removeListenedTrack, error] = useListenedTracks(auth().currentUser.uid);
+    const [addListenedTrack, removeListenedTrack, listenedError] = useListenedTracks(auth().currentUser.uid);
+    const [addFavouritedTrack, removeFavouritedTrack, favouritesError] = useFavouritedTracks(auth().currentUser.uid);
     const playerImageSize = useSelector(state => state.playerImageSize);
     const { colors } = useTheme();
     const { position, bufferedPosition, duration } = useTrackPlayerProgress();
@@ -28,6 +30,7 @@ const MusicPlayer = ({ navigation }) => {
     const [previousDisabled, setPreviousDisabled] = useState(false);
     const [filteredQueue, setFilteredQueue] = useState([]);
     const playerContext = usePlayerContext();
+    const allFavouritedTracks = useSelector(state => state.favouritedTracks);
 
     useEffect(() => {
         if (playerContext.trackQueue && playerContext.currentTrack) {
@@ -103,6 +106,18 @@ const MusicPlayer = ({ navigation }) => {
         navigation.navigate('Profile');
     }
 
+    const trackFavourited = (trackId) => {
+        return allFavouritedTracks.includes(trackId) ? 'green' : '';
+    }
+
+    const toggleFavourited = id => {
+        if(allFavouritedTracks.filter(trackId => trackId === id).length > 0) {
+            removeFavouritedTrack(id);
+        }else {
+            addFavouritedTrack(id);
+        }
+    }
+
     if (playerContext.isEmpty || !playerContext.currentTrack) {
         return null;
     }
@@ -142,6 +157,7 @@ const MusicPlayer = ({ navigation }) => {
                     <View style={{ ...styles.otherControlsContainer, ...styles.sectionContainer }}>
                         <IconButton color={colors.lightIconsAndText} animated icon="comment" size={20} onPress={() => dispatch(commentsModalVisible(true))} />
                         <IconButton color={colors.lightIconsAndText} disabled={filteredQueue.length === 0} animated icon="playlist-play" size={20} onPress={() => dispatch(queueModalVisible(true))} />
+                        <IconButton color={colors.lightIconsAndText} animated icon={trackFavourited(playerContext.currentTrack.id) ? 'heart' : 'heart-outline'} size={20} onPress={() => toggleFavourited(playerContext.currentTrack.id)} />
                     </View>
                 </LinearGradient>
             </ScrollView>
