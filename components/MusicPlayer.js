@@ -25,7 +25,6 @@ const MusicPlayer = ({ navigation }) => {
     const [previousDisabled, setPreviousDisabled] = useState(false);
     const [filteredQueue, setFilteredQueue] = useState([]);
     const playerContext = usePlayerContext();
-    const isQueueModalVisible = useSelector(state => state.queueModalVisible);
 
     useEffect(() => {
         if (playerContext.trackQueue && playerContext.currentTrack) {
@@ -137,12 +136,8 @@ const MusicPlayer = ({ navigation }) => {
                     </View>
                 </LinearGradient>
             </ScrollView>
-            {isQueueModalVisible &&
-                <>
-                    <QueueModal tracks={filteredQueue} navigation={navigation} />
-                    <CommentsModal />
-                </>
-            }
+            <QueueModal tracks={filteredQueue} navigation={navigation} />
+            <CommentsModal />
         </>
     )
 }
