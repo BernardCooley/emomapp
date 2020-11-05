@@ -34,7 +34,6 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
 
     const onListenedTracksGetResult = QuerySnapshot => {
         const listenedTracks = QuerySnapshot.data().listened ? QuerySnapshot.data().listened : [];
-        console.log(listenedTracks);
         dispatch(setListenedTracks(listenedTracks));
     }
 

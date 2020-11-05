@@ -62,8 +62,6 @@ const RegisterScreen = ({ navigation }) => {
     const showHideSocials = () => setShowSocials(!showSocials);
 
     const setSocialUrl = (socialPlatform, value) => {
-        console.log(socialPlatform, value);
-
         const updatedSocials = socials.map(social => {
             if (social.name === socialPlatform) {
                 social.url = value
