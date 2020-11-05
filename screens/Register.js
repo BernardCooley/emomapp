@@ -130,7 +130,11 @@ const RegisterScreen = ({ navigation }) => {
                                 storeArtistDetails(url, newUserData.user.uid).then(result => {
                                     if (result) {
                                         setIsRegistering(false);
-                                        navigation.push('EmailVerification');
+                                        navigation.push('EmailVerification',
+                                            loginDetails = {
+                                                email: email,
+                                                password: password
+                                            });
                                     }
                                 })
                             }).catch(error => {
@@ -148,7 +152,10 @@ const RegisterScreen = ({ navigation }) => {
                             storeArtistDetails(url, newUserData.user.uid).then(result => {
                                 if (result) {
                                     setIsRegistering(false);
-                                    navigation.push('EmailVerification');
+                                    navigation.push('EmailVerification', {
+                                        email: email,
+                                        password: password
+                                    });
                                 }
                             })
                         }).catch(error => {

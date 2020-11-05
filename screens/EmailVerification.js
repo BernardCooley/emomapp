@@ -4,7 +4,8 @@ import { Title, Button, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import auth from '@react-native-firebase/auth';
 
-const EmailVerificationScreen = ({ navigation }) => {
+const EmailVerificationScreen = ({ navigation, route }) => {
+    const { email, password } = route.params;
 
     useEffect(() => {
 
@@ -18,12 +19,19 @@ const EmailVerificationScreen = ({ navigation }) => {
         })
     }
 
+    const openLoginScreen = () => {
+        navigation.push('Login', {
+            emailFromRoute: email,
+            passwordFromRoute: password
+        });
+    }
+
     return (
         <View style={styles.container}>
             <Title>Email address not verified</Title>
             <Button onPress={resendEmail} style={styles.resendButton} mode='contained'>Re-send email verification email</Button>
             <Text>or</Text>
-            <Button onPress={() => navigation.push('Login')} style={styles.loginButton}>Login</Button>
+            <Button onPress={openLoginScreen} style={styles.loginButton}>Login</Button>
         </View>
     )
 };

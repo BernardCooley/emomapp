@@ -9,13 +9,13 @@ import formStyles from '../styles/FormStyles';
 
 const LoginScreen = ({ route, navigation }) => {
     const { colors } = useTheme();
-    const { fromVerificationPage } = route.params;
+    const { fromVerificationPage, emailFromRoute, passwordFromRoute } = route.params;
     const user = useSelector(state => state.user);
 
     const emailRef = useRef();
     const passwordRef = useRef();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState(emailFromRoute ? emailFromRoute : '');
+    const [password, setPassword] = useState(passwordFromRoute ? passwordFromRoute : '');
 
     const [formIsValid, setFormIsValid] = useState(false);
     const [snackBarMessage, setSnackBarMessage] = useState('');
@@ -85,6 +85,11 @@ const LoginScreen = ({ route, navigation }) => {
                     <Button disabled={!formIsValid} style={styles.button} mode="contained" onPress={login}>
                         Log in
                     </Button>
+                    <View style={styles.forgotPasswordButtonContainer}>
+                        <Button style={styles.forgotPasswordButton} onPress={() => navigation.push('ForgotPassword', {
+                            emailFromLogin: email
+                        })}>Fogot password</Button>
+                    </View>
                     {fromVerificationPage &&
                         <Text style={{ ...styles.verificationLabel, color: colors.primary }}>Email verification email sent.</Text>
                     }
@@ -105,6 +110,15 @@ const LoginScreen = ({ route, navigation }) => {
     );
 }
 
-const styles = StyleSheet.create(formStyles);
+const styles = StyleSheet.create({
+    ...formStyles,
+    forgotPasswordButtonContainer: {
+        display: 'flex',
+        justifyContent: 'flex-start'
+    },
+    forgotPasswordButton: {
+        marginTop: 100
+    }
+});
 
 export default LoginScreen;
