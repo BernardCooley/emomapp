@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Keyboard } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import { useSelector, useDispatch } from 'react-redux';
@@ -33,7 +33,7 @@ const LoginScreen = ({ route, navigation }) => {
         if (auth().currentUser && auth().currentUser.emailVerified) {
             navigation.push('Tabs', { screen: 'Explore' });
         }
-        if(fromVerificationPage) {
+        if (fromVerificationPage) {
             dispatch(setSnackbarMessage('Verification email sent'));
         }
     }, []);
@@ -52,6 +52,7 @@ const LoginScreen = ({ route, navigation }) => {
     }, [user]);
 
     const login = async () => {
+        Keyboard.dismiss();
         await auth().signInWithEmailAndPassword(email, password).then(async () => {
             if (auth().currentUser.emailVerified) {
                 navigation.navigate('Tabs', { screen: 'Explore' });
@@ -91,7 +92,7 @@ const LoginScreen = ({ route, navigation }) => {
                     <View style={styles.forgotPasswordButtonContainer}>
                         <Button style={styles.forgotPasswordButton} onPress={() => navigation.push('ForgotPassword', {
                             emailFromLogin: email
-                        })}>Fogot password</Button>
+                        })}>Forgot password</Button>
                     </View>
                 </View>
                 <View style={styles.registerLinkContainer}>

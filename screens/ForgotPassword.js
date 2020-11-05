@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Keyboard } from 'react-native';
 import { Button, Text, IconButton, TextInput } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import { useDispatch } from 'react-redux';
@@ -14,6 +14,7 @@ const ForgotPasswordScreen = ({ navigation, route }) => {
     const [formIsValid, setFormIsValid] = useState(false);
 
     const resetPassword = () => {
+        Keyboard.dismiss();
         auth().sendPasswordResetEmail(email).then(function () {
             dispatch(setSnackbarMessage(`Password reset email sent to: ${email}`));
             navigation.push('Login', {
