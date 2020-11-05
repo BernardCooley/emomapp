@@ -7,8 +7,9 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { commentsModalVisible, queueModalVisible, trackComments } from '../Actions/index';
+import { commentsModalVisible, queueModalVisible, trackComments, artistProfileId } from '../Actions/index';
 import Progress from './Progress';
 import QueueModal from '../components/QueueModal';
 import CommentsModal from '../components/CommentsModal';
@@ -89,6 +90,11 @@ const MusicPlayer = ({ navigation }) => {
         return `${mins}:${("0" + secs).slice(-2)}`
     }
 
+    const viewArtistProfile = artistId => {
+        dispatch(artistProfileId(artistId));
+        navigation.navigate('Profile');
+    }
+
     if (playerContext.isEmpty || !playerContext.currentTrack) {
         return null;
     }
@@ -97,10 +103,12 @@ const MusicPlayer = ({ navigation }) => {
         <>
             <ScrollView contentContainerStyle={styles.scrollView}>
                 <LinearGradient colors={[colors.playerLight, colors.playerDark]} style={styles.playerContainer}>
-                <IconButton style={styles.closeIcon} onPress={() => navigation.goBack()} color={colors.lightIconsAndText} animated icon="chevron-down" size={30}/>
+                    <IconButton style={styles.closeIcon} onPress={() => navigation.goBack()} color={colors.lightIconsAndText} animated icon="chevron-down" size={30} />
                     <View style={{ ...styles.sectionContainer, ...styles.trackInfoContainer }}>
-                        <Title style={{color: colors.lightIconsAndText}}>{playerContext.currentTrack.title}</Title>
-                        <Text style={{color: colors.lightIconsAndText}}>{playerContext.currentTrack.artist}</Text>
+                        <Title style={{ color: colors.lightIconsAndText }}>{playerContext.currentTrack.title}</Title>
+                        <TouchableOpacity onPress={() => viewArtistProfile(playerContext.currentTrack.artistId)}>
+                            <Text style={{ color: colors.lightIconsAndText }}>{playerContext.currentTrack.artist}</Text>
+                        </TouchableOpacity>
                     </View>
                     <View style={{ ...styles.imageAndProgressContainer, ...styles.sectionContainer, height: playerImageSize, width: playerImageSize }}>
                         <View style={{ ...styles.trackImageContainer }}>

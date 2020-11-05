@@ -32,8 +32,8 @@ const ArtistProfileScreen = ({ navigation }) => {
         }
     }, [currentProfile]);
 
-    const backToArtists = () => {
-        navigation.navigate('Tabs', { screen: 'Artists' });
+    const goBack = () => {
+        navigation.goBack();
         dispatch(artistProfileId(''));
     }
 
@@ -56,7 +56,7 @@ const ArtistProfileScreen = ({ navigation }) => {
                         justifyContent: 'space-between'
                     }}>
                         <View style={styles.container}>
-                            <IconButton style={styles.closeButton} animated icon="close" size={25} onPress={backToArtists} />
+                            <IconButton style={styles.closeButton} animated icon="close" size={25} onPress={goBack} />
                             <Title style={StyleSheet.title}>{currentProfile.artistName}</Title>
                             <Divider />
                             <Avatar.Image style={styles.artistImage} size={300} source={{ uri: currentProfile.artistImageUrl }} />
