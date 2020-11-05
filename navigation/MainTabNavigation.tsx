@@ -26,7 +26,7 @@ const MainTabNavigator = () => {
         activeBackgroundColor: 'lightgray',
         showLabel: false
       }}
-      tabBar={tabsProps => (
+      tabBar={() => (
         <>
           {currScreen === 'Account' ?
             <IconButton style={{ ...styles.backIcon }} onPress={() => navigation.goBack()} animated icon="keyboard-backspace" size={30} /> : <IconButton style={{ ...styles.settingsIcon, bottom: iconLocation }} onPress={() => navigation.navigate('Account')} animated icon="cog-outline" size={30} />

@@ -95,3 +95,10 @@ export const setSnackbarMessage = snackbarMessage => {
         payload: snackbarMessage
     };
 };
+
+export const setListenedTracks = listenedTracks => {
+    return {
+        type: 'LISTENED_TRACKS',
+        payload: listenedTracks
+    };
+};

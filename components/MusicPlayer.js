@@ -8,14 +8,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import auth from '@react-native-firebase/auth';
 
 import { commentsModalVisible, queueModalVisible, trackComments, artistProfileId } from '../Actions/index';
 import Progress from './Progress';
 import QueueModal from '../components/QueueModal';
 import CommentsModal from '../components/CommentsModal';
 import Grid from '../components/Grid';
+import useListenedTracks from '../hooks/useListenedTracks';
 
 const MusicPlayer = ({ navigation }) => {
+    const [addListenedTrack, removeListenedTrack, error] = useListenedTracks(auth().currentUser.uid);
     const playerImageSize = useSelector(state => state.playerImageSize);
     const { colors } = useTheme();
     const { position, bufferedPosition, duration } = useTrackPlayerProgress();
@@ -45,6 +48,12 @@ const MusicPlayer = ({ navigation }) => {
             return () => unsibscribe();
         }
     }, [playerContext.trackQueue, playerContext.currentTrack]);
+
+    useEffect(() => {
+        if (playerContext.currentTrack && Math.round(position) / playerContext.currentTrack.duration * 100 > 5) {
+            addListenedTrack(playerContext.currentTrack.id);
+        }
+    }, [playerContext.currentTrack, position]);
 
     const onCommentsGetResult = QuerySnapshot => {
         if (QuerySnapshot.data().comments) {

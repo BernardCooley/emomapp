@@ -18,7 +18,8 @@ const allReducers = combineReducers({
     trackListFilters: musicReducers.trackListFilters,
     playerImageSize: musicReducers.playerImageSize,
     navigation: screenReducers.navigation,
-    snackbarMessage: screenReducers.snackbarMessage
+    snackbarMessage: screenReducers.snackbarMessage,
+    listenedTracks: musicReducers.listenedTracks
 });
 
 const rootReducer = (state, action) => {

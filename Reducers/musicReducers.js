@@ -78,6 +78,14 @@ const musicReducers = {
             default:
                 return state;
         }
+    },
+    listenedTracks: (state = [], action) => {
+        switch (action.type) {
+            case 'LISTENED_TRACKS':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

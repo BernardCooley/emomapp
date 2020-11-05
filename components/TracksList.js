@@ -1,19 +1,46 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Avatar, IconButton, List, Divider, Menu } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import storage from '@react-native-firebase/storage';
-import { useDispatch } from 'react-redux';
-import { artistProfileId } from '../Actions/index';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+
+import { artistProfileId, setListenedTracks, setSnackbarMessage } from '../Actions/index';
+import useListenedTracks from '../hooks/useListenedTracks';
 
 
 const TracksList = ({ navigation, tracks, listLocation }) => {
+    const [addListenedTrack, removeListenedTrack, error] = useListenedTracks(auth().currentUser.uid);
     const dispatch = useDispatch();
     const playerContext = usePlayerContext();
     const [showMenu, setShowMenu] = useState(false);
     const [menuLocation, setMenuLocation] = useState({});
     const [clickedTrack, setClickedTrack] = useState('');
+    const usersRef = firestore().collection('users');
+    const allListenedTracks = useSelector(state => state.listenedTracks);
+
+    useEffect(() => {
+        const unsibscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
+
+        return () => unsibscribe();
+    }, []);
+
+    const trackListened = (trackId) => {
+        return allListenedTracks.includes(trackId) ? 'green' : '';
+    }
+
+    const onListenedTracksGetResult = QuerySnapshot => {
+        const listenedTracks = QuerySnapshot.data().listened ? QuerySnapshot.data().listened : [];
+        console.log(listenedTracks);
+        dispatch(setListenedTracks(listenedTracks));
+    }
+
+    const onListenedTracksError = error => {
+        console.error(error);
+    }
 
     const openMenu = (e, track) => {
         setClickedTrack(track);
@@ -60,6 +87,16 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
         )
     }
 
+    const toggleListened = id => {
+        if(allListenedTracks.filter(trackId => trackId === id).length > 0) {
+            removeListenedTrack(id);
+            dispatch(setSnackbarMessage(`Set to unlistened`));
+        }else {
+            addListenedTrack(id);
+            dispatch(setSnackbarMessage(`Set to listened`));
+        }
+    }
+
     const TracksList = () => (
         <>
             {
@@ -78,7 +115,10 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                             left={() =>
                                 <Avatar.Image style={styles.trackImage} size={50} source={{ uri: tracks[key].trackImage }} />
                             }
-                            right={() => <DotsIcon track={tracks[key]}/>}
+                            right={() => <View style={styles.trackListingRight}>
+                                <DotsIcon track={tracks[key]} />
+                                <IconButton icon={trackListened(tracks[key].id) ? 'ear-hearing' : 'ear-hearing-off'} size={20} onPress={() => toggleListened(tracks[key].id)}/>
+                            </View>}
                             onPress={() => playTrack(tracks[key])}
                         />
                         <Divider />
@@ -120,6 +160,12 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         backgroundColor: 'transparent'
+    },
+    trackListingRight: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
 
