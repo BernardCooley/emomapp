@@ -285,7 +285,7 @@ const RegisterScreen = ({ navigation }) => {
                                             },
                                         }}
                                         disableScroll
-                                        placeholder='City'
+                                        placeholder='City (optional)'
                                         onPress={(data, details = null) => {
                                             setLocation(details.description);
                                         }}
@@ -321,7 +321,7 @@ const RegisterScreen = ({ navigation }) => {
 
                                     <TextInput
                                         style={styles.input}
-                                        label="Website"
+                                        label="Website (optional)"
                                         value={website}
                                         onChangeText={website => setWebsite(website)}
                                     />
