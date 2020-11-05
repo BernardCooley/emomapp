@@ -19,7 +19,8 @@ const CommentsModal = () => {
 
     const openCommentBox = (currentCommentType, commentInd) => {
         dispatch(commentType(currentCommentType));
-        if(commentInd) {
+        
+        if(commentInd > -1) {
             dispatch(commentIndex(commentInd))
         }
     }
