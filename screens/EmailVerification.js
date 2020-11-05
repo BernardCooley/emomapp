@@ -23,9 +23,7 @@ const EmailVerificationScreen = ({ navigation }) => {
             <Title>Email address not verified</Title>
             <Button onPress={resendEmail} style={styles.resendButton} mode='contained'>Re-send email verification email</Button>
             <Text>or</Text>
-            <Button onPress={() => navigation.push('Login', {
-                fromVerificationPage: false
-            })} style={styles.loginButton}>Login</Button>
+            <Button onPress={() => navigation.push('Login')} style={styles.loginButton}>Login</Button>
         </View>
     )
 };

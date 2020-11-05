@@ -21,9 +21,7 @@ const HomeScreen = ({ navigation }) => {
                         <Text style={styles.description}>The electronic music open mic community</Text>
                     </View>
                     <View style={styles.buttonContainer}>
-                        <Button style={styles.button} onPress={() => navigation.navigate('Login', {
-                            fromVerificationPage: false
-                        })} mode='contained'>Log in</Button>
+                        <Button style={styles.button} onPress={() => navigation.navigate('Login')} mode='contained'>Log in</Button>
                         <Button style={styles.button} onPress={() => navigation.navigate('Register')} mode='contained'>Register</Button>
                     </View>
                 </View>

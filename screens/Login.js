@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { TextInput, Button, Text, Snackbar, useTheme } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import { useSelector } from 'react-redux';
-import firestore from '@react-native-firebase/firestore';
 
 import formStyles from '../styles/FormStyles';
 
@@ -49,68 +48,10 @@ const LoginScreen = ({ route, navigation }) => {
         }
     }, [user]);
 
-    const storeArtistDetails = async (url, userId) => {
-        return await firestore().collection('users').doc(userId).update({
-            artistImageUrl: url
-        }).then(() => {
-            return true;
-        }).catch(error => {
-            console.log('STORE ARTIST DETAILS =============>', error);
-            return false
-        })
-    }
-
     const login = async () => {
         await auth().signInWithEmailAndPassword(email, password).then(async () => {
             if (auth().currentUser.emailVerified) {
-                console.log('Verified');
-                const userId = auth().currentUser.uid;
-                await firestore().collection('users').doc(userId).get().then(async resp => {
-                    if (resp.exists) {
-                        navigation.push('Tabs', { screen: 'Explore' });
-                    } else {
-                        setIsRegistering(true);
-                        await firestore().collection('users').doc(userId).set({
-                            userId: userId,
-                            artistName: artistName,
-                            bio: bio,
-                            socials: socials,
-                            website: website,
-                            location: location
-                        }).then(async () => {
-                            let reference = null;
-
-                            if (artistImage.name) {
-                                reference = storage().ref(`/artistImages/${userId}.${artistImage.ext}`);
-
-                                await reference.putFile(`file://${artistImage.path}`).then(async response => {
-                                    await getDownloadUrl(response).then(url => {
-                                        storeArtistDetails(url, userId).then(result => {
-                                            if (result) {
-                                                navigation.navigate('Tabs', { screen: 'Ecplore' });
-                                            }
-                                        })
-                                    })
-                                }).catch(error => {
-                                    console.log('IMAGE UPLOAD ============>', error);
-                                });
-                            } else {
-                                reference = storage().ref(`default.png`);
-
-                                await getDownloadUrl().then(url => {
-                                    storeArtistDetails(url, userId).then(result => {
-                                        if (result) {
-                                            setIsRegistering(false);
-                                            navigation.push('Tabs', { screen: 'Explore' });
-                                        }
-                                    })
-                                })
-                            }
-                        });
-                    }
-                }).catch(async () => {
-
-                });
+                navigation.navigate('Tabs', { screen: 'Explore' });
             } else {
                 console.log('NOT Verified');
                 navigation.push('EmailVerification');

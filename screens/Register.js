@@ -110,10 +110,49 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     const register = async () => {
-        auth().createUserWithEmailAndPassword(email, password).then(async () => {
-            await auth().currentUser.sendEmailVerification().then(() => {
-                navigation.push('EmailVerification');
-                // TODO store register details and pass to login page
+        auth().createUserWithEmailAndPassword(email, password).then(async newUserData => {
+            await auth().currentUser.sendEmailVerification().then(async () => {
+                setIsRegistering(true);
+
+                await firestore().collection('users').doc(newUserData.user.uid).set({
+                    artistName: artistName,
+                    bio: bio,
+                    socials: socials,
+                    website: website,
+                    location: location,
+                }).then(async () => {
+                    let reference = null;
+
+                    if (artistImage.name) {
+                        reference = storage().ref(`/artistImages/${newUserData.user.uid}.${artistImage.ext}`);
+
+                        await reference.putFile(`file://${artistImage.path}`).then(async response => {
+                            await getDownloadUrl(response).then(url => {
+                                storeArtistDetails(url, newUserData.user.uid).then(result => {
+                                    if (result) {
+                                        navigation.push('EmailVerification');
+                                        setIsRegistering(false);
+                                    }
+                                })
+                            })
+                        }).catch(error => {
+                            console.log('IMAGE UPLOAD ============>', error);
+                        });
+                    } else {
+                        reference = storage().ref(`default.png`);
+
+                        await getDownloadUrl().then(url => {
+                            storeArtistDetails(url, newUserData.user.uid).then(result => {
+                                if (result) {
+                                    setIsRegistering(false);
+                                    navigation.push('EmailVerification');
+                                }
+                            })
+                        })
+                    }
+                }).catch(error => {
+                    console.log('ADD USER ===============>', error);
+                });
             });
         }).catch(error => {
             console.log('REGISTER USER =============>', error);
@@ -121,6 +160,17 @@ const RegisterScreen = ({ navigation }) => {
                 setSnackBarMessage('Email address already in use!')
             }
         });
+    }
+
+    const storeArtistDetails = async (url, userId) => {
+        return await firestore().collection('users').doc(userId).update({
+            artistImageUrl: url
+        }).then(() => {
+            return true;
+        }).catch(error => {
+            console.log('STORE ARTIST DETAILS =============>', error);
+            return false
+        })
     }
 
     const getDownloadUrl = async (response) => {
@@ -267,9 +317,7 @@ const RegisterScreen = ({ navigation }) => {
                                 </View>
                                 <View style={styles.registerLinkContainer}>
                                     <Text style={styles.registerText}>Already registered?.....</Text>
-                                    <Button style={styles.registerLink} mode="text" onPress={() => navigation.navigate('Login', {
-                                        fromVerificationPage: false
-                                    })}>
+                                    <Button style={styles.registerLink} mode="text" onPress={() => navigation.navigate('Login')}>
                                         log in
                                     </Button>
                                 </View>

@@ -16,7 +16,8 @@ const MainStackNavigator = () => {
     return (
         <MainStack.Navigator headerMode='none'>
             <MainStack.Screen name='Home' component={HomeScreen} />
-            <MainStack.Screen name='Login' component={LoginScreen} />
+            <MainStack.Screen name='Login' component={LoginScreen}
+                initialParams={{ fromVerificationPage: false }} />
             <MainStack.Screen name='Register' component={RegisterScreen} />
             <MainStack.Screen name='EmailVerification' component={EmailVerificationScreen} />
             <MainStack.Screen name='Tabs' component={MainTabNavigator} />
