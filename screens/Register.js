@@ -110,10 +110,9 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     const register = async () => {
+        setIsRegistering(true);
         auth().createUserWithEmailAndPassword(email, password).then(async newUserData => {
-            await auth().currentUser.sendEmailVerification().then(async () => {
-                setIsRegistering(true);
-
+            await newUserData.user.sendEmailVerification().then(async () => {
                 await firestore().collection('users').doc(newUserData.user.uid).set({
                     artistName: artistName,
                     bio: bio,
@@ -130,12 +129,16 @@ const RegisterScreen = ({ navigation }) => {
                             await getDownloadUrl(response).then(url => {
                                 storeArtistDetails(url, newUserData.user.uid).then(result => {
                                     if (result) {
-                                        navigation.push('EmailVerification');
                                         setIsRegistering(false);
+                                        navigation.push('EmailVerification');
                                     }
                                 })
-                            })
+                            }).catch(error => {
+                                setIsRegistering(false);
+                                console.log('GET DOWNLOAD URL ===============>', error);
+                            });
                         }).catch(error => {
+                            setIsRegistering(false);
                             console.log('IMAGE UPLOAD ============>', error);
                         });
                     } else {
@@ -148,13 +151,18 @@ const RegisterScreen = ({ navigation }) => {
                                     navigation.push('EmailVerification');
                                 }
                             })
-                        })
+                        }).catch(error => {
+                            setIsRegistering(false);
+                            console.log('GET DOWNLOAD URL ============>', error);
+                        });
                     }
                 }).catch(error => {
+                    setIsRegistering(false);
                     console.log('ADD USER ===============>', error);
                 });
             });
         }).catch(error => {
+            setIsRegistering(false);
             console.log('REGISTER USER =============>', error);
             if (error.code === 'auth/email-already-in-use') {
                 setSnackBarMessage('Email address already in use!')

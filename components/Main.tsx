@@ -55,7 +55,6 @@ const Main = () => {
                         onReady={() => routeNameRef.current = navigationRef.current.getCurrentRoute().name}
                         onStateChange={() => {
                             const currentRouteName = navigationRef.current.getCurrentRoute().name
-                            console.log(currentRouteName)
                             dispatch(currentScreen(currentRouteName));
                             routeNameRef.current = currentRouteName;
                         }}>
