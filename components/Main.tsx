@@ -9,6 +9,7 @@ import MainStackNavigator from '../navigation/MainStackNavigation';
 import { useSelector, useDispatch } from 'react-redux';
 import auth from '@react-native-firebase/auth';
 import { user, currentScreen, setSnackbarMessage } from '../Actions/index';
+import NetInfo from '@react-native-community/netinfo';
 
 const Main = () => {
     const routeNameRef = React.useRef();
@@ -37,6 +38,19 @@ const Main = () => {
 
             setIsReady(true);
         });
+
+        const unsubscribe = NetInfo.addEventListener(state => {
+            console.log(state.isConnected);
+            if (state.isConnected) {
+                alert('Connected');
+                setSnackbarMessage('connected');
+            } else {
+                setSnackbarMessage('not connected');
+                alert('Not connected');
+            }
+        });
+
+        return () => unsubscribe();
     }, []);
 
     useEffect(() => {
@@ -70,7 +84,7 @@ const Main = () => {
                 </PlayerContextProvider>
                 : (
                     <Box f={1} center>
-                        <ActivityIndicator size='large'  />
+                        <ActivityIndicator size='large' />
                     </Box>
                 )}
         </>

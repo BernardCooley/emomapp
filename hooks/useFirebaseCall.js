@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { tracks, artists, setActivityIndicator, setNetConnected } from '../Actions/index';
-import NetInfo from '@react-native-community/netinfo';
+import { tracks, artists, setActivityIndicator } from '../Actions/index';
 
 const useFirebaseCall = (collectionName, orderBy, limit) => {
     const dispatch = useDispatch();
@@ -16,16 +15,6 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
 
     useEffect(() => {
         getData();
-
-        const unsubscribe = NetInfo.addEventListener(state => {
-            if(state.isConnected) {
-                setNetConnected(true);
-            }else {
-                setNetConnected(false);
-            }
-        });
-
-        return () => unsubscribe();
     }, []);
 
     const getData = async () => {
