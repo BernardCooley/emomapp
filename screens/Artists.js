@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, SafeAreaView, FlatList, RefreshControl, Keyboard, View } from 'react-native';
-import { Card, Title, Chip, Searchbar, ActivityIndicator, IconButton } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, SafeAreaView, RefreshControl, Keyboard, View, ScrollView } from 'react-native';
+import { Title, Searchbar, ActivityIndicator, Text } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
+import PropTypes from 'prop-types';
 
-import { artistProfileId, setActivityIndicator, setSnackbarMessage, artists } from '../Actions/index';
+import { setActivityIndicator, setSnackbarMessage, artists } from '../Actions/index';
 import useFirebaseCall from '../hooks/useFirebaseCall';
+import ArtistsList from '../components/ArtistsList';
 
 const ArtistsScreen = ({ navigation }) => {
     const activityIndicator = useSelector(state => state.activityIndicator);
@@ -14,8 +16,15 @@ const ArtistsScreen = ({ navigation }) => {
     const [refreshing, setRefreshing] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState('');
     const usersRef = firestore().collection('users');
+    const [showingSearchResults, setShowingSearchResults] = useState(false);
 
     const [getArtists, error, getNextArtists, getTrackImages] = useFirebaseCall('users', 'artistName', 20);
+
+    useEffect(() => {
+        if(searchQuery.length === 0) {
+            refresh();
+        }
+    }, [searchQuery]);
 
     useEffect(() => {
         getArtists();
@@ -31,24 +40,8 @@ const ArtistsScreen = ({ navigation }) => {
         setRefreshing(true);
         getArtists();
         wait(2000).then(() => setRefreshing(false));
+        setShowingSearchResults(false);
     };
-
-    const viewArtistProfile = artistId => {
-        dispatch(artistProfileId(artistId));
-        navigation.navigate('Profile');
-    }
-
-    const viewArtistTracks = artistId => {
-        alert(artistId);
-    }
-
-    const renderItem = ({ item }) => (
-        <Card style={styles.card} onPress={() => viewArtistProfile(item.userId)}>
-            <Chip style={styles.chip} icon="music-box-multiple" onPress={() => viewArtistTracks(item.userId)}>{item.trackAmount}</Chip>
-            <Card.Cover style={styles.cardCover} source={{ uri: item.artistImageUrl }} />
-            <Title style={styles.cardTitle}>{item.artistName}</Title>
-        </Card>
-    );
 
     const onChangeSearch = query => {
         setSearchQuery(query);
@@ -68,9 +61,8 @@ const ArtistsScreen = ({ navigation }) => {
                 const filteredArtists = allArtists.filter(artist => contains(artist.artistName, searchQuery));
                 dispatch(artists(filteredArtists));
                 dispatch(setActivityIndicator(false));
+                setShowingSearchResults(true);
             });
-
-            setSearchQuery('');
         } else {
             dispatch(setSnackbarMessage(`Search box is empty`));
         }
@@ -78,72 +70,51 @@ const ArtistsScreen = ({ navigation }) => {
 
     return (
         <>
-            <SafeAreaView style={styles.artistsContainer}>
-                {allArtists.length > 0 ?
-                    <>
-                        {activityIndicator ?
-                            <ActivityIndicator style={styles.activityIndicatorContainer} size='large' /> :
-                            <FlatList
-                                ListHeaderComponent={
-                                    <Searchbar
-                                        icon='magnify'
-                                        onIconPress={search}
-                                        clearIcon='close'
-                                        placeholder="Search artists"
-                                        onChangeText={onChangeSearch}
-                                        value={searchQuery}
-                                        onSubmitEditing={search}
-                                    />
-                                }
-                                refreshControl={
-                                    <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-                                }
-                                style={styles.listContainer}
-                                data={allArtists}
-                                renderItem={renderItem}
-                                keyExtractor={artist => artist.userId}
-                                numColumns={2}
-                            />
-                        }
-                    </> :
-                    <>
-                        <IconButton style={{ ...styles.backIcon }} onPress={() => navigation.push('ExploreTabs', { screen: 'Artists' })} animated icon="keyboard-backspace" size={30} />
-                        <View style={styles.noArtistsLabel}>
-                            <Title >No artists found</Title>
-                        </View>
-                    </>
-                }
-            </SafeAreaView>
+            {allArtists &&
+                <SafeAreaView style={styles.container}>
+                    <Searchbar
+                        icon='magnify'
+                        onIconPress={search}
+                        clearIcon='close'
+                        placeholder="Search artists"
+                        onChangeText={onChangeSearch}
+                        value={searchQuery}
+                        onSubmitEditing={search}
+                    />
+                    {activityIndicator ?
+                        <ActivityIndicator style={styles.activityIndicatorContainer} size='large' /> :
+                        <ScrollView
+                            refreshControl={
+                                <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+                            }
+                            style={styles.scrollView} contentContainerStyle={{
+                                flexGrow: 1,
+                                justifyContent: 'space-between'
+                            }}>
+                            {showingSearchResults &&
+                                <Text style={styles.resultsLabel}>{allArtists.length} results found for: "{searchQuery}"</Text>
+                            }
+                            {allArtists.length > 0 ?
+                                <ArtistsList navigation={navigation}/> :
+                                <>
+                                    <View style={styles.noArtistsLabel}>
+                                        <Title >No artists found</Title>
+                                    </View>
+                                </>
+                            }
+                        </ScrollView>
+                    }
+                </SafeAreaView>
+            }
         </>
     );
 }
 
+ArtistsScreen.propTypes = {
+    navigation: PropTypes.object
+}
+
 const styles = StyleSheet.create({
-    artistsContainer: {
-        flex: 1,
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        flexDirection: 'row'
-    },
-    card: {
-        height: 'auto',
-        width: '45%',
-        margin: 10
-    },
-    cardTitle: {
-        textAlign: 'center',
-        width: '100%',
-        backgroundColor: 'rgba(53, 53, 53, 0.94)',
-        color: 'white',
-        height: 'auto'
-    },
-    chip: {
-        position: 'absolute',
-        top: 5,
-        left: 5,
-        zIndex: 1,
-        width: 50
-    },
     activityIndicatorContainer: {
         display: 'flex',
         justifyContent: 'center',
@@ -156,10 +127,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 300
     },
-    backIcon: {
-        position: 'absolute',
-        left: 0,
-        top: 0
+    resultsLabel: {
+        fontWeight: 'bold',
+        padding: 10
     }
 });
 
