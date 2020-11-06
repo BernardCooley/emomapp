@@ -129,9 +129,10 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                             left={() =>
                                 <Avatar.Image style={styles.trackImage} size={50} source={{ uri: tracks[key].trackImage }} />
                             }
-                            right={() => <View style={styles.trackListingRight}>
+                            right={() => 
+                            <View style={styles.trackListingRight}>
+                                <IconButton style={styles.earIcon} icon={trackListened(tracks[key].id) ? 'ear-hearing' : 'ear-hearing-off'} size={20} onPress={() => toggleListened(tracks[key].id)}/>
                                 <DotsIcon track={tracks[key]} />
-                                <IconButton icon={trackListened(tracks[key].id) ? 'ear-hearing' : 'ear-hearing-off'} size={20} onPress={() => toggleListened(tracks[key].id)}/>
                             </View>}
                             onPress={() => playTrack(tracks[key])}
                         />
@@ -178,8 +179,13 @@ const styles = StyleSheet.create({
     trackListingRight: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center'
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        position: 'relative',
+        right: -15
+    },
+    earIcon: {
+        marginRight: -10
     }
 });
 
