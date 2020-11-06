@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from "@react-navigation/native";
 import TracksList from '../components/TracksList';
 import PropTypes from 'prop-types';
-import { Searchbar, ActivityIndicator, Title } from 'react-native-paper';
+import { Searchbar, ActivityIndicator, Title, IconButton } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 
 import useFirebaseCall from '../hooks/useFirebaseCall';
@@ -106,9 +106,12 @@ const TracksScreen = ({ navigation }) => {
                             }}>
                             {allTracks.length > 0 ?
                                 <TracksList tracks={allTracks} navigation={navigation} /> :
-                                <View style={styles.noTracksLabel}>
-                                    <Title >No tracks found</Title>
-                                </View>
+                                <>
+                                    <IconButton style={{ ...styles.backIcon }} onPress={() => navigation.push('ExploreTabs', { screen: 'Tracks' })} animated icon="keyboard-backspace" size={30} />
+                                    <View style={styles.noTracksLabel}>
+                                        <Title >No tracks found</Title>
+                                    </View>
+                                </>
                             }
                         </ScrollView>
                     }
@@ -145,6 +148,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         height: 300
+    },
+    backIcon: {
+        position: 'absolute',
+        left: 0,
+        top: 0
     }
 });
 

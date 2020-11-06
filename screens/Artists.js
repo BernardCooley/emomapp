@@ -1,17 +1,21 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, SafeAreaView, FlatList, RefreshControl } from 'react-native';
-import { Card, Title, Chip } from 'react-native-paper';
+import { StyleSheet, SafeAreaView, FlatList, RefreshControl, Keyboard, View } from 'react-native';
+import { Card, Title, Chip, Searchbar, ActivityIndicator, IconButton } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
-import { artistProfileId } from '../Actions/index';
+import firestore from '@react-native-firebase/firestore';
 
+import { artistProfileId, setActivityIndicator, setSnackbarMessage, artists } from '../Actions/index';
 import useFirebaseCall from '../hooks/useFirebaseCall';
 
 const ArtistsScreen = ({ navigation }) => {
+    const activityIndicator = useSelector(state => state.activityIndicator);
     const dispatch = useDispatch();
     const allArtists = useSelector(state => state.artists);
     const [refreshing, setRefreshing] = React.useState(false);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const usersRef = firestore().collection('users');
 
-    const [getArtists, error, getNextArtists] = useFirebaseCall('users', 'artistName', 20);
+    const [getArtists, error, getNextArtists, getTrackImages] = useFirebaseCall('users', 'artistName', 20);
 
     useEffect(() => {
         getArtists();
@@ -46,19 +50,69 @@ const ArtistsScreen = ({ navigation }) => {
         </Card>
     );
 
+    const onChangeSearch = query => {
+        setSearchQuery(query);
+    };
+
+    const contains = (string, substring) => {
+        return string.toLowerCase().indexOf(substring) !== -1;
+    }
+
+    const search = async () => {
+        if (searchQuery.length > 0) {
+            Keyboard.dismiss();
+            dispatch(setActivityIndicator(true));
+
+            await usersRef.get().then(response => {
+                const allArtists = response.docs.map(doc => doc.data());
+                const filteredArtists = allArtists.filter(artist => contains(artist.artistName, searchQuery));
+                dispatch(artists(filteredArtists));
+                dispatch(setActivityIndicator(false));
+            });
+
+            setSearchQuery('');
+        } else {
+            dispatch(setSnackbarMessage(`Search box is empty`));
+        }
+    }
+
     return (
         <>
             <SafeAreaView style={styles.artistsContainer}>
-                <FlatList
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-                    }
-                    style={styles.listContainer}
-                    data={allArtists}
-                    renderItem={renderItem}
-                    keyExtractor={artist => artist.userId}
-                    numColumns={2}
-                />
+                {allArtists.length > 0 ?
+                    <>
+                        {activityIndicator ?
+                            <ActivityIndicator style={styles.activityIndicatorContainer} size='large' /> :
+                            <FlatList
+                                ListHeaderComponent={
+                                    <Searchbar
+                                        icon='magnify'
+                                        onIconPress={search}
+                                        clearIcon='close'
+                                        placeholder="Search artists"
+                                        onChangeText={onChangeSearch}
+                                        value={searchQuery}
+                                        onSubmitEditing={search}
+                                    />
+                                }
+                                refreshControl={
+                                    <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+                                }
+                                style={styles.listContainer}
+                                data={allArtists}
+                                renderItem={renderItem}
+                                keyExtractor={artist => artist.userId}
+                                numColumns={2}
+                            />
+                        }
+                    </> :
+                    <>
+                        <IconButton style={{ ...styles.backIcon }} onPress={() => navigation.push('ExploreTabs', { screen: 'Artists' })} animated icon="keyboard-backspace" size={30} />
+                        <View style={styles.noArtistsLabel}>
+                            <Title >No artists found</Title>
+                        </View>
+                    </>
+                }
             </SafeAreaView>
         </>
     );
@@ -89,6 +143,23 @@ const styles = StyleSheet.create({
         left: 5,
         zIndex: 1,
         width: 50
+    },
+    activityIndicatorContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%'
+    },
+    noArtistsLabel: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 300
+    },
+    backIcon: {
+        position: 'absolute',
+        left: 0,
+        top: 0
     }
 });
 
