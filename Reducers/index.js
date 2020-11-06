@@ -2,6 +2,7 @@ import screenReducers from './screenReducers';
 import authReducers from './authReducers';
 import musicReducers from './musicReducers';
 import { combineReducers } from 'redux';
+import reducers from './reducers';
 
 const allReducers = combineReducers({
     currentScreen: screenReducers.currentScreen,
@@ -20,7 +21,8 @@ const allReducers = combineReducers({
     snackbarMessage: screenReducers.snackbarMessage,
     listenedTracks: musicReducers.listenedTracks,
     favouritedTracks: musicReducers.favouritedTracks,
-    activityIndicator: screenReducers.activityIndicator
+    activityIndicator: screenReducers.activityIndicator,
+    netConnected: reducers.netConnected
 });
 
 const rootReducer = (state, action) => {

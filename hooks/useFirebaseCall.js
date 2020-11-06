@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { tracks, artists, setActivityIndicator } from '../Actions/index';
+import { tracks, artists, setActivityIndicator, setNetConnected } from '../Actions/index';
+import NetInfo from '@react-native-community/netinfo';
 
 const useFirebaseCall = (collectionName, orderBy, limit) => {
     const dispatch = useDispatch();
@@ -15,6 +16,16 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
 
     useEffect(() => {
         getData();
+
+        const unsubscribe = NetInfo.addEventListener(state => {
+            if(state.isConnected) {
+                setNetConnected(true);
+            }else {
+                setNetConnected(false);
+            }
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const getData = async () => {
@@ -24,10 +35,10 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
                 response => {
                     const data = [...response.docs.map(doc => doc.data())];
 
-                    if(collectionName === 'tracks') {
+                    if (collectionName === 'tracks') {
                         setTracksState(data);
                         getTrackImages(data);
-                    }else if(collectionName === 'users') {
+                    } else if (collectionName === 'users') {
                         data.forEach((artist, index) => {
                             if (allTracks.length > 0) {
                                 data[index]['trackAmount'] = allTracks.filter(track => track.artistId === artist.userId).length;

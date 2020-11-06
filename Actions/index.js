@@ -109,3 +109,10 @@ export const setActivityIndicator = activityIndicator => {
         payload: activityIndicator
     };
 };
+
+export const setNetConnected = netConnected => {
+    return {
+        type: 'NET_CONNECTED',
+        payload: netConnected
+    };
+};
