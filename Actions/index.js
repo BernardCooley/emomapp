@@ -19,13 +19,6 @@ export const tracks = tracks => {
     };
 };
 
-export const artistProfileId = id => {
-    return {
-        type: 'ARTIST_PROFILE_ID',
-        payload: id
-    };
-};
-
 export const artists = artists => {
     return {
         type: 'ARTISTS',

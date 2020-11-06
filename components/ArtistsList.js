@@ -3,15 +3,15 @@ import { View, StyleSheet } from 'react-native';
 import { Title, Card, Chip } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { artistProfileId } from '../Actions/index';
 
 const ArtistsList = ({ navigation }) => {
     const dispatch = useDispatch();
     const allArtists = useSelector(state => state.artists);
 
-    const viewArtistProfile = artistId => {
-        dispatch(artistProfileId(artistId));
-        navigation.push('Profile');
+    const viewArtistProfile = id => {
+        navigation.push('Profile', {
+            artistId: id
+        });
     }
 
     const viewArtistTracks = artistId => {

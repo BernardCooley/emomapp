@@ -28,7 +28,7 @@ const MainStackNavigator = () => {
             <MainStack.Screen name='Tabs' component={MainTabNavigator} />
             <MainStack.Screen name='ExploreTabs' component={ExploreScreen} />
             <MainStack.Screen name='Music' component={MusicScreen} />
-            <MainStack.Screen name="Profile" component={ArtistProfileScreen} />
+            <MainStack.Screen name="Profile" component={ArtistProfileScreen} initialParams={{ artistId: '' }} />
         </MainStack.Navigator>
     )
 }

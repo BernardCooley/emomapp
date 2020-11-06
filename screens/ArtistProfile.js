@@ -3,28 +3,27 @@ import { StyleSheet, View, SafeAreaView, ScrollView, Linking } from 'react-nativ
 import { Text, IconButton, Title, Divider, Avatar, Subheading, useTheme } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
-import { artistProfileId } from '../Actions/index';
 import TracksList from '../components/TracksList';
 import PropTypes from 'prop-types';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import SocialLinks from '../components/SocialLinks';
 
-const ArtistProfileScreen = ({ navigation }) => {
+const ArtistProfileScreen = ({ navigation, route }) => {
+    const { artistId } = route.params;
     const { colors } = useTheme();
     const dispatch = useDispatch();
-    const currentprofileId = useSelector(state => state.artistProfileId);
     const allTracks = useSelector(state => state.tracks);
     const [currentProfile, setCurrentProfile] = useState({});
     const [currentProfileTracks, setCurrentProfileTracks] = useState({});
 
     useEffect(() => {
-        if (currentprofileId.length > 0) {
-            firestore().collection('users').doc(currentprofileId).get().then(response => {
+        if (artistId.length > 0) {
+            firestore().collection('users').doc(artistId).get().then(response => {
                 setCurrentProfile(response.data());
             })
         }
-    }, [currentprofileId]);
+    }, [artistId]);
 
     useEffect(() => {
         if (currentProfile) {
@@ -34,7 +33,6 @@ const ArtistProfileScreen = ({ navigation }) => {
 
     const goBack = () => {
         navigation.goBack();
-        dispatch(artistProfileId(''));
     }
 
     const openUrl = url => {

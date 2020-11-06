@@ -10,7 +10,7 @@ import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import auth from '@react-native-firebase/auth';
 
-import { commentsModalVisible, queueModalVisible, trackComments, artistProfileId} from '../Actions/index';
+import { commentsModalVisible, queueModalVisible, trackComments} from '../Actions/index';
 import Progress from './Progress';
 import QueueModal from '../components/QueueModal';
 import CommentsModal from '../components/CommentsModal';
@@ -101,9 +101,10 @@ const MusicPlayer = ({ navigation }) => {
         return `${mins}:${("0" + secs).slice(-2)}`
     }
 
-    const viewArtistProfile = artistId => {
-        dispatch(artistProfileId(artistId));
-        navigation.navigate('Profile');
+    const viewArtistProfile = id => {
+        navigation.push('Profile', {
+            artistId: id
+        });
     }
 
     const trackFavourited = (trackId) => {

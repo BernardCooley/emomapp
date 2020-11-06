@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-import { artistProfileId, setListenedTracks, setSnackbarMessage, setFavouritedTracks } from '../Actions/index';
+import { setListenedTracks, setSnackbarMessage, setFavouritedTracks } from '../Actions/index';
 import useListenedTracks from '../hooks/useListenedTracks';
 
 
@@ -82,8 +82,9 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
 
     const artistProfile = () => {
         setShowMenu(false);
-        dispatch(artistProfileId(clickedTrack.artistId));
-        navigation.navigate('Profile');
+        navigation.push('Profile', {
+            artistId: clickedTrack.artistId
+        });
     }
 
     const closeMenu = () => {
