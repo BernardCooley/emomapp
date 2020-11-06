@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, Linking } from 'react-native';
 import { Text, IconButton, Title, Divider, Avatar, Subheading, useTheme } from 'react-native-paper';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import TracksList from '../components/TracksList';
 import PropTypes from 'prop-types';
@@ -12,7 +12,6 @@ import SocialLinks from '../components/SocialLinks';
 const ArtistProfileScreen = ({ navigation, route }) => {
     const { artistId } = route.params;
     const { colors } = useTheme();
-    const dispatch = useDispatch();
     const allTracks = useSelector(state => state.tracks);
     const [currentProfile, setCurrentProfile] = useState({});
     const [currentProfileTracks, setCurrentProfileTracks] = useState({});

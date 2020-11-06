@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { StyleSheet, BackHandler, Alert, SafeAreaView, RefreshControl, Keyboard, View, ScrollView } from 'react-native';
+import { StyleSheet, BackHandler, Alert, SafeAreaView, RefreshControl, Keyboard, View, ScrollView, Dimensions } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from "@react-navigation/native";
 import PropTypes from 'prop-types';
-import { Title, Searchbar, ActivityIndicator, Text } from 'react-native-paper';
+import { Title, Searchbar, ActivityIndicator, Text, useTheme, FAB } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 
 import useFirebaseCall from '../hooks/useFirebaseCall';
@@ -13,13 +13,18 @@ import TracksList from '../components/TracksList';
 
 
 const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
+    const { colors } = useTheme();
     const dispatch = useDispatch();
     const activityIndicator = useSelector(state => state.activityIndicator);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [scroll, setScroll] = useState(null);
     const [showingSearchResults, setShowingSearchResults] = useState(false);
     const [getArtists, artistsError, getNextArtists] = useFirebaseCall('users', 'artistName', 20);
     const [getTracks, tracksError, getNextTracks, getTrackImages] = useFirebaseCall('tracks', 'id', 20);
+    const [displayBackToTopIcon, setDisplayBackToTopIcon] = useState(false);
+    const screenHeight = Dimensions.get("window").height;
+
 
     let firestoreRef = null;
     let allData = null;
@@ -38,9 +43,13 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
         }
     }, [searchQuery]);
 
-    useEffect(() => {
-
-    }, []);
+    const findDimesions = scrollHeight => {
+        if (Math.round(scrollHeight) + 200 > Math.round(screenHeight)) {
+            setDisplayBackToTopIcon(true);
+        } else {
+            setDisplayBackToTopIcon(false);
+        }
+    }
 
     useFocusEffect(
         useCallback(() => {
@@ -74,9 +83,9 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
         setSearchQuery('');
         setRefreshing(true);
         if (artistsOrTracks === 'artists') {
-            getArtists();   
+            getArtists();
         } else {
-           getTracks();
+            getTracks();
         }
         wait(2000).then(() => setRefreshing(false));
         setShowingSearchResults(false);
@@ -117,6 +126,10 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
         }
     }
 
+    const goToTop = () => {
+        scroll.scrollTo({ x: 0, y: 0, animated: true });
+    }
+
     return (
         <>
             {allData &&
@@ -132,31 +145,47 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
                     />
                     {activityIndicator ?
                         <ActivityIndicator style={styles.activityIndicatorContainer} size='large' /> :
-                        <ScrollView
-                            refreshControl={
-                                <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+                        <>
+                            <ScrollView
+                                onContentSizeChange={(width, height) => {
+                                    findDimesions(height);
+                                  }}
+                                ref={c => { setScroll(c) }}
+                                refreshControl={
+                                    <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+                                }
+                                style={styles.scrollView}
+                                contentContainerStyle={{
+                                    flexGrow: 1,
+                                    justifyContent: 'space-between'
+                                }}>
+                                {showingSearchResults &&
+                                    <Text style={styles.resultsLabel}>{allData.length} results found for: "{searchQuery}"</Text>
+                                }
+                                {allData.length > 0 ?
+                                    <>
+                                        {artistsOrTracks === 'artists' ?
+                                            <ArtistsList navigation={navigation} /> :
+                                            <TracksList tracks={allData} navigation={navigation} />
+                                        }
+                                    </> :
+                                    <>
+                                        <View style={styles.noResultsLabel}>
+                                            <Title >No {artistsOrTracks} found</Title>
+                                        </View>
+                                    </>
+                                }
+                            </ScrollView>
+                            {displayBackToTopIcon &&
+                                <FAB
+                                    animated
+                                    small
+                                    icon="arrow-up-drop-circle-outline"
+                                    style={{ ...styles.toTopIcon, backgroundColor: colors.lightIconsAndText }}
+                                    onPress={goToTop}
+                                />
                             }
-                            style={styles.scrollView} contentContainerStyle={{
-                                flexGrow: 1,
-                                justifyContent: 'space-between'
-                            }}>
-                            {showingSearchResults &&
-                                <Text style={styles.resultsLabel}>{allData.length} results found for: "{searchQuery}"</Text>
-                            }
-                            {allData.length > 0 ?
-                                <>
-                                    {artistsOrTracks === 'artists' ?
-                                        <ArtistsList navigation={navigation}/> :
-                                        <TracksList tracks={allData} navigation={navigation} />
-                                    }
-                                </> :
-                                <>
-                                    <View style={styles.noResultsLabel}>
-                                        <Title >No {artistsOrTracks} found</Title>
-                                    </View>
-                                </>
-                            }
-                        </ScrollView>
+                        </>
                     }
                 </SafeAreaView>
             }
@@ -170,6 +199,9 @@ TracksAndArtists.propTypes = {
 };
 
 const styles = StyleSheet.create({
+    scrollView: {
+        marginBottom: 50
+    },
     noResultsLabel: {
         display: 'flex',
         justifyContent: 'center',
@@ -185,6 +217,12 @@ const styles = StyleSheet.create({
     resultsLabel: {
         fontWeight: 'bold',
         padding: 10
+    },
+    toTopIcon: {
+        position: 'absolute',
+        bottom: 60,
+        left: 10,
+        zIndex: 100
     }
 });
 

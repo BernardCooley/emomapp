@@ -35,9 +35,8 @@ const ExploreScreen = ({ navigation }) => {
                 <FAB
                     animated
                     small
-                    style={styles.fab}
                     icon="account-outline"
-                    style={{...styles.settingsIcon, backgroundColor: colors.lightIconsAndText}}
+                    style={{...styles.settingsIcon, ...styles.fab, backgroundColor: colors.lightIconsAndText}}
                     onPress={() => navigation.navigate('Account')}
                 />
             }
