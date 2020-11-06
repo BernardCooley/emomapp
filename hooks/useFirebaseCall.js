@@ -35,6 +35,7 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
                                 data[index]['trackAmount'] = 0;
                             }
                         });
+                        dispatch(setActivityIndicator(false));
                         setArtistsState(data);
                         dispatch(artists(data));
                     }
