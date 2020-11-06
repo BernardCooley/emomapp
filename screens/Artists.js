@@ -55,7 +55,7 @@ const ArtistsScreen = ({ navigation }) => {
     };
 
     const contains = (string, substring) => {
-        return string.toLowerCase().indexOf(substring) !== -1;
+        return string.toLowerCase().indexOf(substring.toLowerCase()) !== -1;
     }
 
     const search = async () => {
