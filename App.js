@@ -18,7 +18,9 @@ const App = () => {
       lightgray70Tr: 'rgba(241, 243, 242, 0.7)',
       dark: '#2e2c2f',
       playerDark: '#07102A',
-      playerLight: '#595F70'
+      playerLight: '#595F70',
+      midGray: '#5e5e5e',
+      lightGray: '#a3a3a3'
     },
   };
 

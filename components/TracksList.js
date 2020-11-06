@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Avatar, IconButton, List, Divider, Menu } from 'react-native-paper';
+import { Avatar, IconButton, List, Divider, Menu, useTheme } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import storage from '@react-native-firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +13,7 @@ import useListenedTracks from '../hooks/useListenedTracks';
 
 
 const TracksList = ({ navigation, tracks, listLocation }) => {
+    const { colors } = useTheme();
     const [addListenedTrack, removeListenedTrack, error] = useListenedTracks(auth().currentUser.uid);
     const dispatch = useDispatch();
     const playerContext = usePlayerContext();
@@ -131,7 +132,7 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                             }
                             right={() => 
                             <View style={styles.trackListingRight}>
-                                <IconButton style={styles.earIcon} icon={trackListened(tracks[key].id) ? 'ear-hearing' : 'ear-hearing-off'} size={20} onPress={() => toggleListened(tracks[key].id)}/>
+                                <IconButton style={{...styles.earIcon, transform: [{ rotateY: trackListened(tracks[key].id) ? '180deg' : '0deg' }]}} color={trackListened(tracks[key].id) ? colors.dark : colors.lightGray} icon={trackListened(tracks[key].id) ? 'ear-hearing' : 'ear-hearing-off'} size={20} onPress={() => toggleListened(tracks[key].id)}/>
                                 <DotsIcon track={tracks[key]} />
                             </View>}
                             onPress={() => playTrack(tracks[key])}
@@ -183,9 +184,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'relative',
         right: -15
-    },
-    earIcon: {
-        marginRight: -10
     }
 });
 

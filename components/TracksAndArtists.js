@@ -125,7 +125,7 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
                         icon='magnify'
                         onIconPress={search}
                         clearIcon='close'
-                        placeholder="Search tracks"
+                        placeholder={`Search ${artistsOrTracks}`}
                         onChangeText={onChangeSearch}
                         value={searchQuery}
                         onSubmitEditing={search}
@@ -152,7 +152,7 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
                                 </> :
                                 <>
                                     <View style={styles.noResultsLabel}>
-                                        <Title >No tracks found</Title>
+                                        <Title >No {artistsOrTracks} found</Title>
                                     </View>
                                 </>
                             }
