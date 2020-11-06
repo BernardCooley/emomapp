@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Title, Card, Chip } from 'react-native-paper';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 
 const ArtistsList = ({ navigation }) => {
-    const dispatch = useDispatch();
     const allArtists = useSelector(state => state.artists);
 
     const viewArtistProfile = id => {
