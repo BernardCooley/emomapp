@@ -104,7 +104,7 @@ const useFirebaseCall = (collectionName, orderBy, limit) => {
         }
     };
 
-    return [getData, error, getNextItems];
+    return [getData, error, getNextItems, getTrackImages];
 }
 
 export default useFirebaseCall;

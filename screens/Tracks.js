@@ -1,17 +1,24 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, SafeAreaView, BackHandler, Alert, ScrollView, RefreshControl } from 'react-native';
-import { useSelector } from 'react-redux';
+import { View, StyleSheet, SafeAreaView, BackHandler, Alert, ScrollView, RefreshControl, Keyboard } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from "@react-navigation/native";
 import TracksList from '../components/TracksList';
 import PropTypes from 'prop-types';
+import { Searchbar, ActivityIndicator, Title } from 'react-native-paper';
+import firestore from '@react-native-firebase/firestore';
 
 import useFirebaseCall from '../hooks/useFirebaseCall';
+import { setActivityIndicator, setSnackbarMessage } from '../Actions/index';
 
 
 const TracksScreen = ({ navigation }) => {
+    const tracksRef = firestore().collection('tracks');
+    const dispatch = useDispatch();
+    const activityIndicator = useSelector(state => state.activityIndicator);
     const allTracks = useSelector(state => state.tracks);
-    const [getTracks, error, getNextTracks] = useFirebaseCall('tracks', 'id', 20);
+    const [getTracks, error, getNextTracks, getTrackImages] = useFirebaseCall('tracks', 'id', 20);
     const [refreshing, setRefreshing] = React.useState(false);
+    const [searchQuery, setSearchQuery] = React.useState('');
 
 
     const wait = (timeout) => {
@@ -48,20 +55,63 @@ const TracksScreen = ({ navigation }) => {
         }, [])
     );
 
+    const onChangeSearch = query => {
+        setSearchQuery(query);
+    };
+
+    const contains = (string, substring) => {
+        return string.toLowerCase().indexOf(substring) !== -1;
+    }
+
+    const search = async () => {
+        if (searchQuery.length > 0) {
+            Keyboard.dismiss();
+            dispatch(setActivityIndicator(true));
+
+            await tracksRef.get().then(response => {
+                const allTracks = response.docs.map(doc => doc.data());
+                const filteredTracks = allTracks.filter(track => contains(track.artist, searchQuery) || contains(track.title, searchQuery));
+
+                getTrackImages(filteredTracks);
+            });
+
+            setSearchQuery('');
+        } else {
+            dispatch(setSnackbarMessage(`Search box is empty`));
+        }
+    }
+
     return (
         <>
             {allTracks &&
                 <SafeAreaView style={styles.container}>
-                    <ScrollView
-                        refreshControl={
-                            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-                        }
-                        style={styles.scrollView} contentContainerStyle={{
-                            flexGrow: 1,
-                            justifyContent: 'space-between'
-                        }}>
-                        <TracksList tracks={allTracks} navigation={navigation} />
-                    </ScrollView>
+                    <Searchbar
+                        icon='magnify'
+                        onIconPress={search}
+                        clearIcon='close'
+                        placeholder="Search tracks"
+                        onChangeText={onChangeSearch}
+                        value={searchQuery}
+                        onSubmitEditing={search}
+                    />
+                    {activityIndicator ?
+                        <ActivityIndicator style={styles.activityIndicatorContainer} size='large' /> :
+                        <ScrollView
+                            refreshControl={
+                                <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+                            }
+                            style={styles.scrollView} contentContainerStyle={{
+                                flexGrow: 1,
+                                justifyContent: 'space-between'
+                            }}>
+                            {allTracks.length > 0 ?
+                                <TracksList tracks={allTracks} navigation={navigation} /> :
+                                <View style={styles.noTracksLabel}>
+                                    <Title >No tracks found</Title>
+                                </View>
+                            }
+                        </ScrollView>
+                    }
                 </SafeAreaView>
             }
         </>
@@ -83,6 +133,18 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         backgroundColor: 'transparent'
+    },
+    activityIndicatorContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%'
+    },
+    noTracksLabel: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 300
     }
 });
 
