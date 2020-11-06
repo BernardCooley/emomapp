@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useTheme, IconButton } from 'react-native-paper';
+import { useTheme, FAB } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { StyleSheet } from 'react-native';
 
@@ -32,7 +32,14 @@ const ExploreScreen = ({ navigation }) => {
                 <ExploreTab.Screen name="Artists" component={ArtistsScreen} />
             </ExploreTab.Navigator>
             {currScreen !== 'Account' &&
-                <IconButton style={styles.settingsIcon} onPress={() => navigation.navigate('Account')} animated icon="cog-outline" size={30} />
+                <FAB
+                    animated
+                    small
+                    style={styles.fab}
+                    icon="account-outline"
+                    style={{...styles.settingsIcon, backgroundColor: colors.lightIconsAndText}}
+                    onPress={() => navigation.navigate('Account')}
+                />
             }
         </>
     );
@@ -41,8 +48,8 @@ const ExploreScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     settingsIcon: {
         position: 'absolute',
-        right: 0,
-        bottom: 0
+        right: 10,
+        bottom: 10
     }
 });
 
