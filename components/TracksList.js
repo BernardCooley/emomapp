@@ -128,7 +128,7 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                             title={tracks[key].artist}
                             description={tracks[key].title}
                             left={() =>
-                                <Avatar.Image style={styles.trackImage} size={50} source={{ uri: tracks[key].trackImage }} />
+                                <Avatar.Image style={styles.trackImage} size={40} source={{ uri: tracks[key].trackImage }} />
                             }
                             right={() => 
                             <View style={styles.trackListingRight}>
@@ -137,7 +137,6 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                             </View>}
                             onPress={() => playTrack(tracks[key])}
                         />
-                        <Divider />
                     </View>
                 ))
             }
@@ -167,9 +166,7 @@ const styles = StyleSheet.create({
     listItem: {
         height: 60,
         paddingVertical: 0,
-        paddingHorizontal: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: 'lightgray'
+        paddingHorizontal: 10
     },
     trackImage: {
         height: 'auto',
