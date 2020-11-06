@@ -15,12 +15,11 @@ import Progress from './Progress';
 import QueueModal from '../components/QueueModal';
 import CommentsModal from '../components/CommentsModal';
 import Grid from '../components/Grid';
-import useListenedTracks from '../hooks/useListenedTracks';
-import useFavouritedTracks from '../hooks/useFavouritedTracks';
+import useFavAndListened from '../hooks/useFavAndListened';
 
 const MusicPlayer = ({ navigation }) => {
-    const [addListenedTrack, removeListenedTrack, listenedError] = useListenedTracks(auth().currentUser.uid);
-    const [addFavouritedTrack, removeFavouritedTrack, favouritesError] = useFavouritedTracks(auth().currentUser.uid);
+    const [addFavouritedTrack, removeFavouritedTrack, favouritesError] = useFavAndListened(auth().currentUser.uid, 'favourites');
+    const [addListenedTrack, removeListenedTrack, listenedError] = useFavAndListened(auth().currentUser.uid, 'listened');
     const playerImageSize = useSelector(state => state.playerImageSize);
     const { colors } = useTheme();
     const { position, bufferedPosition, duration } = useTrackPlayerProgress();

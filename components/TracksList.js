@@ -9,12 +9,12 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
 import { setListenedTracks, setSnackbarMessage, setFavouritedTracks } from '../Actions/index';
-import useListenedTracks from '../hooks/useListenedTracks';
+import useFavAndListened from '../hooks/useFavAndListened';
 
 
 const TracksList = ({ navigation, tracks, listLocation }) => {
     const { colors } = useTheme();
-    const [addListenedTrack, removeListenedTrack, error] = useListenedTracks(auth().currentUser.uid);
+    const [addListenedTrack, removeListenedTrack, listenedError] = useFavAndListened(auth().currentUser.uid, 'listened');
     const dispatch = useDispatch();
     const playerContext = usePlayerContext();
     const [showMenu, setShowMenu] = useState(false);
