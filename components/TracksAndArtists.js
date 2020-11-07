@@ -209,10 +209,8 @@ const styles = StyleSheet.create({
         height: 300
     },
     activityIndicatorContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%'
+        position: 'relative',
+        top: 250
     },
     resultsLabel: {
         fontWeight: 'bold',
