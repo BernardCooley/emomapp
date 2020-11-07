@@ -14,6 +14,7 @@ import useFavAndListened from '../hooks/useFavAndListened';
 
 const TracksList = ({ navigation, tracks, listLocation }) => {
     const { colors } = useTheme();
+    const [addFavouritedTrack, removeFavouritedTrack, favouritesError] = useFavAndListened(auth().currentUser.uid, 'favourites');
     const [addListenedTrack, removeListenedTrack, listenedError] = useFavAndListened(auth().currentUser.uid, 'listened');
     const dispatch = useDispatch();
     const playerContext = usePlayerContext();
@@ -22,6 +23,7 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
     const [clickedTrack, setClickedTrack] = useState('');
     const usersRef = firestore().collection('users');
     const allListenedTracks = useSelector(state => state.listenedTracks);
+    const allFavouritedTracks = useSelector(state => state.favouritedTracks);
 
     useEffect(() => {
         const unsibscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
@@ -34,8 +36,8 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
         };
     }, []);
 
-    const trackListened = (trackId) => {
-        return allListenedTracks.includes(trackId) ? 'green' : '';
+    const trackListened = trackId => {
+        return allListenedTracks.includes(trackId);
     }
 
     const onListenedTracksGetResult = QuerySnapshot => {
@@ -102,13 +104,25 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
         )
     }
 
-    const toggleListened = id => {
-        if(allListenedTracks.filter(trackId => trackId === id).length > 0) {
-            removeListenedTrack(id);
+    const toggleListened = () => {
+        if (allListenedTracks.filter(trackId => trackId === clickedTrack.id).length > 0) {
+            removeListenedTrack(clickedTrack.id);
             dispatch(setSnackbarMessage(`Set to unlistened`));
         }else {
-            addListenedTrack(id);
+            addListenedTrack(clickedTrack.id);
             dispatch(setSnackbarMessage(`Set to listened`));
+        }
+    }
+
+    const trackFavourited = trackId => {
+        return allFavouritedTracks.includes(trackId);
+    }
+
+    const toggleFavourited = () => {
+        if (allFavouritedTracks.filter(trackId => trackId === clickedTrack.id).length > 0) {
+            removeFavouritedTrack(clickedTrack.id);
+        } else {
+            addFavouritedTrack(clickedTrack.id);
         }
     }
 
@@ -132,7 +146,6 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                             }
                             right={() => 
                             <View style={styles.trackListingRight}>
-                                <IconButton style={{...styles.earIcon, transform: [{ rotateY: trackListened(tracks[key].id) ? '180deg' : '0deg' }]}} color={trackListened(tracks[key].id) ? colors.dark : colors.lightGray} icon={trackListened(tracks[key].id) ? 'ear-hearing' : 'ear-hearing-off'} size={20} onPress={() => toggleListened(tracks[key].id)}/>
                                 <DotsIcon track={tracks[key]} />
                             </View>}
                             onPress={() => playTrack(tracks[key])}
@@ -151,11 +164,14 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
         <>
             <Menu
                 visible={showMenu}
+                style={styles.menu}
                 onDismiss={closeMenu}
                 anchor={menuLocation}>
-                <Menu.Item onPress={() => queueTrack()} icon="plus-box-multiple" title="Queue track" />
+                <Menu.Item onPress={queueTrack} icon="plus-box-multiple" title="Queue track" />
                 <Divider />
-                <Menu.Item onPress={() => artistProfile()} icon="account-box" title="Artist profile" />
+                <Menu.Item onPress={artistProfile} icon="account-box" title="Artist profile" />
+                <Menu.Item onPress={toggleFavourited} icon={trackFavourited(clickedTrack.id) ? 'heart' : 'heart-outline'} title={trackFavourited(clickedTrack.id) ? 'Unfavourite' : 'Favourite'} color={trackFavourited(clickedTrack.id) ? colors.dark : colors.lightGray} />
+                <Menu.Item onPress={toggleListened} icon={trackListened(clickedTrack.id) ? 'ear-hearing' : 'ear-hearing-off'} title={trackListened(clickedTrack.id) ? 'Set to unlistened' : 'Set to listened'} color={trackListened(clickedTrack.id) ? colors.dark : colors.lightGray} />
             </Menu>
             <TracksList />
         </>
@@ -163,6 +179,9 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
 }
 
 const styles = StyleSheet.create({
+    menu: {
+        width: 220
+    },
     listItem: {
         height: 60,
         paddingVertical: 0,

@@ -106,8 +106,8 @@ const MusicPlayer = ({ navigation }) => {
         });
     }
 
-    const trackFavourited = (trackId) => {
-        return allFavouritedTracks.includes(trackId) ? 'green' : '';
+    const trackFavourited = trackId => {
+        return allFavouritedTracks.includes(trackId);
     }
 
     const toggleFavourited = id => {
