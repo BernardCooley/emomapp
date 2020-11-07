@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-import { setListenedTracks, setSnackbarMessage, setFavouritedTracks } from '../Actions/index';
+import { setListenedTracks, setFavouritedTracks } from '../Actions/index';
 import useFavAndListened from '../hooks/useFavAndListened';
 
 
@@ -104,26 +104,16 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
         )
     }
 
-    const toggleListened = () => {
-        if (allListenedTracks.filter(trackId => trackId === clickedTrack.id).length > 0) {
-            removeListenedTrack(clickedTrack.id);
-            dispatch(setSnackbarMessage(`Set to unlistened`));
+    const toggleFavOrListened = favOrListened => {
+        if (favOrListened === 'favourites') {
+            allFavouritedTracks.filter(trackId => trackId === clickedTrack.id).length > 0 ? removeFavouritedTrack(clickedTrack.id) : addFavouritedTrack(clickedTrack.id);
         }else {
-            addListenedTrack(clickedTrack.id);
-            dispatch(setSnackbarMessage(`Set to listened`));
+            allListenedTracks.filter(trackId => trackId === clickedTrack.id).length > 0 ? removeListenedTrack(clickedTrack.id) : addListenedTrack(clickedTrack.id);
         }
     }
 
     const trackFavourited = trackId => {
         return allFavouritedTracks.includes(trackId);
-    }
-
-    const toggleFavourited = () => {
-        if (allFavouritedTracks.filter(trackId => trackId === clickedTrack.id).length > 0) {
-            removeFavouritedTrack(clickedTrack.id);
-        } else {
-            addFavouritedTrack(clickedTrack.id);
-        }
     }
 
     const TracksList = () => (
@@ -170,8 +160,8 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                 <Menu.Item onPress={queueTrack} icon="plus-box-multiple" title="Queue track" />
                 <Divider />
                 <Menu.Item onPress={artistProfile} icon="account-box" title="Artist profile" />
-                <Menu.Item onPress={toggleFavourited} icon={trackFavourited(clickedTrack.id) ? 'heart' : 'heart-outline'} title={trackFavourited(clickedTrack.id) ? 'Unfavourite' : 'Favourite'} color={trackFavourited(clickedTrack.id) ? colors.dark : colors.lightGray} />
-                <Menu.Item onPress={toggleListened} icon={trackListened(clickedTrack.id) ? 'ear-hearing' : 'ear-hearing-off'} title={trackListened(clickedTrack.id) ? 'Set to unlistened' : 'Set to listened'} color={trackListened(clickedTrack.id) ? colors.dark : colors.lightGray} />
+                <Menu.Item onPress={() => toggleFavOrListened('favourites')} icon={trackFavourited(clickedTrack.id) ? 'heart' : 'heart-outline'} title={trackFavourited(clickedTrack.id) ? 'Unfavourite' : 'Favourite'} color={trackFavourited(clickedTrack.id) ? colors.dark : colors.lightGray} />
+                <Menu.Item onPress={() => toggleFavOrListened('listened')} icon={trackListened(clickedTrack.id) ? 'ear-hearing' : 'ear-hearing-off'} title={trackListened(clickedTrack.id) ? 'Set to unlistened' : 'Set to listened'} color={trackListened(clickedTrack.id) ? colors.dark : colors.lightGray} />
             </Menu>
             <TracksList />
         </>
