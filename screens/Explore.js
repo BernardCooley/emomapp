@@ -26,6 +26,9 @@ const ExploreScreen = ({ navigation }) => {
                 tabBarOptions={{
                     indicatorStyle: {
                         backgroundColor: colors.primary
+                    },
+                    labelStyle: {
+                        fontSize: 16
                     }
                 }}>
                 <ExploreTab.Screen name="Tracks" component={TracksScreen} />

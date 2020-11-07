@@ -3,10 +3,19 @@ import React from 'react';
 import rootReducer from './Reducers';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux'
-import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import { DefaultTheme, Provider as PaperProvider, configureFonts } from 'react-native-paper';
 import Main from './components/Main';
 
 const App = () => {
+  const fontConfig = {
+    default: {
+      regular: {
+        fontFamily: 'Montserrat',
+        fontWeight: 'normal'
+      }
+    },
+  };
+
   const theme = {
     ...DefaultTheme,
     roundness: 2,
@@ -22,6 +31,7 @@ const App = () => {
       midGray: '#5e5e5e',
       lightGray: '#a3a3a3'
     },
+    fonts: configureFonts(fontConfig)
   };
 
   const store = createStore(rootReducer);
