@@ -119,6 +119,7 @@ const RegisterScreen = ({ navigation }) => {
                     socials: socials,
                     website: website,
                     location: location,
+                    userId: newUserData.user.uid
                 }).then(async () => {
                     let reference = null;
 

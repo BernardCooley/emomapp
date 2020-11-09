@@ -15,7 +15,6 @@ const socialIconColours = {
 
 
 const SocialLinks = ({ socials }) => {
-
     const openUrl = url => {
         Linking.canOpenURL(url).then(supported => {
             if (supported) {

@@ -17,7 +17,7 @@ const ArtistProfileScreen = ({ navigation, route }) => {
     const [currentProfileTracks, setCurrentProfileTracks] = useState({});
 
     useEffect(() => {
-        if (artistId.length > 0) {
+        if (artistId && artistId.length > 0) {
             firestore().collection('users').doc(artistId).get().then(response => {
                 setCurrentProfile(response.data());
             })
@@ -81,7 +81,7 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                                     <Divider />
                                 </View> : null
                             }
-                            {currentProfile.socials && Object.keys(currentProfile.socials).length > 0 ?
+                            {currentProfile.socials && Object.keys(currentProfile.socials).filter(key => currentProfile.socials[key].url.length > 0).length > 0 ?
                                 <>
                                     <Subheading style={styles.subHeading}>Socials</Subheading>
                                     <SocialLinks socials={currentProfile.socials} />
