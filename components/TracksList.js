@@ -126,11 +126,11 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                             descriptionNumberOfLines={1}
                             titleEllipsizeMode='tail'
                             descriptionEllipsizeMode='tail'
-                            titleStyle={{ fontSize: 15 }}
-                            descriptionStyle={{ fontSize: 22 }}
+                            titleStyle={{ fontSize: 22 }}
+                            descriptionStyle={{ fontSize: 15 }}
                             style={styles.listItem}
-                            title={tracks[key].artist}
-                            description={tracks[key].title}
+                            title={tracks[key].title}
+                            description={tracks[key].artist}
                             left={() =>
                                 <Avatar.Image style={styles.trackImage} size={40} source={{ uri: tracks[key].trackImage }} />
                             }
