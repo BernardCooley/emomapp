@@ -4,8 +4,9 @@ import { useTheme } from 'react-native-paper';
 import { Dimensions } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import storage from '@react-native-firebase/storage';
 
-import { setFilterSortMenu, tracks, setActivityIndicator, setSortAndFilterOptions } from '../Actions/index';
+import { setFilterSortMenu, tracks, setActivityIndicator, setSortAndFilterOptions, artists } from '../Actions/index';
 
 const useFilterAndSort = (listToFilter) => {
     let tracksRef = firestore().collection('tracks');
@@ -18,6 +19,10 @@ const useFilterAndSort = (listToFilter) => {
     const menuWidth = 280;
 
     const sortAndFilterOptions = useSelector(state => state.sortAndFilterOptions);
+
+    useEffect(() => {
+        toggleApplyButton();
+    }, [sortAndFilterOptions])
 
     const isSelected = (sortOrFilter, type) => {
         if (sortOrFilter === 'sort') {
@@ -53,7 +58,6 @@ const useFilterAndSort = (listToFilter) => {
         dispatch(setFilterSortMenu(''));
     }
 
-    // TODO why is this greyed out???
     const toggleApplyButton = () => {
         if (sortAndFilterOptions[listToFilter].filter.length === 0 && sortAndFilterOptions[listToFilter].sort.length === 0) {
             setDisableApplyButton(true);
@@ -78,6 +82,29 @@ const useFilterAndSort = (listToFilter) => {
 
     const closeMenu = () => {
         dispatch(setFilterSortMenu(''));
+    }
+
+    const getTrackImages = async trackData => {
+        const queryList = [];
+
+        trackData.forEach(track => {
+            queryList.push(
+                {
+                    query: storage().ref(`trackImages/${track.id}.jpg`).getDownloadURL(),
+                    track: track
+                }
+            );
+        });
+
+        const updatedTracks = await Promise.all(
+            queryList.map(async query => {
+                query.track['trackImage'] = await query.query;
+                return query.track;
+            })
+        );
+
+        dispatch(tracks(updatedTracks));
+        dispatch(setActivityIndicator(false));
     }
 
     const applyFilterAndSort = async () => {
@@ -114,12 +141,27 @@ const useFilterAndSort = (listToFilter) => {
                 })
             }
         } else if (listToFilter === 'artists') {
-            // TODO change all userId to artistId
-            console.log(sortAndFilterOptions.artists.sort);
             const split = sortAndFilterOptions.artists.sort.split('-');
-            await usersRef.get().then(response => {
-                console.log(response);
-                console.log(response.docs.map(doc => doc.data()));
+            await usersRef.orderBy(split[0], split[1]).limit(20).get().then(async response => {
+                const artistresponse = response.docs.map(doc => doc.data());
+
+                await tracksRef.get().then(resp => {
+                    const allTracks = resp.docs.map(doc => doc.data());
+
+                    artistresponse.forEach((artist, index) => {
+                        if (allTracks.length > 0) {
+                            artistresponse[index]['trackAmount'] = allTracks.filter(track => track.artistId === artist.userId).length;
+                        } else {
+                            artistresponse[index]['trackAmount'] = 0;
+                        }
+                    });
+
+                    // TODO use sortby function to sort
+
+                    dispatch(artists(artistresponse));
+                });
+
+
                 dispatch(setActivityIndicator(false));
             })
         }

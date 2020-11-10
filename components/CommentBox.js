@@ -25,7 +25,7 @@ const CommentBox = ({ colors }) => {
 
             await usersRef.doc(auth().currentUser.uid).get().then(async response => {
                 const com = {
-                    artistName: response.data().artistName,
+                    artist: response.data().artist,
                     comment: currentNewComment,
                     userId: auth().currentUser.uid,
                     date: new Date()

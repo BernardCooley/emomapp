@@ -27,7 +27,7 @@ const ArtistsList = ({ navigation }) => {
                         <Card style={styles.card} onPress={() => viewArtistProfile(allArtists[key].userId)}>
                             <Chip style={styles.chip} icon="music-box-multiple" onPress={() => viewArtistTracks(allArtists[key].userId)}>{allArtists[key].trackAmount}</Chip>
                             <Card.Cover style={styles.cardCover} source={{ uri: allArtists[key].artistImageUrl }} />
-                            <Title style={styles.cardTitle}>{allArtists[key].artistName}</Title>
+                            <Title style={styles.cardTitle}>{allArtists[key].artist}</Title>
                         </Card>
                     </View>
                 ))

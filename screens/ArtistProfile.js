@@ -54,7 +54,7 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                     }}>
                         <View style={styles.container}>
                             <IconButton style={styles.closeButton} animated icon="close" size={25} onPress={goBack} />
-                            <Title style={StyleSheet.title}>{currentProfile.artistName}</Title>
+                            <Title style={StyleSheet.title}>{currentProfile.artist}</Title>
                             <Divider />
                             <Avatar.Image style={styles.artistImage} size={300} source={{ uri: currentProfile.artistImageUrl }} />
                             <Divider />

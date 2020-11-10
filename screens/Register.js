@@ -19,7 +19,7 @@ const RegisterScreen = ({ navigation }) => {
         'VirtualizedLists should never be nested' // TODO: Remove when fixed
     ]);
 
-    const [artistName, setArtistName] = useState('');
+    const [artist, setArtistName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [artistImage, setArtistImage] = useState({});
@@ -44,7 +44,7 @@ const RegisterScreen = ({ navigation }) => {
     };
 
     const errors = {
-        artistName: {
+        artist: {
             valid: false
         },
         email: {
@@ -57,7 +57,7 @@ const RegisterScreen = ({ navigation }) => {
 
     useEffect(() => {
         validate();
-    }, [artistName, email, password, artistImage, bio]);
+    }, [artist, email, password, artistImage, bio]);
 
     const showHideSocials = () => setShowSocials(!showSocials);
 
@@ -98,11 +98,11 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     const validate = () => {
-        errors.artistName.valid = artistName.length > 0;
+        errors.artist.valid = artist.length > 0;
         errors.email.valid = /\S+@\S+\.\S+/.test(email);
         errors.password.valid = password.length >= 6;
 
-        errors.artistName.valid && errors.email.valid && errors.password.valid ? setFormIsValid(true) : setFormIsValid(false);
+        errors.artist.valid && errors.email.valid && errors.password.valid ? setFormIsValid(true) : setFormIsValid(false);
     }
 
     const removeImage = () => {
@@ -114,7 +114,7 @@ const RegisterScreen = ({ navigation }) => {
         auth().createUserWithEmailAndPassword(email, password).then(async newUserData => {
             await newUserData.user.sendEmailVerification().then(async () => {
                 await firestore().collection('users').doc(newUserData.user.uid).set({
-                    artistName: artistName,
+                    artist: artist,
                     bio: bio,
                     socials: socials,
                     website: website,
@@ -216,8 +216,8 @@ const RegisterScreen = ({ navigation }) => {
                                     <TextInput
                                         style={styles.input}
                                         label="Artist name"
-                                        value={artistName}
-                                        onChangeText={artistName => setArtistName(artistName)}
+                                        value={artist}
+                                        onChangeText={artist => setArtistName(artist)}
                                     />
 
                                     <TextInput

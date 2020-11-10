@@ -20,7 +20,7 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [scroll, setScroll] = useState(null);
     const [showingSearchResults, setShowingSearchResults] = useState(false);
-    const [getArtists, artistsError, getNextArtists] = useFirebaseCall('users', 'artistName', 20);
+    const [getArtists, artistsError, getNextArtists] = useFirebaseCall('users', 'artist', 20);
     const [getTracks, tracksError, getNextTracks, getTrackImages] = useFirebaseCall('tracks', 'id', 20);
     const [displayBackToTopIcon, setDisplayBackToTopIcon] = useState(false);
     const screenHeight = Dimensions.get("window").height;
@@ -108,7 +108,7 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
                 let filteredData = [];
 
                 if (artistsOrTracks === 'artists') {
-                    filteredData = allData.filter(artist => contains(artist.artistName, searchQuery));
+                    filteredData = allData.filter(artist => contains(artist.artist, searchQuery));
                     dispatch(artists(filteredData));
                     dispatch(artists(filteredData));
                     dispatch(setActivityIndicator(false));

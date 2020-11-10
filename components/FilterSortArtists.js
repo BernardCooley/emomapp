@@ -18,8 +18,8 @@ const FilterSortArtists = () => {
             anchor={{ x: (screenWidth / 2) + (menuWidth / 2), y: 30 }}>
 
             <Text style={styles.sortFilterLabel}>Sort by:</Text>
-            <Menu.Item style={backgroundColor('sort', 'artist-asc')} onPress={() => sortList('artist-asc')} icon="sort-variant" title="Artist name (asc)" />
-            <Menu.Item style={backgroundColor('sort', 'artist-desc')} onPress={() => sortList('artist-desc')} icon="sort-reverse-variant" title="Artist name (desc)" />
+            <Menu.Item style={backgroundColor('sort', 'artist-desc')} onPress={() => sortList('artist-desc')} icon="sort-variant" title="Artist name (asc)" />
+            <Menu.Item style={backgroundColor('sort', 'artist-asc')} onPress={() => sortList('artist-asc')} icon="sort-reverse-variant" title="Artist name (desc)" />
             <Menu.Item style={backgroundColor('sort', 'track-amount')} onPress={() => sortList('track-amount')} icon="music-box-multiple-outline" title="Track amount" />
 
             <Divider />

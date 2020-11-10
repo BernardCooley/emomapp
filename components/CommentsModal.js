@@ -53,7 +53,7 @@ const CommentsModal = () => {
                             {currentTrackComments && currentTrackComments.length > 0 ? currentTrackComments.map((comment, index) => (
                                 <View style={styles.commentContainer} key={index}>
                                     <View style={styles.userAndDateContainer}>
-                                        <Text style={styles.commentUser}>{comment.artistName}</Text>
+                                        <Text style={styles.commentUser}>{comment.artist}</Text>
                                         <Text style={styles.date}>{formatDate(comment.date)}</Text>
                                     </View>
                                     <View style={styles.commentTextContainer}>
@@ -63,7 +63,7 @@ const CommentsModal = () => {
                                     {comment.replies ? comment.replies.sort((a, b) => (a.date > b.date) ? 1 : -1).map((reply, index) => (
                                         <View style={styles.replyContainer} key={index}>
                                             <View style={styles.userAndDateContainer}>
-                                                <Text style={styles.commentUser}>{comment.artistName}</Text>
+                                                <Text style={styles.commentUser}>{comment.artist}</Text>
                                                 <Text style={styles.date}>{formatDate(comment.date)}</Text>
                                             </View>
                                             <Text style={styles.commentText}>{reply.comment}</Text>
