@@ -23,7 +23,8 @@ const allReducers = combineReducers({
     favouritedTracks: musicReducers.favouritedTracks,
     activityIndicator: screenReducers.activityIndicator,
     netConnected: reducers.netConnected,
-    filterSortMenu: screenReducers.filterSortMenu
+    filterSortMenu: screenReducers.filterSortMenu,
+    sortAndFilterOptions: musicReducers.sortAndFilterOptions
 });
 
 const rootReducer = (state, action) => {

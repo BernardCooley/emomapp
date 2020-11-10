@@ -94,6 +94,23 @@ const musicReducers = {
             default:
                 return state;
         }
+    },
+    sortAndFilterOptions: (state = {
+        tracks: {
+            sort: '',
+            filter: ''
+        },
+        artists: {
+            sort: '',
+            filter: ''
+        }
+    }, action) => {
+        switch (action.type) {
+            case 'SORT_AND_FILTER_OPTIONS':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

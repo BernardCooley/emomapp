@@ -123,3 +123,10 @@ export const setFilterSortMenu = filterSortMenu => {
         payload: filterSortMenu
     };
 };
+
+export const setSortAndFilterOptions = sortAndFilterOptions => {
+    return {
+        type: 'SORT_AND_FILTER_OPTIONS',
+        payload: sortAndFilterOptions
+    };
+};
