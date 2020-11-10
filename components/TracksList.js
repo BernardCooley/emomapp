@@ -10,6 +10,7 @@ import firestore from '@react-native-firebase/firestore';
 
 import { setListenedTracks, setFavouritedTracks } from '../Actions/index';
 import useFavAndListened from '../hooks/useFavAndListened';
+import FilterSortTracks from './FilterSortTracks';
 
 
 const TracksList = ({ navigation, tracks, listLocation }) => {
@@ -163,6 +164,7 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                 <Menu.Item onPress={() => toggleFavOrListened('favourites')} icon={trackFavourited(clickedTrack.id) ? 'heart' : 'heart-outline'} title={trackFavourited(clickedTrack.id) ? 'Unfavourite' : 'Favourite'} color={trackFavourited(clickedTrack.id) ? colors.dark : colors.lightGray} />
                 <Menu.Item onPress={() => toggleFavOrListened('listened')} icon={trackListened(clickedTrack.id) ? 'ear-hearing' : 'ear-hearing-off'} title={trackListened(clickedTrack.id) ? 'Set to unlistened' : 'Set to listened'} color={trackListened(clickedTrack.id) ? colors.dark : colors.lightGray} />
             </Menu>
+            <FilterSortTracks/>
             <TracksList />
         </>
     );

@@ -116,3 +116,10 @@ export const setNetConnected = netConnected => {
         payload: netConnected
     };
 };
+
+export const setFilterSortMenu = filterSortMenu => {
+    return {
+        type: 'FILTER_SORT_MENU',
+        payload: filterSortMenu
+    };
+};

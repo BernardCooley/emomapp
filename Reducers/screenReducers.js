@@ -30,6 +30,14 @@ const screenReducers = {
             default:
                 return state;
         }
+    },
+    filterSortMenu: (state = '', action) => {
+        switch (action.type) {
+            case 'FILTER_SORT_MENU':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

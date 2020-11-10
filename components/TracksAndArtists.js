@@ -3,11 +3,11 @@ import { StyleSheet, BackHandler, Alert, SafeAreaView, RefreshControl, Keyboard,
 import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from "@react-navigation/native";
 import PropTypes from 'prop-types';
-import { Title, Searchbar, ActivityIndicator, Text, useTheme, FAB } from 'react-native-paper';
+import { Title, Searchbar, ActivityIndicator, Text, useTheme, FAB, IconButton } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 
 import useFirebaseCall from '../hooks/useFirebaseCall';
-import { setActivityIndicator, setSnackbarMessage, artists } from '../Actions/index';
+import { setActivityIndicator, setSnackbarMessage, artists, setFilterSortMenu } from '../Actions/index';
 import ArtistsList from '../components/ArtistsList';
 import TracksList from '../components/TracksList';
 
@@ -24,7 +24,6 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
     const [getTracks, tracksError, getNextTracks, getTrackImages] = useFirebaseCall('tracks', 'id', 20);
     const [displayBackToTopIcon, setDisplayBackToTopIcon] = useState(false);
     const screenHeight = Dimensions.get("window").height;
-
 
     let firestoreRef = null;
     let allData = null;
@@ -130,26 +129,34 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
         scroll.scrollTo({ x: 0, y: 0, animated: true });
     }
 
+    const openFilterModal = () => {
+        dispatch(setFilterSortMenu(artistsOrTracks));
+    }
+
     return (
         <>
             {allData &&
                 <SafeAreaView style={styles.container}>
-                    <Searchbar
-                        icon='magnify'
-                        onIconPress={search}
-                        clearIcon='close'
-                        placeholder={`Search ${artistsOrTracks}`}
-                        onChangeText={onChangeSearch}
-                        value={searchQuery}
-                        onSubmitEditing={search}
-                    />
+                    <View style={styles.searchFilterContainer}>
+                        <Searchbar
+                            style={styles.searchField}
+                            icon='magnify'
+                            onIconPress={search}
+                            clearIcon='close'
+                            placeholder={`Search ${artistsOrTracks}`}
+                            onChangeText={onChangeSearch}
+                            value={searchQuery}
+                            onSubmitEditing={search}
+                        />
+                        <IconButton onPress={openFilterModal} style={styles.filterIcon} animated icon='filter-variant' size={30} />
+                    </View>
                     {activityIndicator ?
                         <ActivityIndicator style={styles.activityIndicatorContainer} size='large' /> :
                         <>
                             <ScrollView
                                 onContentSizeChange={(width, height) => {
                                     findDimesions(height);
-                                  }}
+                                }}
                                 ref={c => { setScroll(c) }}
                                 refreshControl={
                                     <RefreshControl refreshing={refreshing} onRefresh={refresh} />
@@ -221,6 +228,19 @@ const styles = StyleSheet.create({
         bottom: 60,
         left: 10,
         zIndex: 100
+    },
+    searchFilterContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'space-between',
+        backgroundColor: 'white'
+    },
+    searchField: {
+        flexGrow: 1
+    },
+    filterIcon: {
+        width: 50
     }
 });
 

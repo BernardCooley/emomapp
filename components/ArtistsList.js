@@ -3,6 +3,8 @@ import { View, StyleSheet } from 'react-native';
 import { Title, Card, Chip } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
+import FilterSortArtists from './FilterSortArtists';
+
 
 const ArtistsList = ({ navigation }) => {
     const allArtists = useSelector(state => state.artists);
@@ -36,6 +38,7 @@ const ArtistsList = ({ navigation }) => {
     return (
         <View style={styles.artistListContainer}>
             <Artists />
+            <FilterSortArtists/>
         </View>
     )
 };
