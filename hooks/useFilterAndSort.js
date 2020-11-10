@@ -4,7 +4,6 @@ import { useTheme } from 'react-native-paper';
 import { Dimensions } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import storage from '@react-native-firebase/storage';
 
 import { setFilterSortMenu, tracks, setActivityIndicator, setSortAndFilterOptions } from '../Actions/index';
 
@@ -20,12 +19,7 @@ const useFilterAndSort = (listToFilter) => {
 
     const sortAndFilterOptions = useSelector(state => state.sortAndFilterOptions);
 
-    useEffect(() => {
-        toggleApplyButton();
-    }, [sortAndFilterOptions]);
-
     const isSelected = (sortOrFilter, type) => {
-        // TODO doesnt update selected
         if (sortOrFilter === 'sort') {
             return sortAndFilterOptions[listToFilter].sort === type;
         } else {
@@ -48,11 +42,18 @@ const useFilterAndSort = (listToFilter) => {
     }
 
     const clear = () => {
-        setSortAndFilterOptions({...sortAndFilterOptions[listToFilter], filter: ''});
-        setSortAndFilterOptions({...sortAndFilterOptions[listToFilter], sort: ''});
+        dispatch(setSortAndFilterOptions({
+            ...sortAndFilterOptions,
+            [listToFilter]: { ...sortAndFilterOptions[listToFilter], sort: '', filter: '' }
+        }));
+        // TODO get all tracks when clearing
+        if (listToFilter === 'tracks') {
+            getTracks
+        }
         dispatch(setFilterSortMenu(''));
     }
 
+    // TODO why is this greyed out???
     const toggleApplyButton = () => {
         if (sortAndFilterOptions[listToFilter].filter.length === 0 && sortAndFilterOptions[listToFilter].sort.length === 0) {
             setDisableApplyButton(true);
@@ -61,56 +62,31 @@ const useFilterAndSort = (listToFilter) => {
         }
     }
 
-    const sortList = sort => {
-        if (isSelected('sort', sort)) {
-            setSortAndFilterOptions({...sortAndFilterOptions[listToFilter], sort: ''});
-        } else {
-            setSortAndFilterOptions({...sortAndFilterOptions[listToFilter], sort: sort});
-        }
+    const sortList = sortType => {
+        dispatch(setSortAndFilterOptions({
+            ...sortAndFilterOptions,
+            [listToFilter]: { ...sortAndFilterOptions[listToFilter], sort: isSelected('sort', sortType) ? '' : sortType }
+        }));
     }
 
     const filterList = filterType => {
-        if (isSelected('filter', filterType)) {
-            setSortAndFilterOptions({...sortAndFilterOptions[listToFilter], filter: ''});
-        } else {
-            setSortAndFilterOptions({...sortAndFilterOptions[listToFilter], filter: filterType});
-        }
+        dispatch(setSortAndFilterOptions({
+            ...sortAndFilterOptions,
+            [listToFilter]: { ...sortAndFilterOptions[listToFilter], filter: isSelected('filter', filterType) ? '' : filterType }
+        }));
     }
 
     const closeMenu = () => {
         dispatch(setFilterSortMenu(''));
     }
 
-    const getTrackImages = async trackData => {
-        const queryList = [];
-
-        trackData.forEach(track => {
-            queryList.push(
-                {
-                    query: storage().ref(`trackImages/${track.id}.jpg`).getDownloadURL(),
-                    track: track
-                }
-            );
-        });
-
-        const updatedTracks = await Promise.all(
-            queryList.map(async query => {
-                query.track['trackImage'] = await query.query;
-                return query.track;
-            })
-        );
-
-        dispatch(tracks(updatedTracks));
-        dispatch(setActivityIndicator(false));
-    }
-
     const applyFilterAndSort = async () => {
         dispatch(setActivityIndicator(true));
         if (listToFilter === 'tracks') {
-            if (sortAndFilterOptions[listToFilter].filter.length > 0) {
+            if (sortAndFilterOptions.tracks.filter.length > 0) {
                 const idQueryList = [];
 
-                if (sortAndFilterOptions[listToFilter].filter === 'favourites') {
+                if (sortAndFilterOptions.tracks.filter === 'favourites') {
                     await usersRef.doc(auth().currentUser.uid).get().then(async response => {
                         response.data().favourites.forEach(id => {idQueryList.push(tracksRef.doc(id))});
 
@@ -118,7 +94,7 @@ const useFilterAndSort = (listToFilter) => {
 
                         getTrackImages(sortTracks(favTracks.map(track => track.data())));
                     });
-                } else if (sortAndFilterOptions[listToFilter].filter === 'notListened') {
+                } else if (sortAndFilterOptions.tracks.filter === 'notListened') {
                     await usersRef.doc(auth().currentUser.uid).get().then(async response => {
                         const listenedIds = response.data().listened;
 
@@ -130,16 +106,22 @@ const useFilterAndSort = (listToFilter) => {
                     })
                 }
             }
-            if (sortAndFilterOptions[listToFilter].filter.length === 0 && sortAndFilterOptions[listToFilter].sort.length > 0) {
-                const sortTypeSplit = sortAndFilterOptions[listToFilter].sort.split('-');
+            if (sortAndFilterOptions.tracks.filter.length === 0 && sortAndFilterOptions.tracks.sort.length > 0) {
+                const sortTypeSplit = sortAndFilterOptions.tracks.sort.split('-');
                 tracksRef.orderBy(sortTypeSplit[0], sortTypeSplit[1]).get().then(response => {
                     dispatch(setActivityIndicator(false));
-                    // TODO apply updated tracks
-                    console.log(response.docs.map(doc => doc.data().title));
+                    getTrackImages(response.docs.map(doc => doc.data()));
                 })
             }
         } else if (listToFilter === 'artists') {
-            // TODO filter for artists
+            // TODO change all userId to artistId
+            console.log(sortAndFilterOptions.artists.sort);
+            const split = sortAndFilterOptions.artists.sort.split('-');
+            await usersRef.get().then(response => {
+                console.log(response);
+                console.log(response.docs.map(doc => doc.data()));
+                dispatch(setActivityIndicator(false));
+            })
         }
 
 
