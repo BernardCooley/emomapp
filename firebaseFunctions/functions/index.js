@@ -6,10 +6,17 @@ const { ApolloServer, gql } = require('apollo-server-express');
 const serviceAccount = require('./emom-84ee4-firebase-adminsdk-2309z-aab93226ec.json');
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount)
 });
 
 const typeDefs = gql`
+    type Comment {
+        artist: String,
+        comment: String,
+        userId: String,
+        replies: [Comment]
+    }
+
     type Track {
         album: String,
         artist: String,
@@ -17,7 +24,9 @@ const typeDefs = gql`
         description: String,
         genre: String,
         id: ID,
-        title: String
+        title: String,
+        duration: Int,
+        comments: [Comment]
     }
     type User {
         artist: String,
@@ -35,27 +44,27 @@ const typeDefs = gql`
 `
 
 const resolvers = {
-    Query: {
-        async tracks() {
-          const tracks = await admin
-            .firestore()
-            .collection('tracks')
-            .get();
-          return tracks.docs.map(track => track.data());
-        },
-        async users() {
-            const users = await admin
-              .firestore()
-              .collection('users')
-              .get();
-            return users.docs.map(user => user.data());
-          }
+  Query: {
+    async tracks() {
+      const tracks = await admin
+        .firestore()
+        .collection('tracks')
+        .get();
+      return tracks.docs.map(track => track.data());
+    },
+    async users() {
+      const users = await admin
+        .firestore()
+        .collection('users')
+        .get();
+      return users.docs.map(user => user.data());
     }
+  }
 }
 
 const app = express();
-const server = new ApolloServer({typeDefs, resolvers});
+const server = new ApolloServer({ typeDefs, resolvers });
 
-server.applyMiddleware({app, path: '/', cors: true});
+server.applyMiddleware({ app, path: '/', cors: true });
 
 exports.graph = functions.https.onRequest(app);
