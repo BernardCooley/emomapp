@@ -2,18 +2,19 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const express = require('express');
 const { ApolloServer, gql } = require('apollo-server-express');
-
-const serviceAccount = require('./emom-84ee4-firebase-adminsdk-2309z-aab93226ec.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
 const { Storage } = require('@google-cloud/storage');
 
-// Creates a client
+const serviceAccount = require('./emom-84ee4-firebase-adminsdk-2309z-aab93226ec.json');
+const keyfileName = require('./emom-84ee4-b1c62c1d7d9e.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://emom-84ee4.firebaseio.com"
+});
+
 const storage = new Storage({
-  projectId: 'emom-84ee4'
+  projectId: 'emom-84ee4',
+  keyFileName: keyfileName,
 });
 
 const typeDefs = gql`
@@ -51,7 +52,7 @@ const typeDefs = gql`
     type Query {
         tracks: [Track]
         users: [User]
-        downloadUrls: [DownloadURL]
+        downloadUrls: DownloadURL
     }
 `
 
@@ -71,32 +72,18 @@ const resolvers = {
         .get();
       return users.docs.map(user => user.data());
     },
-    // TODO Not working
     async downloadUrls() {
-      const fn = async () => {
-        try {
-          const signedUrl = storage
-            .bucket('tracks')
-            .file('/ds5MaDn5ewxxvV0CK9GG.mp3')
-            .getSignedUrl({ action: 'read', expires: '10-25-2022' }); // purposedly not awaiting here
-          // do other stuff in the mean time
-          const url = await signedUrl; // now I need the URL
-          console.log(url)
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fn();
-
-      // const bucket = storage.bucket('tracks');
-      // const file = bucket.file(`/ds5MaDn5ewxxvV0CK9GG.mp3`);
-
-      // return file.getSignedUrl({
-      //   action: 'read',
-      //   expires: '03-09-2491'
-      // }).then(signedUrls => {
-      //   return signedUrls[0]
-      // });
+      try {
+        const signedUrl = await storage
+          .bucket('emom-84ee4.appspot.com')
+          .file('tracks/ds5MaDn5ewxxvV0CK9GG.mp3')
+          .getSignedUrl({ action: 'read', expires: '10-25-2022' });
+        const url = signedUrl;
+        console.log(url)
+        return url;
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 }
