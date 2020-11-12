@@ -9,7 +9,18 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
+const { Storage } = require('@google-cloud/storage');
+
+// Creates a client
+const storage = new Storage({
+  projectId: 'emom-84ee4'
+});
+
 const typeDefs = gql`
+    type DownloadURL {
+      url: String
+    }
+
     type Comment {
         artist: String,
         comment: String,
@@ -40,6 +51,7 @@ const typeDefs = gql`
     type Query {
         tracks: [Track]
         users: [User]
+        downloadUrls: [DownloadURL]
     }
 `
 
@@ -58,6 +70,33 @@ const resolvers = {
         .collection('users')
         .get();
       return users.docs.map(user => user.data());
+    },
+    // TODO Not working
+    async downloadUrls() {
+      const fn = async () => {
+        try {
+          const signedUrl = storage
+            .bucket('tracks')
+            .file('/ds5MaDn5ewxxvV0CK9GG.mp3')
+            .getSignedUrl({ action: 'read', expires: '10-25-2022' }); // purposedly not awaiting here
+          // do other stuff in the mean time
+          const url = await signedUrl; // now I need the URL
+          console.log(url)
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fn();
+
+      // const bucket = storage.bucket('tracks');
+      // const file = bucket.file(`/ds5MaDn5ewxxvV0CK9GG.mp3`);
+
+      // return file.getSignedUrl({
+      //   action: 'read',
+      //   expires: '03-09-2491'
+      // }).then(signedUrls => {
+      //   return signedUrls[0]
+      // });
     }
   }
 }

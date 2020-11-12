@@ -48,7 +48,9 @@ const Main = () => {
     }, []);
 
     useEffect(() => {
-        console.log(tracks.tracks[0]);
+        if (tracks.tracks) {
+            console.log(tracks.tracks);
+        }
     }, [tracks]);
 
     useEffect(() => {
