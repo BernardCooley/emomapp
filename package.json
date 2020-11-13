@@ -9,7 +9,8 @@
     "test": "jest",
     "lint": "eslint .",
     "clean-run-dev": "cd android & gradlew clean & cd .. & npx react-native run-android",
-    "clean-run-prod": "cd android & gradlew clean & cd .. & npx react-native run-android --variant=release"
+    "clean-run-prod": "cd android & gradlew clean & cd .. & npx react-native run-android --variant=release",
+    "server": "node api/index.js"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
