@@ -1,12 +1,35 @@
 import 'react-native-gesture-handler';
-import React from 'react';
 import rootReducer from './Reducers';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux'
 import { DefaultTheme, Provider as PaperProvider, configureFonts } from 'react-native-paper';
 import Main from './components/Main';
+import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from '@apollo/client';
+
+const appolloClient = new ApolloClient({
+  uri: 'http://localhost:4000/graphql',
+  cache: new InMemoryCache()
+});
+
+const ALL_TRACKS = gql`
+    {
+        tracks {
+            id
+            title
+            artistId
+            description
+            duration
+        }
+    }
+`;
 
 const App = () => {
+  const { loading, error, data } = useQuery(ALL_TRACKS);
+
+  console.log(data);
+  console.log(error);
+
+
   const fontConfig = {
     default: {
       regular: {
@@ -37,11 +60,13 @@ const App = () => {
   const store = createStore(rootReducer);
 
   return (
-    <PaperProvider theme={theme}>
-      <Provider store={store}>
-        <Main/>
-      </Provider>
-    </PaperProvider>
+    <ApolloProvider client={appolloClient}>
+      <PaperProvider theme={theme}>
+        <Provider store={store}>
+          <Main />
+        </Provider>
+      </PaperProvider>
+    </ApolloProvider>
   );
 }
 

@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import TrackPlayer from 'react-native-track-player';
 import { Box } from 'react-native-design-utility';
 import { ActivityIndicator, Snackbar } from 'react-native-paper';
@@ -10,19 +10,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import auth from '@react-native-firebase/auth';
 import { user, currentScreen, setSnackbarMessage } from '../Actions/index';
 
-import useFetchData from '../hooks/useFetchData';
+import useTracks from '../hooks/useTracks';
 
 const Main = () => {
-    const routeNameRef = React.useRef();
-    const navigationRef = React.useRef();
+    const routeNameRef = useRef();
+    const navigationRef = useRef();
     const dispatch = useDispatch();
     const snackbarMessage = useSelector(state => state.snackbarMessage);
 
     const [isReady, setIsReady] = useState(false);
 
-    const query = `{tracks {album artist artistId description genre id title duration comments {artist comment userId replies {artist comment userId}}}}`
+    const query = `{tracks {album artist artistId description genre id title duration comments {artist comment userId replies {artist comment userId}}}}`;
 
-    const [tracks, getTracks, tracksError] = useFetchData();
+    const [tracks, getTracks, tracksError] = useTracks();
 
     useEffect(() => {
         TrackPlayer.setupPlayer().then(() => {
@@ -43,13 +43,11 @@ const Main = () => {
 
             setIsReady(true);
         });
-
-        getTracks(query);
     }, []);
 
     useEffect(() => {
-        if (tracks.tracks) {
-            console.log(tracks.tracks);
+        if (tracks) {
+            console.log(tracks);
         }
     }, [tracks]);
 
