@@ -3,10 +3,9 @@ import { Artist } from './models/Artist';
 
 export const resolvers = {
     Query: {
-        // TODO Error happening
         tracks: async (_, {_id, _artistId, _genre, _album }) => {
             if (_id) {
-                return await Track.findById(_id);
+                return await [Track.findById(_id)];
             };
             if(_artistId) {
                 return await Track.find({ artistId: _artistId });
