@@ -7,6 +7,5 @@ export const Track = mongoose.model("Track", {
     description: String,
     genre: String,
     title: String,
-    duration: Number,
-    comments: Array
+    duration: Number
 });

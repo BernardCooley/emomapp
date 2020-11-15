@@ -5,10 +5,17 @@ export const typeDefs = gql`
       url: String
     }
 
-    type Comment {
+    type Reply {
         artist: String!,
         comment: String!,
         artistId: String!
+    }
+
+    type Comment {
+        artist: String!,
+        comment: String!,
+        artistId: String!,
+        replies: [Reply]
     }
 
     type Social {
@@ -23,13 +30,16 @@ export const typeDefs = gql`
         genre: String,
         id: ID!,
         title: String!,
-        duration: Int!
+        duration: Int!,
+        comments: [Comment]
     }
     type Artist {
         artistName: String!,
         bio: String,
         location: String,
-        website: String
+        website: String,
+        id: ID,
+        socials: [Social]
     }
     type Query {
         tracks: [Track!]!
