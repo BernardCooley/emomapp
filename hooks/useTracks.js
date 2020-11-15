@@ -1,36 +1,25 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const useTracks = () => {
+const useTracks = query => {
     const [tracks, setTracks] = useState([]);
     const [error, setError] = useState([]);
-    const [query, setquery] = useState(`
-        {
-            tracks {
-                id
-                title
-                artistId
-                description
-                duration
-            }
-        }
-    `);
 
     useEffect(() => {
-        getTracks();
+        getTracks(query);
     }, []);
 
-    const getTracks = async () => {
-        console.log(query);
-        const result = await axios.post(
-            'http://localhost:4000/graphql', {
-            query: query
-        }).catch(error => {
-            console.log(error);
-            setError(error);
-        });
+    const getTracks = async query => {
+        if(query) {
+            const result = await axios.post(
+                'http://10.0.2.2:4000/graphql', {
+                query: query
+            }).catch(error => {
+                setError(error);
+            });
 
-        setTracks(result);
+            setTracks(result.data.data);
+        }
     }
 
     return [tracks, getTracks, error];

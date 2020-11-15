@@ -20,9 +20,19 @@ const Main = () => {
 
     const [isReady, setIsReady] = useState(false);
 
-    const query = `{tracks {album artist artistId description genre id title duration comments {artist comment userId replies {artist comment userId}}}}`;
+    const [query, setquery] = useState(`
+        {
+            tracks {
+                id
+                title
+                artistId
+                description
+                duration
+            }
+        }
+    `);
 
-    const [tracks, getTracks, tracksError] = useTracks();
+    const [tracks, getTracks, tracksError] = useTracks(query);
 
     useEffect(() => {
         TrackPlayer.setupPlayer().then(() => {
