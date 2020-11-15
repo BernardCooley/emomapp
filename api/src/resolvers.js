@@ -21,7 +21,7 @@ export const resolvers = {
         },
         artists: async (_, {_id, _location}) => {
             if (_id) {
-                return await Artist.findById(_id);
+                return await [Artist.findById(_id)];
             };
             if (_location) {
                 return await Artist.find({ location: _location });
