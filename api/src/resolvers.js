@@ -3,11 +3,31 @@ import { Artist } from './models/Artist';
 
 export const resolvers = {
     Query: {
-        tracks: async () => {
-            return Track.find();
+        // TODO Error happening
+        tracks: async (_, {_id, _artistId, _genre, _album }) => {
+            if (_id) {
+                return await Track.findById(_id);
+            };
+            if(_artistId) {
+                return await Track.find({ artistId: _artistId });
+            };
+            if(_genre) {
+                return await Track.find({ genre: _genre });
+            };
+            if(_album) {
+                return await Track.find({ album: _album });
+            };
+
+            return await Track.find();
         },
-        artists: async () => {
-            return Artist.find();
+        artists: async (_, {_id, _location}) => {
+            if (_id) {
+                return await Artist.findById(_id);
+            };
+            if (_location) {
+                return await Artist.find({ location: _location });
+            };
+            return await Artist.find();
         }
     },
     Mutation: {

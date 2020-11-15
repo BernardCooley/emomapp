@@ -42,8 +42,8 @@ export const typeDefs = gql`
         socials: [Social]
     }
     type Query {
-        tracks: [Track!]!
-        artists: [Artist!]!
+        tracks(_id: String, _artistId: String, _genre: String, _album: String): [Track!]!
+        artists(_id: String, _location: String): [Artist!]!
         downloadUrls: DownloadURL
     }
     type Mutation {
