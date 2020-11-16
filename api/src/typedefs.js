@@ -14,11 +14,10 @@ export const typeDefs = gql`
     type Comment {
         artist: String!,
         comment: String!,
-        artistId: String!,
-        replies: [Reply]
+        artistId: String!
     }
 
-    type Social {
+    input Social {
         name: String!,
         url: String!
     }
@@ -38,8 +37,7 @@ export const typeDefs = gql`
         bio: String,
         location: String,
         website: String,
-        id: ID,
-        socials: [Social]
+        id: ID
     }
     type Query {
         tracks(_id: String, _artistId: String, _genre: String, _album: String): [Track!]!
@@ -61,5 +59,10 @@ export const typeDefs = gql`
             location: String,
             website: String
         ): Artist!
+        addComment(
+            trackId: String!
+            comment: String!,
+            artistId: String!
+        ): Track!
     }
 `;
