@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
+import { string } from './schemaTypes';
 
-export const Social = mongoose.model("Social", {
-    name: String,
-    url: String
-});
+const { Schema } = mongoose;
+
+const socialSchema = new Schema({
+    name: string,
+    url: string
+})
+
+export const Social = mongoose.model("Social", socialSchema);

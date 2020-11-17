@@ -12,7 +12,6 @@ export const typeDefs = gql`
     }
 
     type Comment {
-        artist: String!,
         comment: String!,
         artistId: String!
     }
@@ -29,8 +28,7 @@ export const typeDefs = gql`
         genre: String,
         id: ID!,
         title: String!,
-        duration: Int!,
-        comments: [Comment]
+        duration: Int!
     }
     type Artist {
         artistName: String!,

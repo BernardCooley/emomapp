@@ -1,7 +1,7 @@
 import { Track } from './models/Track';
 import { Artist } from './models/Artist';
-import { Social } from './models/Social';
 import { Comment } from './models/Comment';
+import mongoose from 'mongoose';
 
 export const resolvers = {
     Query: {
@@ -44,49 +44,30 @@ export const resolvers = {
             return artist;
         },
         addComment: async (_, { trackId, comment, artistId }) => {
+            const ObjectId = mongoose.mongo.ObjectId;
             const commentObject = new Comment({ comment, artistId });
+
             const filter = {
-                _id: '5faeaf019e1f5ea7a099fed6'
+                _id: new ObjectId(trackId)
             }
             const update = {
-                comments: commentObject
+                $addToSet: {
+                    comments: commentObject
+                }
             }
+            const options = {
+                new: true
+            };
 
-
-            const track = await Track.findByIdAndUpdate(
-                '5faeaf019e1f5ea7a099fed6',
-                {
-                    $set: update
-                },
-                {
-                    returnNewDocument: true
-                }, (error, result) => {
-                    console.log(result);
-                    return result
-                });
-
-            // let track = await Track.findOneAndUpdate(filter, update, (error, result) => {
-                
-            // });
-
-            // track = await Track.findOne(filter);
-
-            // console.log(track);
-
-            return track;
-
-
-
-            // const track = await Track.findById(trackId);
-
-            // if (!track.comments) {
-            //     track.comments = [];
-            // }
-
-            // await track.comments.push(commentObject);
-
-            // await track.save();
-            // return track;
+            const updatedTrack = await Track.findOneAndUpdate(
+                filter,
+                update,
+                options,
+                (error, success) => {
+                    error ? console.log(error) : console.log(success);
+                }
+            );
+            return updatedTrack;
         }
     }
 }

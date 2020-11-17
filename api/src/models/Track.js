@@ -1,11 +1,16 @@
 import mongoose from 'mongoose';
+import { string } from './schemaTypes';
 
-export const Track = mongoose.model("Track", {
-    title: String,
-    album: String,
-    artistId: String,
-    description: String,
-    genre: String,
-    title: String,
-    duration: Number
-});
+const { Schema } = mongoose;
+
+const trackSchema = new Schema({
+    title: string,
+    album: string,
+    artistId: string,
+    description: string,
+    genre: string,
+    title: string,
+    duration: string
+})
+
+export const Track = mongoose.model("Track", trackSchema);

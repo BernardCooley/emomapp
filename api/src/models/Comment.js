@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
+import { string } from './schemaTypes';
 
-export const Comment = mongoose.model("Comment", {
-    comment: String,
-    artistId: String
-});
+const { Schema } = mongoose;
+
+const commentSchema = new Schema({
+    comment: string,
+    artistId: string
+})
+
+export const Comment = mongoose.model("Comment", commentSchema);
