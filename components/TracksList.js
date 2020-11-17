@@ -11,9 +11,23 @@ import firestore from '@react-native-firebase/firestore';
 import { setListenedTracks, setFavouritedTracks } from '../Actions/index';
 import useFavAndListened from '../hooks/useFavAndListened';
 import FilterSortTracks from './FilterSortTracks';
+import useTracks from '../hooks/useTracks';
+
+const tracksQuery = `
+    {
+        tracks {
+            album
+            id
+            title
+            artistId
+            description
+            duration
+        }
+    }
+`
 
 
-const TracksList = ({ navigation, tracks, listLocation }) => {
+const TracksList = ({ navigation, listLocation }) => {
     const { colors } = useTheme();
     const [addFavouritedTrack, removeFavouritedTrack, favouritesError] = useFavAndListened(auth().currentUser.uid, 'favourites');
     const [addListenedTrack, removeListenedTrack, listenedError] = useFavAndListened(auth().currentUser.uid, 'listened');
@@ -25,6 +39,7 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
     const usersRef = firestore().collection('users');
     const allListenedTracks = useSelector(state => state.listenedTracks);
     const allFavouritedTracks = useSelector(state => state.favouritedTracks);
+    const [tracks, getTracks, tracksError] = useTracks(tracksQuery);
 
     useEffect(() => {
         const unsibscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
@@ -36,6 +51,10 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
             unsibscribe2();
         };
     }, []);
+
+    useEffect(() => {
+        console.log(tracks.tracks);
+    }, [tracks]);
 
     const trackListened = trackId => {
         return allListenedTracks.includes(trackId);
@@ -120,7 +139,7 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
     const TracksList = () => (
         <>
             {
-                Object.keys(tracks).map((key, index) => (
+                tracks.tracks.map((track, index) => (
                     <View key={index}>
                         <List.Item
                             titleNumberOfLines={1}
@@ -130,16 +149,16 @@ const TracksList = ({ navigation, tracks, listLocation }) => {
                             titleStyle={{ fontSize: 22 }}
                             descriptionStyle={{ fontSize: 15 }}
                             style={styles.listItem}
-                            title={tracks[key].title}
-                            description={tracks[key].artist}
+                            title={track.title}
+                            description={track.artistId}
                             left={() =>
-                                <Avatar.Image style={styles.trackImage} size={40} source={{ uri: tracks[key].trackImage }} />
+                                <Avatar.Image style={styles.trackImage} size={40} source={{ uri: track.trackImage }} />
                             }
                             right={() => 
                             <View style={styles.trackListingRight}>
-                                <DotsIcon track={tracks[key]} />
+                                <DotsIcon track={track} />
                             </View>}
-                            onPress={() => playTrack(tracks[key])}
+                            onPress={() => playTrack(track)}
                         />
                     </View>
                 ))

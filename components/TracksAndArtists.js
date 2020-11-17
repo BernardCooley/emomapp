@@ -173,7 +173,7 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
                                     <>
                                         {artistsOrTracks === 'artists' ?
                                             <ArtistsList navigation={navigation} /> :
-                                            <TracksList tracks={allData} navigation={navigation} />
+                                            <TracksList navigation={navigation} />
                                         }
                                     </> :
                                     <>

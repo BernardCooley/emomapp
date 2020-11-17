@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { string, array } from './schemaTypes';
+import { string } from './schemaTypes';
 
 const { Schema } = mongoose;
 
@@ -7,8 +7,7 @@ const artistSchema = new Schema({
     artistName: string,
     bio: string,
     location: string,
-    website: string, 
-    socials: array
+    website: string
 })
 
 export const Artist = mongoose.model("Artist", artistSchema);

@@ -10,8 +10,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import auth from '@react-native-firebase/auth';
 import { user, currentScreen, setSnackbarMessage } from '../Actions/index';
 
-import useTracks from '../hooks/useTracks';
-
 const Main = () => {
     const routeNameRef = useRef();
     const navigationRef = useRef();
@@ -19,20 +17,6 @@ const Main = () => {
     const snackbarMessage = useSelector(state => state.snackbarMessage);
 
     const [isReady, setIsReady] = useState(false);
-
-    const [query, setquery] = useState(`
-        {
-            tracks {
-                id
-                title
-                artistId
-                description
-                duration
-            }
-        }
-    `);
-
-    const [tracks, getTracks, tracksError] = useTracks(query);
 
     useEffect(() => {
         TrackPlayer.setupPlayer().then(() => {
@@ -55,11 +39,6 @@ const Main = () => {
         });
     }, []);
 
-    useEffect(() => {
-        if (tracks) {
-            console.log(tracks);
-        }
-    }, [tracks]);
 
     useEffect(() => {
         auth().onAuthStateChanged(onAuthStateChanged);
