@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/client';
 import { ADD_NEW_TRACK } from '../queries/graphQlQueries';
 
 
-const useTracks = () => {
+const useAddTrack = () => {
     const [createNewTrack] = useMutation(ADD_NEW_TRACK);
 
     const addTrack = newTrackData => {
@@ -28,4 +28,4 @@ const useTracks = () => {
 
     }
 
-    export default useTracks;
+    export default useAddTrack;
