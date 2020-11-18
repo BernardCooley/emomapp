@@ -7,6 +7,8 @@ import { resolvers } from './resolvers';
 import { MONGO_DATABASE_NAME, MONGO_PASSWORD } from './constants';
 
 const startServer = async () => {
+    const endPoint = 'http://10.0.2.2:4000/graphql';
+
     const app = express();
 
     const server = new ApolloServer({
@@ -20,11 +22,11 @@ const startServer = async () => {
         useUnifiedTopology: true,
         useFindAndModify: false
     });
-    
+
     mongoose.set('debug', true);
 
     app.listen({ port: 4000 }, () =>
-        console.log(`Server ready at: http://localhost:4000${server.graphqlPath}`)
+        console.log(`Server ready at: ${endPoint}`)
     )
 }
 
