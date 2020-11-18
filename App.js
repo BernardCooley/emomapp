@@ -5,6 +5,9 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux'
 import { DefaultTheme, Provider as PaperProvider, configureFonts } from 'react-native-paper';
 import Main from './components/Main';
+import { ApolloProvider } from '@apollo/client';
+
+import apolloClient from './apolloSetup';
 
 const App = () => {
   const fontConfig = {
@@ -37,11 +40,13 @@ const App = () => {
   const store = createStore(rootReducer);
 
   return (
-    <PaperProvider theme={theme}>
-      <Provider store={store}>
-        <Main />
-      </Provider>
-    </PaperProvider>
+    <ApolloProvider client={apolloClient}>
+      <PaperProvider theme={theme}>
+        <Provider store={store}>
+          <Main />
+        </Provider>
+      </PaperProvider>
+    </ApolloProvider>
   );
 }
 

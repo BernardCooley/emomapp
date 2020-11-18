@@ -7,7 +7,7 @@ export const resolvers = {
     Query: {
         tracks: async (_, { _id, _artistId, _genre, _album }) => {
             if (_id) {
-                return await [Track.findById(_id)];
+                return [await Track.findById(_id)];
             };
             if (_artistId) {
                 return await Track.find({ artistId: _artistId });

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Avatar, IconButton, List, Divider, Menu, useTheme } from 'react-native-paper';
+import { Avatar, IconButton, List, Divider, Menu, useTheme, Button } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import storage from '@react-native-firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,19 +12,7 @@ import { setListenedTracks, setFavouritedTracks } from '../Actions/index';
 import useFavAndListened from '../hooks/useFavAndListened';
 import FilterSortTracks from './FilterSortTracks';
 import useTracks from '../hooks/useTracks';
-
-const tracksQuery = `
-    {
-        tracks {
-            album
-            id
-            title
-            artistId
-            description
-            duration
-        }
-    }
-`
+import { ALL_TRACKS_ALL_DETAILS } from '../queries/graphQlQueries';
 
 
 const TracksList = ({ navigation, listLocation }) => {
@@ -39,7 +27,7 @@ const TracksList = ({ navigation, listLocation }) => {
     const usersRef = firestore().collection('users');
     const allListenedTracks = useSelector(state => state.listenedTracks);
     const allFavouritedTracks = useSelector(state => state.favouritedTracks);
-    const [tracks, getTracks, tracksError] = useTracks(tracksQuery);
+    // const [tracks, getTracks, tracksError] = useTracks(ALL_TRACKS_ALL_DETAILS);
 
     useEffect(() => {
         const unsibscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
@@ -52,9 +40,10 @@ const TracksList = ({ navigation, listLocation }) => {
         };
     }, []);
 
-    useEffect(() => {
-        console.log(tracks.tracks);
-    }, [tracks]);
+    // useEffect(() => {
+    //     console.log('----------------------------------');
+    //     console.log(tracks.tracks);
+    // }, [tracks]);
 
     const trackListened = trackId => {
         return allListenedTracks.includes(trackId);
@@ -138,7 +127,7 @@ const TracksList = ({ navigation, listLocation }) => {
 
     const TracksList = () => (
         <>
-            {
+            {/* {
                 tracks.tracks.map((track, index) => (
                     <View key={index}>
                         <List.Item
@@ -162,7 +151,7 @@ const TracksList = ({ navigation, listLocation }) => {
                         />
                     </View>
                 ))
-            }
+            } */}
         </>
     );
 

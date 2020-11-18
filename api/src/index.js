@@ -7,7 +7,7 @@ import { resolvers } from './resolvers';
 import { MONGO_DATABASE_NAME, MONGO_PASSWORD } from './constants';
 
 const startServer = async () => {
-    const endPoint = 'http://10.0.2.2:4000/graphql';
+    const endPoint = 'http://localhost:4000/graphql';
 
     const app = express();
 

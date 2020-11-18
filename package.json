@@ -13,7 +13,7 @@
     "server": "node api/index.js"
   },
   "dependencies": {
-    "@apollo/client": "^3.2.5",
+    "@apollo/client": "^3.2.7",
     "@material-ui/core": "^4.11.0",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/netinfo": "react-native-community/react-native-netinfo",
@@ -27,6 +27,7 @@
     "@react-navigation/native": "^5.7.6",
     "@react-navigation/stack": "^5.9.3",
     "@types/react": "^16.9.53",
+    "apollo-link-http": "^1.5.17",
     "axios": "^0.21.0",
     "graphql": "^15.4.0",
     "react": "16.13.1",
