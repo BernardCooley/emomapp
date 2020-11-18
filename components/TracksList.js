@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Avatar, IconButton, List, Divider, Menu, useTheme, Button } from 'react-native-paper';
+import { Avatar, IconButton, List, Divider, Menu, useTheme } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import storage from '@react-native-firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { useQuery } from '@apollo/client';
 
 import { setListenedTracks, setFavouritedTracks } from '../Actions/index';
 import useFavAndListened from '../hooks/useFavAndListened';
 import FilterSortTracks from './FilterSortTracks';
-import useTracks from '../hooks/useTracks';
-import { ALL_TRACKS_ALL_DETAILS } from '../queries/graphQlQueries';
+import { ALL_TRACKS_TRACKLIST } from '../queries/graphQlQueries';
 
 
 const TracksList = ({ navigation, listLocation }) => {
@@ -27,7 +27,7 @@ const TracksList = ({ navigation, listLocation }) => {
     const usersRef = firestore().collection('users');
     const allListenedTracks = useSelector(state => state.listenedTracks);
     const allFavouritedTracks = useSelector(state => state.favouritedTracks);
-    // const [tracks, getTracks, tracksError] = useTracks(ALL_TRACKS_ALL_DETAILS);
+    const { loading, error, data } = useQuery(ALL_TRACKS_TRACKLIST);
 
     useEffect(() => {
         const unsibscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
@@ -39,11 +39,6 @@ const TracksList = ({ navigation, listLocation }) => {
             unsibscribe2();
         };
     }, []);
-
-    // useEffect(() => {
-    //     console.log('----------------------------------');
-    //     console.log(tracks.tracks);
-    // }, [tracks]);
 
     const trackListened = trackId => {
         return allListenedTracks.includes(trackId);
@@ -116,7 +111,7 @@ const TracksList = ({ navigation, listLocation }) => {
     const toggleFavOrListened = favOrListened => {
         if (favOrListened === 'favourites') {
             allFavouritedTracks.filter(trackId => trackId === clickedTrack.id).length > 0 ? removeFavouritedTrack(clickedTrack.id) : addFavouritedTrack(clickedTrack.id);
-        }else {
+        } else {
             allListenedTracks.filter(trackId => trackId === clickedTrack.id).length > 0 ? removeListenedTrack(clickedTrack.id) : addListenedTrack(clickedTrack.id);
         }
     }
@@ -127,8 +122,8 @@ const TracksList = ({ navigation, listLocation }) => {
 
     const TracksList = () => (
         <>
-            {/* {
-                tracks.tracks.map((track, index) => (
+            {
+                data && data.tracks.map((track, index) => (
                     <View key={index}>
                         <List.Item
                             titleNumberOfLines={1}
@@ -151,7 +146,7 @@ const TracksList = ({ navigation, listLocation }) => {
                         />
                     </View>
                 ))
-            } */}
+            }
         </>
     );
 
@@ -172,7 +167,7 @@ const TracksList = ({ navigation, listLocation }) => {
                 <Menu.Item onPress={() => toggleFavOrListened('favourites')} icon={trackFavourited(clickedTrack.id) ? 'heart' : 'heart-outline'} title={trackFavourited(clickedTrack.id) ? 'Unfavourite' : 'Favourite'} color={trackFavourited(clickedTrack.id) ? colors.dark : colors.lightGray} />
                 <Menu.Item onPress={() => toggleFavOrListened('listened')} icon={trackListened(clickedTrack.id) ? 'ear-hearing' : 'ear-hearing-off'} title={trackListened(clickedTrack.id) ? 'Set to unlistened' : 'Set to listened'} color={trackListened(clickedTrack.id) ? colors.dark : colors.lightGray} />
             </Menu>
-            <FilterSortTracks/>
+            <FilterSortTracks />
             <TracksList />
         </>
     );
