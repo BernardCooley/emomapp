@@ -12,6 +12,22 @@ const apolloSetup = new ApolloClient({
         watchQuery: {
             fetchPolicy: 'cache-and-network'
         }
+    },
+    typePolicies: {
+        Query: {
+            fields: {
+                artists: {
+                    merge(existing, incoming) {
+                        return { ...existing, ...incoming };
+                      }
+                },
+                tracks: {
+                    merge(existing, incoming) {
+                        return { ...existing, ...incoming };
+                      }
+                }
+            }
+        }
     }
 });
 

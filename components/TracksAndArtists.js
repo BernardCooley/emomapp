@@ -5,11 +5,13 @@ import { useFocusEffect } from "@react-navigation/native";
 import PropTypes from 'prop-types';
 import { Title, Searchbar, ActivityIndicator, Text, useTheme, FAB, IconButton } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
+import { useQuery } from '@apollo/client';
 
 import useFirebaseCall from '../hooks/useFirebaseCall';
 import { setActivityIndicator, setSnackbarMessage, artists, setFilterSortMenu } from '../Actions/index';
 import ArtistsList from '../components/ArtistsList';
 import TracksList from '../components/TracksList';
+import { ALL_TRACKS_TRACKLIST, ALL_ARTISTS_ALL_DETAILS } from '../queries/graphQlQueries';
 
 
 const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
@@ -24,6 +26,16 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
     const [getTracks, tracksError, getNextTracks, getTrackImages] = useFirebaseCall('tracks', 'id', 20);
     const [displayBackToTopIcon, setDisplayBackToTopIcon] = useState(false);
     const screenHeight = Dimensions.get("window").height;
+
+    let query = null;
+
+    if(artistsOrTracks === 'artists') {
+        query = ALL_ARTISTS_ALL_DETAILS
+    }else if(artistsOrTracks === 'tracks') {
+        query = ALL_TRACKS_TRACKLIST
+    }
+
+    const { loading, error, data, refetch } = useQuery(query);
 
     let firestoreRef = null;
     let allData = null;
@@ -81,11 +93,7 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
     const refresh = () => {
         setSearchQuery('');
         setRefreshing(true);
-        if (artistsOrTracks === 'artists') {
-            getArtists();
-        } else {
-            getTracks();
-        }
+        refetch();
         wait(2000).then(() => setRefreshing(false));
         setShowingSearchResults(false);
     };
@@ -172,8 +180,8 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
                                 {allData.length > 0 ?
                                     <>
                                         {artistsOrTracks === 'artists' ?
-                                            <ArtistsList navigation={navigation} /> :
-                                            <TracksList navigation={navigation} />
+                                            <ArtistsList artists={data} navigation={navigation} /> :
+                                            <TracksList tracks={data} navigation={navigation} />
                                         }
                                     </> :
                                     <>
@@ -201,7 +209,8 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
 };
 
 TracksAndArtists.propTypes = {
-    tracks: PropTypes.object,
+    tracks: PropTypes.array,
+    artists: PropTypes.array,
     navigation: PropTypes.object
 };
 

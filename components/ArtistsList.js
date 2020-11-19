@@ -1,14 +1,11 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Title, Card, Chip } from 'react-native-paper';
-import { useSelector } from 'react-redux';
 
 import FilterSortArtists from './FilterSortArtists';
 
 
-const ArtistsList = ({ navigation }) => {
-    const allArtists = useSelector(state => state.artists);
-
+const ArtistsList = ({ navigation, artists }) => {
     const viewArtistProfile = id => {
         navigation.push('Profile', {
             artistId: id
@@ -22,12 +19,12 @@ const ArtistsList = ({ navigation }) => {
     const Artists = () => (
         <>
             {
-                Object.keys(allArtists).map((key, index) => (
+                artists && artists.artists.map((artist, index) => (
                     <View style={styles.artistContainer} key={index}>
-                        <Card style={styles.card} onPress={() => viewArtistProfile(allArtists[key].userId)}>
-                            <Chip style={styles.chip} icon="music-box-multiple" onPress={() => viewArtistTracks(allArtists[key].userId)}>{allArtists[key].trackAmount}</Chip>
-                            <Card.Cover style={styles.cardCover} source={{ uri: allArtists[key].artistImageUrl }} />
-                            <Title style={styles.cardTitle}>{allArtists[key].artist}</Title>
+                        <Card style={styles.card} onPress={() => viewArtistProfile(artist.id)}>
+                            <Chip style={styles.chip} icon="music-box-multiple" onPress={() => viewArtistTracks(artist.id)}>{artist.trackAmount}</Chip>
+                            <Card.Cover style={styles.cardCover} source={{ uri: artist.artistImageUrl }} />
+                            <Title style={styles.cardTitle}>{artist.artistName}</Title>
                         </Card>
                     </View>
                 ))

@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useTheme, FAB } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { StyleSheet } from 'react-native';
 
 import TracksScreen from '../screens/Tracks';
 import ArtistsScreen from '../screens/Artists';
 import { setNavigation } from '../Actions/index';
-import { useSelector } from 'react-redux';
 
 const ExploreScreen = ({ navigation }) => {
     const dispatch = useDispatch();

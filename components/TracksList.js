@@ -7,15 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { useQuery } from '@apollo/client';
 
 import { setListenedTracks, setFavouritedTracks } from '../Actions/index';
 import useFavAndListened from '../hooks/useFavAndListened';
 import FilterSortTracks from './FilterSortTracks';
-import { ALL_TRACKS_TRACKLIST } from '../queries/graphQlQueries';
 
 
-const TracksList = ({ navigation, listLocation }) => {
+const TracksList = ({ navigation, listLocation, tracks }) => {
     const { colors } = useTheme();
     const [addFavouritedTrack, removeFavouritedTrack, favouritesError] = useFavAndListened(auth().currentUser.uid, 'favourites');
     const [addListenedTrack, removeListenedTrack, listenedError] = useFavAndListened(auth().currentUser.uid, 'listened');
@@ -27,7 +25,6 @@ const TracksList = ({ navigation, listLocation }) => {
     const usersRef = firestore().collection('users');
     const allListenedTracks = useSelector(state => state.listenedTracks);
     const allFavouritedTracks = useSelector(state => state.favouritedTracks);
-    const { loading, error, data } = useQuery(ALL_TRACKS_TRACKLIST);
 
     useEffect(() => {
         const unsibscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
@@ -123,7 +120,7 @@ const TracksList = ({ navigation, listLocation }) => {
     const TracksList = () => (
         <>
             {
-                data && data.tracks.map((track, index) => (
+                tracks && tracks.tracks.map((track, index) => (
                     <View key={index}>
                         <List.Item
                             titleNumberOfLines={1}
