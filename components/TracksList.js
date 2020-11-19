@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Avatar, IconButton, List, Divider, Menu, useTheme } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
 import storage from '@react-native-firebase/storage';
@@ -33,36 +33,26 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
     const { loading, error, data, refetch } = useQuery(
         SELECTED_ARTISTS_ARTIST_NAME,
         {
-            variables: artistIds
+            variables: {
+                artistIds: artistIds
+            }
         }
     );
 
     useEffect(() => {
-        if(artistIds.length > 0) {
-            // console.log(artistIds);
-        }
-    }, [artistIds]);
-
-    useEffect(() => {
-        if(!loading) {
-            console.log(data);
-        }
-    }, [data]);
-
-    useEffect(() => {
-        if(tracks.tracks) {
+        if(tracks) {
             setArtistIds(tracks.tracks.map(track => track.artistId));
         }
     }, [tracks]);
 
     useEffect(() => {
-        const unsibscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
+        const unsubscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
 
-        const unsibscribe2 = usersRef.doc(auth().currentUser.uid).onSnapshot(onFavouritedTracksGetResult, onFavouritedTracksError);
+        const unsubscribe2 = usersRef.doc(auth().currentUser.uid).onSnapshot(onFavouritedTracksGetResult, onFavouritedTracksError);
 
         return () => {
-            unsibscribe();
-            unsibscribe2();
+            unsubscribe();
+            unsubscribe2();
         };
     }, []);
 
@@ -147,7 +137,13 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
     }
 
     const getArtistName = artistId => {
-        
+        if(data) {
+            return (
+                <Text>
+                    {data.artists.filter(artist => artist.id === artistId)[0].artistName}
+                </Text>
+            )
+        }
     }
 
     const TracksList = () => (
@@ -164,14 +160,14 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
                             descriptionStyle={{ fontSize: 15 }}
                             style={styles.listItem}
                             title={track.title}
-                            description={track.artistId}
+                            description={() => getArtistName(track.artistId)}
                             left={() =>
                                 <Avatar.Image style={styles.trackImage} size={40} source={{ uri: track.trackImage }} />
                             }
-                            right={() => 
-                            <View style={styles.trackListingRight}>
-                                <DotsIcon track={track} />
-                            </View>}
+                            right={() =>
+                                <View style={styles.trackListingRight}>
+                                    <DotsIcon track={track} />
+                                </View>}
                             onPress={() => playTrack(track)}
                         />
                     </View>

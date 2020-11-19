@@ -27,9 +27,10 @@ export const ALL_ARTISTS_ALL_DETAILS = gql`
 `
 
 export const SELECTED_ARTISTS_ARTIST_NAME = gql`
-    query tracks($trackIds: [ID]) {
-        artists(trackIds: $trackIds) {
+    query artists($_artistIds: [ID]) {
+        artists(_artistIds: $_artistIds) {
             artistName
+            id
         }
     }
 `

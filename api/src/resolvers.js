@@ -23,21 +23,7 @@ export const resolvers = {
         },
         artists: async (_, { _artistIds, _id, _location }) => {
             if (_artistIds) {
-                // const mongoIds = _artistIds.map(id => {
-                //     console.log(id);
-                //     // return mongoose.Types.ObjectId(id);
-                // });
-                // console.log(mongoIds);
-                // console.log(mongoIds);
-                const names = await Artist.find({
-                    '_id': { $in: _artistIds}
-                }, (err, docs) => {
-                     console.log(docs);
-                     console.log(err);
-                     return docs
-                });
-                console.log(names);
-                return names
+                return await Artist.find().where('_id').in(_artistIds);
             }
             if (_id) {
                 return [await Artist.findById(_id)];
