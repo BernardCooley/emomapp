@@ -38,8 +38,17 @@ export const typeDefs = gql`
         id: ID
     }
     type Query {
-        tracks(_id: String, _artistId: String, _genre: String, _album: String): [Track!]!
-        artists(_id: String, _location: String): [Artist!]!
+        tracks(
+            _id: String,
+            _artistId: String,
+            _genre: String,
+            _album: String
+        ): [Track!]!
+        artists(
+            _artistIds: [ID],
+            _id: String,
+            _location: String
+        ): [Artist!]!
         downloadUrls: DownloadURL
     }
     type Mutation {

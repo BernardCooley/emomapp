@@ -21,9 +21,26 @@ export const resolvers = {
 
             return await Track.find();
         },
-        artists: async (_, { _id, _location }) => {
+        artists: async (_, { _artistIds, _id, _location }) => {
+            if (_artistIds) {
+                // const mongoIds = _artistIds.map(id => {
+                //     console.log(id);
+                //     // return mongoose.Types.ObjectId(id);
+                // });
+                // console.log(mongoIds);
+                // console.log(mongoIds);
+                const names = await Artist.find({
+                    '_id': { $in: _artistIds}
+                }, (err, docs) => {
+                     console.log(docs);
+                     console.log(err);
+                     return docs
+                });
+                console.log(names);
+                return names
+            }
             if (_id) {
-                return await [Artist.findById(_id)];
+                return [await Artist.findById(_id)];
             };
             if (_location) {
                 return await Artist.find({ location: _location });

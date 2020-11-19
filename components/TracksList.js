@@ -7,10 +7,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { useQuery } from '@apollo/client';
 
 import { setListenedTracks, setFavouritedTracks } from '../Actions/index';
 import useFavAndListened from '../hooks/useFavAndListened';
 import FilterSortTracks from './FilterSortTracks';
+import { SELECTED_ARTISTS_ARTIST_NAME } from '../queries/graphQlQueries';
 
 
 const TracksList = ({ navigation, listLocation, tracks }) => {
@@ -25,6 +27,33 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
     const usersRef = firestore().collection('users');
     const allListenedTracks = useSelector(state => state.listenedTracks);
     const allFavouritedTracks = useSelector(state => state.favouritedTracks);
+    const [artistIds, setArtistIds] = useState([]);
+
+
+    const { loading, error, data, refetch } = useQuery(
+        SELECTED_ARTISTS_ARTIST_NAME,
+        {
+            variables: artistIds
+        }
+    );
+
+    useEffect(() => {
+        if(artistIds.length > 0) {
+            // console.log(artistIds);
+        }
+    }, [artistIds]);
+
+    useEffect(() => {
+        if(!loading) {
+            console.log(data);
+        }
+    }, [data]);
+
+    useEffect(() => {
+        if(tracks.tracks) {
+            setArtistIds(tracks.tracks.map(track => track.artistId));
+        }
+    }, [tracks]);
 
     useEffect(() => {
         const unsibscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
@@ -115,6 +144,10 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
 
     const trackFavourited = trackId => {
         return allFavouritedTracks.includes(trackId);
+    }
+
+    const getArtistName = artistId => {
+        
     }
 
     const TracksList = () => (
