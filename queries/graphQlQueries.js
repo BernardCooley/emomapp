@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const ALL_TRACKS_ALL_DETAILS = gql`
-    query tracks {
+    query Tracks {
         tracks {
             album
             artistId
@@ -15,7 +15,7 @@ export const ALL_TRACKS_ALL_DETAILS = gql`
 `
 
 export const ALL_ARTISTS_ALL_DETAILS = gql`
-    query artists {
+    query Artists {
         artists {
             artistName
             bio
@@ -31,7 +31,7 @@ export const ALL_ARTISTS_ALL_DETAILS = gql`
 `
 
 export const ALL_TRACKS_TRACKLIST = gql`
-    query tracks {
+    query Tracks {
         tracks {
             artistId
             title
@@ -44,6 +44,24 @@ export const ALL_TRACKS_TRACKLIST = gql`
         }
     }
 `
+
+export const TRACK_COMMENTS = gql`
+    query Comments($trackId: String!) {
+        comments(_trackId: $trackId) {
+            artistId
+            trackId
+            comment
+            replyToArtistId
+            artist {
+                artistName
+            }
+        }
+    }
+`
+
+
+
+
 
 export const ADD_NEW_TRACK = gql`
         mutation addTrack(

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Title, Text, Avatar, IconButton, useTheme } from 'react-native-paper';
-import { usePlayerContext } from '../contexts/PlayerContext';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,6 +15,7 @@ import QueueModal from '../components/QueueModal';
 import CommentsModal from '../components/CommentsModal';
 import Grid from '../components/Grid';
 import useFavAndListened from '../hooks/useFavAndListened';
+import { usePlayerContext } from '../contexts/PlayerContext';
 
 const MusicPlayer = ({ navigation }) => {
     const [addFavouritedTrack, removeFavouritedTrack, favouritesError] = useFavAndListened(auth().currentUser.uid, 'favourites');
@@ -145,14 +145,15 @@ const MusicPlayer = ({ navigation }) => {
                 </LinearGradient>
             </ScrollView>
             <QueueModal tracks={filteredQueue} navigation={navigation} />
-            <CommentsModal />
+            <CommentsModal trackId={playerContext.currentTrack.id} />
         </>
     )
 }
 
 MusicPlayer.propTypes = {
     tracks: PropTypes.object,
-    navigation: PropTypes.object
+    navigation: PropTypes.object,
+    trackId: PropTypes.string
 }
 
 const styles = StyleSheet.create({

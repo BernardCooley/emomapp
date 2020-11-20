@@ -3,24 +3,33 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { Title, IconButton, Modal, Portal, Provider, Text, Button, useTheme } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useQuery } from '@apollo/client';
 
 import { commentsModalVisible, commentType, commentIndex } from '../Actions/index';
 import modalStyles from '../styles/ModalStyles';
 import CommentBox from '../components/CommentBox';
+import { TRACK_COMMENTS } from '../queries/graphQlQueries';
 
 
-const CommentsModal = () => {
+const CommentsModal = ({ trackId }) => {
     const { colors } = useTheme();
     const dispatch = useDispatch();
     const isCommentsModalVisible = useSelector(state => state.commentsModalVisible);
-    const currentTrackComments = useSelector(state => state.trackComments);
     const currentCommentType = useSelector(state => state.commentType);
     const currentCommentIndex = useSelector(state => state.commentIndex);
 
+    const { loading, error, data, refetch } = useQuery(
+        TRACK_COMMENTS,
+        {
+            variables: { trackId },
+
+        }
+    );
+
     const openCommentBox = (currentCommentType, commentInd) => {
         dispatch(commentType(currentCommentType));
-        
-        if(commentInd > -1) {
+
+        if (commentInd > -1) {
             dispatch(commentIndex(commentInd))
         }
     }
@@ -50,7 +59,7 @@ const CommentsModal = () => {
                     <ScrollView contentContainerStyle={styles.scrollView}>
                         <View style={{ ...styles.queueContainer, ...styles.sectionContainer }}>
                             <Title style={styles.modalTitle}>Comments</Title>
-                            {currentTrackComments && currentTrackComments.length > 0 ? currentTrackComments.map((comment, index) => (
+                            {data ? data.comments.map((comment, index) => (
                                 <View style={styles.commentContainer} key={index}>
                                     <View style={styles.userAndDateContainer}>
                                         <Text style={styles.commentUser}>{comment.artist}</Text>
@@ -83,7 +92,7 @@ const CommentsModal = () => {
                             <Button color={colors.primary} mode='contained' onPress={() => openCommentBox('New comment')}>Add comment</Button>
                         }
                         {currentCommentType === 'New comment' ?
-                            <CommentBox colors={colors}  /> : null
+                            <CommentBox colors={colors} /> : null
                         }
                     </View>
                     <IconButton style={styles.closeIcon} animated icon="close" size={25} onPress={closeModal} />
@@ -100,7 +109,7 @@ CommentsModal.propTypes = {
 const styles = StyleSheet.create({
     ...modalStyles, ...{
         scrollView: {
-            
+
         },
         queueContainer: {
             marginTop: 0
