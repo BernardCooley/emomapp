@@ -10,7 +10,8 @@ const trackSchema = new Schema({
     description: string,
     genre: string,
     title: string,
-    duration: string
+    duration: string,
+    imageName: string
 })
 
 export const Track = mongoose.model("Track", trackSchema);

@@ -40,6 +40,8 @@ export const ALL_TRACKS_TRACKLIST = gql`
         tracks {
             artistId
             title
+            id
+            imageName
         }
     }
 `

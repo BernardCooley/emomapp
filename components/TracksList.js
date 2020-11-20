@@ -146,6 +146,11 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
         }
     }
 
+    const getTrackImageUrl = (artistId, trackId, imageName) => {
+        const baseStorageUrl = 'https://storage.googleapis.com/emom-files/';
+        return `${baseStorageUrl}${artistId}/tracks/${trackId}/${imageName}`;
+    }
+
     const TracksList = () => (
         <>
             {
@@ -162,7 +167,7 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
                             title={track.title}
                             description={() => getArtistName(track.artistId)}
                             left={() =>
-                                <Avatar.Image style={styles.trackImage} size={40} source={{ uri: track.trackImage }} />
+                                <Avatar.Image style={styles.trackImage} size={40} source={{ uri: getTrackImageUrl(track.artistId, track.id, track.imageName) }} />
                             }
                             right={() =>
                                 <View style={styles.trackListingRight}>
