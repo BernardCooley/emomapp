@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Avatar, IconButton, List, Divider, Menu, useTheme } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
-import storage from '@react-native-firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
@@ -88,19 +87,28 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
     }
 
     const playTrack = async track => {
-        await storage().ref(`tracks/${track.id}.mp3`).getDownloadURL().then(url => {
-            track['url'] = url;
-            playerContext.play(track);
-            navigation.push('Music');
-        });
+        const tr = {
+            ...track,
+            url: `https://storage.googleapis.com/emom-files/${track.artistId}/tracks/${track.id}/${track.id}.mp3`,
+            artist: data.artists.filter(artist => artist.id === track.artistId)[0].artistName,
+            trackImage: getTrackImageUrl(track.artistId, track.id, track.imageName)
+        };
+
+        playerContext.play(tr);
+        navigation.push('Music');
     }
 
     const queueTrack = async () => {
         setShowMenu(false);
-        await storage().ref(`tracks/${clickedTrack.id}.mp3`).getDownloadURL().then(url => {
-            clickedTrack['url'] = url;
-            playerContext.play(clickedTrack, true);
-        });
+
+        const tr = {
+            ...clickedTrack,
+            url: `https://storage.googleapis.com/emom-files/${clickedTrack.artistId}/tracks/${clickedTrack.id}/${clickedTrack.id}.mp3`,
+            artist: data.artists.filter(artist => artist.id === clickedTrack.artistId)[0].artistName,
+            trackImage: getTrackImageUrl(clickedTrack.artistId, clickedTrack.id, clickedTrack.imageName)
+        };
+
+        playerContext.play(tr, true);
     }
 
     const artistProfile = () => {

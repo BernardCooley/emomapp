@@ -51,6 +51,7 @@ export const ALL_TRACKS_TRACKLIST = gql`
             title
             id
             imageName
+            duration
         }
     }
 `
