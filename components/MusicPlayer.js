@@ -44,10 +44,6 @@ const MusicPlayer = ({ navigation }) => {
             setFilteredQueue(queue);
             dispatch(queueModalVisible(false));
             dispatch(commentsModalVisible(false));
-
-            const unsibscribe = tracksRef.doc(playerContext.currentTrack.id).onSnapshot(onCommentsGetResult, onCommentsGetError);
-
-            return () => unsibscribe();
         }
     }, [playerContext.trackQueue, playerContext.currentTrack]);
 
@@ -56,19 +52,6 @@ const MusicPlayer = ({ navigation }) => {
             addListenedTrack(playerContext.currentTrack.id);
         }
     }, [playerContext.currentTrack, position]);
-
-    const onCommentsGetResult = QuerySnapshot => {
-        if (QuerySnapshot.data().comments) {
-            const comments = QuerySnapshot.data().comments;
-            dispatch(trackComments(comments.sort((a, b) => (a.date > b.date) ? 1 : -1)));
-        } else {
-            dispatch(trackComments([]));
-        }
-    }
-
-    const onCommentsGetError = error => {
-        console.error(error);
-    }
 
     const playPause = () => {
         if (playerContext.isPlaying) {

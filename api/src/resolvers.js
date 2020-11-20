@@ -33,6 +33,18 @@ export const resolvers = {
             };
 
             return await Artist.find();
+        },
+        comments: async (_, { _trackId }) => {
+            if(_trackId) {
+                return await Comment.find().where('trackId').equals(_trackId);
+            }
+
+            return [];
+        },
+    },
+    Comment: {
+        artist: async (_parent) => {
+            return await Artist.findById(_parent.artistId);
         }
     },
     Mutation: {

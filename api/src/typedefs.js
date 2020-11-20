@@ -1,21 +1,6 @@
 import { gql } from 'apollo-server-express';
 
 export const typeDefs = gql`
-    type DownloadURL {
-      url: String
-    }
-
-    type Reply {
-        artist: String!,
-        comment: String!,
-        artistId: String!
-    }
-
-    type Comment {
-        comment: String!,
-        artistId: String!
-    }
-
     input Social {
         name: String!,
         url: String!
@@ -31,6 +16,7 @@ export const typeDefs = gql`
         duration: Int!
         imageName: String
     }
+
     type Artist {
         artistName: String!,
         bio: String,
@@ -39,6 +25,16 @@ export const typeDefs = gql`
         id: ID,
         artistImageName: String
     }
+    
+    type Comment {
+        id: ID!,
+        trackId: String!
+        comment: String!,
+        artistId: String!,
+        replyToArtistId: String,
+        artist: Artist!
+    }
+
     type Query {
         tracks(
             _id: String,
@@ -51,7 +47,12 @@ export const typeDefs = gql`
             _id: String,
             _location: String
         ): [Artist!]!
-        downloadUrls: DownloadURL
+        comments(
+            _trackId: String!
+        ): [Comment]
+        artist(
+            _artistId: String
+        ): Artist
     }
     type Mutation {
         addTrack(
