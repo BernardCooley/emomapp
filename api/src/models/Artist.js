@@ -7,7 +7,8 @@ const artistSchema = new Schema({
     artistName: string,
     bio: string,
     location: string,
-    website: string
+    website: string,
+    artistImageName: string
 })
 
 export const Artist = mongoose.model("Artist", artistSchema);

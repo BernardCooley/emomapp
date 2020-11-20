@@ -36,7 +36,8 @@ export const typeDefs = gql`
         bio: String,
         location: String,
         website: String,
-        id: ID
+        id: ID,
+        artistImageName: String
     }
     type Query {
         tracks(

@@ -16,6 +16,11 @@ const ArtistsList = ({ navigation, artists }) => {
         alert(artistId);
     }
 
+    const getArtistImageUrl = (artistId, imageName) => {
+        const baseStorageUrl = 'https://storage.googleapis.com/emom-files/';
+        return `${baseStorageUrl}${artistId}/${imageName}`;
+    }
+
     const Artists = () => (
         <>
             {
@@ -23,7 +28,7 @@ const ArtistsList = ({ navigation, artists }) => {
                     <View style={styles.artistContainer} key={index}>
                         <Card style={styles.card} onPress={() => viewArtistProfile(artist.id)}>
                             <Chip style={styles.chip} icon="music-box-multiple" onPress={() => viewArtistTracks(artist.id)}>{artist.trackAmount}</Chip>
-                            <Card.Cover style={styles.cardCover} source={{ uri: artist.artistImageUrl }} />
+                            <Card.Cover style={styles.cardCover} source={{ uri: getArtistImageUrl(artist.id, artist.artistImageName) }} />
                             <Title style={styles.cardTitle}>{artist.artistName}</Title>
                         </Card>
                     </View>
