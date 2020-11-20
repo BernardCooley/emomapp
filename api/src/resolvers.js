@@ -42,6 +42,11 @@ export const resolvers = {
             return [];
         },
     },
+    Track: {
+        artist: async (_parent) => {
+            return await Artist.findById(_parent.artistId);
+        }
+    },
     Comment: {
         artist: async (_parent) => {
             return await Artist.findById(_parent.artistId);

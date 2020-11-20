@@ -14,7 +14,8 @@ export const typeDefs = gql`
         id: ID!,
         title: String!,
         duration: Int!
-        imageName: String
+        imageName: String,
+        artist: Artist!
     }
 
     type Artist {
