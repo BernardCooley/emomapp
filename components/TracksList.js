@@ -6,12 +6,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { useQuery } from '@apollo/client';
 
 import { setListenedTracks, setFavouritedTracks } from '../Actions/index';
 import useFavAndListened from '../hooks/useFavAndListened';
 import FilterSortTracks from './FilterSortTracks';
-import { SELECTED_ARTISTS_ARTIST_NAME } from '../queries/graphQlQueries';
 
 
 const TracksList = ({ navigation, listLocation, tracks }) => {
@@ -26,23 +24,7 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
     const usersRef = firestore().collection('users');
     const allListenedTracks = useSelector(state => state.listenedTracks);
     const allFavouritedTracks = useSelector(state => state.favouritedTracks);
-    const [artistIds, setArtistIds] = useState([]);
-
-
-    const { loading, error, data, refetch } = useQuery(
-        SELECTED_ARTISTS_ARTIST_NAME,
-        {
-            variables: {
-                artistIds: artistIds
-            }
-        }
-    );
-
-    useEffect(() => {
-        if(tracks) {
-            setArtistIds(tracks.tracks.map(track => track.artistId));
-        }
-    }, [tracks]);
+    
 
     useEffect(() => {
         const unsubscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
@@ -90,7 +72,7 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
         const tr = {
             ...track,
             url: `https://storage.googleapis.com/emom-files/${track.artistId}/tracks/${track.id}/${track.id}.mp3`,
-            artist: data.artists.filter(artist => artist.id === track.artistId)[0].artistName,
+            artist: track.artist.artistName,
             trackImage: getTrackImageUrl(track.artistId, track.id, track.imageName)
         };
 
@@ -104,7 +86,7 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
         const tr = {
             ...clickedTrack,
             url: `https://storage.googleapis.com/emom-files/${clickedTrack.artistId}/tracks/${clickedTrack.id}/${clickedTrack.id}.mp3`,
-            artist: data.artists.filter(artist => artist.id === clickedTrack.artistId)[0].artistName,
+            artist: clickedTrack.artist.artistName,
             trackImage: getTrackImageUrl(clickedTrack.artistId, clickedTrack.id, clickedTrack.imageName)
         };
 
@@ -144,16 +126,6 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
         return allFavouritedTracks.includes(trackId);
     }
 
-    const getArtistName = artistId => {
-        if(data) {
-            return (
-                <Text>
-                    {data.artists.filter(artist => artist.id === artistId)[0].artistName}
-                </Text>
-            )
-        }
-    }
-
     const getTrackImageUrl = (artistId, trackId, imageName) => {
         const baseStorageUrl = 'https://storage.googleapis.com/emom-files/';
         return `${baseStorageUrl}${artistId}/tracks/${trackId}/${imageName}`;
@@ -173,7 +145,7 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
                             descriptionStyle={{ fontSize: 15 }}
                             style={styles.listItem}
                             title={track.title}
-                            description={() => getArtistName(track.artistId)}
+                            description={track.artist.artistName}
                             left={() =>
                                 <Avatar.Image style={styles.trackImage} size={40} source={{ uri: getTrackImageUrl(track.artistId, track.id, track.imageName) }} />
                             }

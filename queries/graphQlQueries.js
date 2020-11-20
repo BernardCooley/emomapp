@@ -35,15 +35,6 @@ export const ALL_ARTISTS_ALL_DETAILS = gql`
     }
 `
 
-export const SELECTED_ARTISTS_ARTIST_NAME = gql`
-    query artists($_artistIds: [ID]) {
-        artists(_artistIds: $_artistIds) {
-            artistName
-            id
-        }
-    }
-`
-
 export const ALL_TRACKS_TRACKLIST = gql`
     query tracks {
         tracks {
@@ -52,6 +43,9 @@ export const ALL_TRACKS_TRACKLIST = gql`
             id
             imageName
             duration
+            artist {
+                artistName
+            }
         }
     }
 `
