@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Title, Card, Chip } from 'react-native-paper';
 
 import FilterSortArtists from './FilterSortArtists';
+import TracksByArtist from '../components/TracksByArtist';
 
 
 const ArtistsList = ({ navigation, artists }) => {
@@ -27,7 +28,7 @@ const ArtistsList = ({ navigation, artists }) => {
                 artists && artists.artists.map((artist, index) => (
                     <View style={styles.artistContainer} key={index}>
                         <Card style={styles.card} onPress={() => viewArtistProfile(artist.id)}>
-                            <Chip style={styles.chip} icon="music-box-multiple" onPress={() => viewArtistTracks(artist.id)}>{artist.trackAmount}</Chip>
+                            <Chip style={styles.chip} icon="music-box-multiple" onPress={() => viewArtistTracks(artist.id)}>{TracksByArtist(artist.id).length}</Chip>
                             <Card.Cover style={styles.cardCover} source={{ uri: getArtistImageUrl(artist.id, artist.artistImageName) }} />
                             <Title style={styles.cardTitle}>{artist.artistName}</Title>
                         </Card>
