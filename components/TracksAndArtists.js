@@ -7,14 +7,13 @@ import { Title, Searchbar, ActivityIndicator, Text, useTheme, FAB, IconButton } 
 import firestore from '@react-native-firebase/firestore';
 import { useQuery } from '@apollo/client';
 
-import useFirebaseCall from '../hooks/useFirebaseCall';
 import { setActivityIndicator, setSnackbarMessage, artists, setFilterSortMenu } from '../Actions/index';
 import ArtistsList from '../components/ArtistsList';
 import TracksList from '../components/TracksList';
 import { ALL_TRACKS_TRACKLIST, ALL_ARTISTS_ALL_DETAILS } from '../queries/graphQlQueries';
 
 
-const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
+const TracksAndArtists = ({ navigation, listType }) => {
     const { colors } = useTheme();
     const dispatch = useDispatch();
     const activityIndicator = useSelector(state => state.activityIndicator);
@@ -22,31 +21,18 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [scroll, setScroll] = useState(null);
     const [showingSearchResults, setShowingSearchResults] = useState(false);
-    const [getArtists, artistsError, getNextArtists] = useFirebaseCall('users', 'artist', 20);
-    const [getTracks, tracksError, getNextTracks, getTrackImages] = useFirebaseCall('tracks', 'id', 20);
     const [displayBackToTopIcon, setDisplayBackToTopIcon] = useState(false);
     const screenHeight = Dimensions.get("window").height;
 
     let query = null;
 
-    if(artistsOrTracks === 'artists') {
+    if(listType === 'artists') {
         query = ALL_ARTISTS_ALL_DETAILS
-    }else if(artistsOrTracks === 'tracks') {
+    }else if(listType === 'tracks') {
         query = ALL_TRACKS_TRACKLIST
     }
 
     const { loading, error, data, refetch } = useQuery(query);
-
-    let firestoreRef = null;
-    let allData = null;
-
-    if (artistsOrTracks === 'artists') {
-        firestoreRef = firestore().collection('users');
-        allData = useSelector(state => state.artists);
-    } else {
-        firestoreRef = firestore().collection('tracks');
-        allData = useSelector(state => state.tracks);
-    }
 
     useEffect(() => {
         if (searchQuery.length === 0) {
@@ -107,30 +93,29 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
     }
 
     const search = async () => {
-        if (searchQuery.length > 0) {
-            Keyboard.dismiss();
-            dispatch(setActivityIndicator(true));
+        // if (searchQuery.length > 0) {
+        //     Keyboard.dismiss();
+        //     dispatch(setActivityIndicator(true));
 
-            await firestoreRef.get().then(response => {
-                const allData = response.docs.map(doc => doc.data());
-                let filteredData = [];
+        //     await firestoreRef.get().then(response => {
+        //         const allData = response.docs.map(doc => doc.data());
+        //         let filteredData = [];
 
-                if (artistsOrTracks === 'artists') {
-                    filteredData = allData.filter(artist => contains(artist.artist, searchQuery));
-                    dispatch(artists(filteredData));
-                    dispatch(artists(filteredData));
-                    dispatch(setActivityIndicator(false));
-                } else {
-                    filteredData = allData.filter(track => contains(track.artist, searchQuery) || contains(track.title, searchQuery));
-                    getTrackImages(filteredData);
-                }
+        //         if (listType === 'artists') {
+        //             filteredData = allData.filter(artist => contains(artist.artist, searchQuery));
+        //             dispatch(artists(filteredData));
+        //             dispatch(artists(filteredData));
+        //             dispatch(setActivityIndicator(false));
+        //         } else {
+        //             filteredData = allData.filter(track => contains(track.artist, searchQuery) || contains(track.title, searchQuery));
+        //         }
 
-                setShowingSearchResults(true);
-            });
+        //         setShowingSearchResults(true);
+        //     });
 
-        } else {
-            dispatch(setSnackbarMessage(`Search box is empty`));
-        }
+        // } else {
+        //     dispatch(setSnackbarMessage(`Search box is empty`));
+        // }
     }
 
     const goToTop = () => {
@@ -138,12 +123,12 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
     }
 
     const openFilterModal = () => {
-        dispatch(setFilterSortMenu(artistsOrTracks));
+        dispatch(setFilterSortMenu(listType));
     }
 
     return (
         <>
-            {allData &&
+            {data &&
                 <SafeAreaView style={styles.container}>
                     <View style={styles.searchFilterContainer}>
                         <Searchbar
@@ -151,7 +136,7 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
                             icon='magnify'
                             onIconPress={search}
                             clearIcon='close'
-                            placeholder={`Search ${artistsOrTracks}`}
+                            placeholder={`Search ${listType}`}
                             onChangeText={onChangeSearch}
                             value={searchQuery}
                             onSubmitEditing={search}
@@ -175,18 +160,18 @@ const TracksAndArtists = ({ navigation, artistsOrTracks }) => {
                                     justifyContent: 'space-between'
                                 }}>
                                 {showingSearchResults &&
-                                    <Text style={styles.resultsLabel}>{allData.length} results found for: "{searchQuery}"</Text>
+                                    <Text style={styles.resultsLabel}>{data[listType].length} results found for: "{searchQuery}"</Text>
                                 }
-                                {allData.length > 0 ?
+                                {data[listType].length > 0 ?
                                     <>
-                                        {artistsOrTracks === 'artists' ?
+                                        {listType === 'artists' ?
                                             <ArtistsList artists={data} navigation={navigation} /> :
                                             <TracksList tracks={data} navigation={navigation} />
                                         }
                                     </> :
                                     <>
                                         <View style={styles.noResultsLabel}>
-                                            <Title >No {artistsOrTracks} found</Title>
+                                            <Title >No {listType} found</Title>
                                         </View>
                                     </>
                                 }

@@ -8,7 +8,7 @@ const apolloSetup = new ApolloClient({
     link,
     defaultOptions: {
         watchQuery: {
-            fetchPolicy: 'cache-and-network'
+            fetchPolicy: 'cache-first'
         }
     },
     typePolicies: {

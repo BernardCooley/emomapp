@@ -5,13 +5,13 @@ import TracksAndArtists from '../components/TracksAndArtists';
 
 const TracksScreen = ({ navigation }) => {
     return (
-        <TracksAndArtists artistsOrTracks='tracks' navigation={navigation}/>
+        <TracksAndArtists listType='tracks' navigation={navigation}/>
     );
 }
 
 TracksScreen.propTypes = {
     navigation: PropTypes.object,
-    artistsOrTracks: PropTypes.string
+    listType: PropTypes.string
 }
 
 
