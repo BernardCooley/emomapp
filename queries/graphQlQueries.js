@@ -14,14 +14,6 @@ export const ALL_TRACKS_ALL_DETAILS = gql`
     }
 `
 
-export const TRACKS_BY_ARTIST = gql`
-    query tracks($_artistId: String) {
-        tracks(_artistId: $_artistId) {
-            title
-        }
-    }
-`;
-
 export const ALL_ARTISTS_ALL_DETAILS = gql`
     query artists {
         artists {
@@ -31,6 +23,9 @@ export const ALL_ARTISTS_ALL_DETAILS = gql`
             website
             id
             artistImageName
+            userTracks {
+                id
+            }
         }
     }
 `
