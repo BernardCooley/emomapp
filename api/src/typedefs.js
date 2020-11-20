@@ -24,7 +24,8 @@ export const typeDefs = gql`
         location: String,
         website: String,
         id: ID,
-        artistImageName: String
+        artistImageName: String,
+        userTracks: [Track]
     }
     
     type Comment {
@@ -33,7 +34,7 @@ export const typeDefs = gql`
         comment: String!,
         artistId: String!,
         replyToArtistId: String,
-        artist: Artist!
+        artist: Artist
     }
 
     type Query {
@@ -54,6 +55,9 @@ export const typeDefs = gql`
         artist(
             _artistId: String
         ): Artist
+        userTracks(
+            _artistId: String
+        ): [Track]
     }
     type Mutation {
         addTrack(

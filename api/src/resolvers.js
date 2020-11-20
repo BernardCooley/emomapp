@@ -42,6 +42,11 @@ export const resolvers = {
             return [];
         },
     },
+    Artist: {
+        userTracks: async (_parent) => {
+            return await Track.find().where('artistId').equals(_parent.id);
+        }
+    },
     Track: {
         artist: async (_parent) => {
             return await Artist.findById(_parent.artistId);
