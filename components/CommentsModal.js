@@ -25,7 +25,6 @@ const CommentsModal = ({ trackId }) => {
         TRACK_COMMENTS,
         {
             variables: { trackId },
-
         }
     );
 
