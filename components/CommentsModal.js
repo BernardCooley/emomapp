@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Title, IconButton, Modal, Portal, Provider, Text, Button, useTheme, TextInput } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client';
-import auth from '@react-native-firebase/auth';
 
 import { commentsModalVisible, commentType, commentIndex } from '../Actions/index';
 import modalStyles from '../styles/ModalStyles';
@@ -20,7 +19,7 @@ const CommentsModal = ({ trackId }) => {
     const [showCommentBox, setShowCommentBox] = useState(false);
     const [newComment, setNewComment] = useState('');
     const [replyToArtistId, setReplyToArtistId] = useState('');
-    const [addComment] = useMutation(ADD_COMMENT);
+    const [addComment, { loading: commentLoading }] = useMutation(ADD_COMMENT);
 
     const { loading, error, data, refetch } = useQuery(
         TRACK_COMMENTS,
@@ -29,6 +28,16 @@ const CommentsModal = ({ trackId }) => {
 
         }
     );
+
+    useEffect(() => {
+        if (!commentLoading) {
+            setReplyToArtistId('');
+            setShowCommentBox(false);
+            setNewComment('');
+            dispatch(setSnackbarMessage('Comment added'));
+            refetch();
+        }
+    }, [commentLoading]);
 
     const closeModal = () => {
         dispatch(commentsModalVisible(false));
@@ -58,10 +67,6 @@ const CommentsModal = ({ trackId }) => {
                 replyToArtistId: replyToArtistId.length > 0 ? replyToArtistId : ''
             }
         });
-        setReplyToArtistId('');
-        setShowCommentBox(false);
-        setNewComment('');
-        dispatch(setSnackbarMessage('Comment added'));
     }
 
     const openCommentAsReply = commentArtistId => {
