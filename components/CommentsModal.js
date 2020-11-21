@@ -1,22 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { Title, IconButton, Modal, Portal, Provider, Text, Button, useTheme } from 'react-native-paper';
+import { Title, IconButton, Modal, Portal, Provider, Text, Button, useTheme, TextInput } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
+import auth from '@react-native-firebase/auth';
 
 import { commentsModalVisible, commentType, commentIndex } from '../Actions/index';
 import modalStyles from '../styles/ModalStyles';
-import CommentBox from '../components/CommentBox';
-import { TRACK_COMMENTS } from '../queries/graphQlQueries';
+import { TRACK_COMMENTS, ADD_COMMENT } from '../queries/graphQlQueries';
+import formStyles from '../styles/FormStyles';
+import { setSnackbarMessage } from '../Actions/index';
 
 
 const CommentsModal = ({ trackId }) => {
     const { colors } = useTheme();
     const dispatch = useDispatch();
     const isCommentsModalVisible = useSelector(state => state.commentsModalVisible);
-    const currentCommentType = useSelector(state => state.commentType);
-    const currentCommentIndex = useSelector(state => state.commentIndex);
+    const [showCommentBox, setShowCommentBox] = useState(false);
+    const [newComment, setNewComment] = useState('');
+    const [replyToArtistId, setReplyToArtistId] = useState('');
+    const [addComment] = useMutation(ADD_COMMENT);
 
     const { loading, error, data, refetch } = useQuery(
         TRACK_COMMENTS,
@@ -26,14 +30,6 @@ const CommentsModal = ({ trackId }) => {
         }
     );
 
-    const openCommentBox = (currentCommentType, commentInd) => {
-        dispatch(commentType(currentCommentType));
-
-        if (commentInd > -1) {
-            dispatch(commentIndex(commentInd))
-        }
-    }
-
     const closeModal = () => {
         dispatch(commentsModalVisible(false));
         dispatch(commentIndex(-1))
@@ -41,58 +37,89 @@ const CommentsModal = ({ trackId }) => {
     }
 
     const formatDate = d => {
-        const date = d.toDate();
+        const date = new Date(d);
+
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         const day = date.getDate();
         const monthName = monthNames[date.getMonth()];
         let year = date.getFullYear().toString();
-        year = year.substring(0, year.length - 2);
+        year = year.substring(2, year.length);
 
         return `${day} ${monthName} '${year}`;
+    }
+
+    const postComment = () => {
+        addComment({
+            variables: {
+                trackId: trackId,
+                comment: newComment,
+                artistId: '5fb65286bfb5104b84f6b587',
+                replyToArtistId: replyToArtistId.length > 0 ? replyToArtistId : ''
+            }
+        });
+        setReplyToArtistId('');
+        setShowCommentBox(false);
+        setNewComment('');
+        dispatch(setSnackbarMessage('Comment added'));
+    }
+
+    const openCommentAsReply = commentArtistId => {
+        setShowCommentBox(true);
+        setReplyToArtistId(commentArtistId);
     }
 
     return (
         <Provider>
             <Portal>
-                <Modal visible={isCommentsModalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modalContainerStyles}>
+                <Modal visible={isCommentsModalVisible} onDismiss={closeModal} contentContainerStyle={styles.modalContainerStyles}>
                     <ScrollView contentContainerStyle={styles.scrollView}>
                         <View style={{ ...styles.queueContainer, ...styles.sectionContainer }}>
                             <Title style={styles.modalTitle}>Comments</Title>
                             {data ? data.comments.map((comment, index) => (
                                 <View style={styles.commentContainer} key={index}>
                                     <View style={styles.userAndDateContainer}>
-                                        <Text style={styles.commentUser}>{comment.artist}</Text>
-                                        <Text style={styles.date}>{formatDate(comment.date)}</Text>
+                                        <Text style={styles.commentUser}>{comment.artist.artistName}</Text>
+                                        <Text style={styles.date}>{formatDate(comment.createdAt)}</Text>
                                     </View>
                                     <View style={styles.commentTextContainer}>
-                                        <Text style={styles.commentText}>{comment.comment}</Text>
-                                        <IconButton animated icon="reply" size={20} onPress={() => openCommentBox('Reply', index)} />
+                                        <Text style={styles.commentText}>
+                                            {comment.replyToArtistId &&
+                                                <Text style={{color: colors.primary}}>@{comment.replyToArtistId}  </Text>
+                                            }
+                                              {comment.comment}
+                                        </Text>
+                                        <IconButton animated icon="reply" size={20} onPress={() => openCommentAsReply(comment.artistId)} />
                                     </View>
-                                    {comment.replies ? comment.replies.sort((a, b) => (a.date > b.date) ? 1 : -1).map((reply, index) => (
-                                        <View style={styles.replyContainer} key={index}>
-                                            <View style={styles.userAndDateContainer}>
-                                                <Text style={styles.commentUser}>{comment.artist}</Text>
-                                                <Text style={styles.date}>{formatDate(comment.date)}</Text>
-                                            </View>
-                                            <Text style={styles.commentText}>{reply.comment}</Text>
-                                        </View>
-                                    )) : null
-                                    }
-                                    {currentCommentType === 'Reply' && index == currentCommentIndex ?
-                                        <CommentBox colors={colors} /> : null
-                                    }
                                 </View>
                             )) : <Text>No comments</Text>
                             }
                         </View>
                     </ScrollView>
                     <View style={styles.newCommentContainer}>
-                        {currentCommentType === '' &&
-                            <Button color={colors.primary} mode='contained' onPress={() => openCommentBox('New comment')}>Add comment</Button>
-                        }
-                        {currentCommentType === 'New comment' ?
-                            <CommentBox colors={colors} /> : null
+                        {!showCommentBox ?
+                            <Button color={colors.primary} mode='contained' onPress={() => setShowCommentBox(true)}>Add comment</Button> :
+                            <>
+                                <View style={styles.boxContainer}>
+                                    <TextInput
+                                        mode='outlined'
+                                        theme={{ colors: { primary: colors.primary } }}
+                                        color={colors.primary}
+                                        style={{ ...styles.input, height: 50 }}
+                                        label='Comment'
+                                        value={newComment}
+                                        onChangeText={comm => setNewComment(comm)}
+                                        multiline
+                                    />
+                                    {newComment.length > 0 &&
+                                        <IconButton style={styles.clearIcon} animated icon="comment-remove" size={25} onPress={() => setNewComment('')} />
+                                    }
+                                </View>
+                                <View style={styles.buttonContainer}>
+                                    <Button disabled={newComment.length < 1} color={colors.primary} mode='contained' onPress={() => postComment()}>Submit</Button>
+                                    <Button color={colors.primary} mode='contained' onPress={() => setShowCommentBox(false)}>Cancel</Button>
+                                </View>
+                            </>
                         }
                     </View>
                     <IconButton style={styles.closeIcon} animated icon="close" size={25} onPress={closeModal} />
@@ -107,7 +134,20 @@ CommentsModal.propTypes = {
 }
 
 const styles = StyleSheet.create({
+    ...formStyles,
     ...modalStyles, ...{
+        input: {
+            flexGrow: 1
+        },
+        buttonContainer: {
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around'
+        },
+        modalTitle: {
+            marginTop: 10,
+            marginBottom: 20
+        },
         scrollView: {
 
         },
@@ -120,14 +160,14 @@ const styles = StyleSheet.create({
             marginBottom: 10,
             borderWidth: 1,
             borderRadius: 7,
-            borderColor: 'gray',
-            backgroundColor: '#C4C4C4'
+            borderColor: 'gray'
         },
         commentUser: {
             fontSize: 20
         },
         commentText: {
-            fontSize: 16
+            fontSize: 16,
+            width: '90%'
         },
         replyContainer: {
             marginLeft: 20,
@@ -148,7 +188,7 @@ const styles = StyleSheet.create({
             flexDirection: 'row',
             width: '100%',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'flex-start'
         },
         userAndDateContainer: {
             display: 'flex',
@@ -158,6 +198,20 @@ const styles = StyleSheet.create({
         },
         date: {
             fontSize: 14
+        },
+        boxContainer: {
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            marginBottom: 20
+        },
+        clearIcon: {
+            position: 'absolute',
+            right: 0,
+            top: 5,
+            zIndex: 100
         }
     }
 });

@@ -8,6 +8,6 @@ const commentSchema = new Schema({
     comment: string,
     artistId: string,
     replyToArtistId: string
-})
+}, { timestamps: true });
 
 export const Comment = mongoose.model("Comment", commentSchema);

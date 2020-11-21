@@ -12,6 +12,6 @@ const trackSchema = new Schema({
     title: string,
     duration: string,
     imageName: string
-})
+}, { timestamps: true });
 
 export const Track = mongoose.model("Track", trackSchema);

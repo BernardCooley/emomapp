@@ -9,6 +9,6 @@ const artistSchema = new Schema({
     location: string,
     website: string,
     artistImageName: string
-})
+}, { timestamps: true });
 
 export const Artist = mongoose.model("Artist", artistSchema);

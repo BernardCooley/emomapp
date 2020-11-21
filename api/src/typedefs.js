@@ -1,6 +1,8 @@
 import { gql } from 'apollo-server-express';
 
 export const typeDefs = gql`
+    scalar DateTime
+
     input Social {
         name: String!,
         url: String!
@@ -15,7 +17,9 @@ export const typeDefs = gql`
         title: String!,
         duration: Int!
         imageName: String,
-        artist: Artist!
+        artist: Artist!,
+        createdAt: DateTime,
+        updatedAt: DateTime
     }
 
     type Artist {
@@ -25,7 +29,9 @@ export const typeDefs = gql`
         website: String,
         id: ID,
         artistImageName: String,
-        userTracks: [Track]
+        userTracks: [Track],
+        createdAt: DateTime,
+        updatedAt: DateTime
     }
     
     type Comment {
@@ -34,7 +40,9 @@ export const typeDefs = gql`
         comment: String!,
         artistId: String!,
         replyToArtistId: String,
-        artist: Artist
+        artist: Artist,
+        createdAt: DateTime,
+        updatedAt: DateTime
     }
 
     type Query {
@@ -77,7 +85,8 @@ export const typeDefs = gql`
         addComment(
             trackId: String!
             comment: String!,
-            artistId: String!
+            artistId: String!,
+            replyToArtistId: String
         ): Track!
     }
 `;

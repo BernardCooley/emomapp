@@ -36,7 +36,8 @@ export const resolvers = {
         },
         comments: async (_, { _trackId }) => {
             if(_trackId) {
-                return await Comment.find().where('trackId').equals(_trackId);
+                // TODO not sorting correctly
+                return await Comment.find().where('trackId').equals(_trackId).sort({ createdAt: 1 })
             }
 
             return [];
@@ -68,31 +69,10 @@ export const resolvers = {
             await artist.save();
             return artist;
         },
-        addComment: async (_, { trackId, comment, artistId }) => {
-            const ObjectId = mongoose.mongo.ObjectId;
-            const commentObject = new Comment({ comment, artistId });
-
-            const filter = {
-                _id: new ObjectId(trackId)
-            }
-            const update = {
-                $addToSet: {
-                    comments: commentObject
-                }
-            }
-            const options = {
-                new: true
-            };
-
-            const updatedTrack = await Track.findOneAndUpdate(
-                filter,
-                update,
-                options,
-                (error, success) => {
-                    error ? console.log(error) : console.log(success);
-                }
-            );
-            return updatedTrack;
+        addComment: async (_, { trackId, comment, artistId, replyToArtistId }) => {
+            const newComment = new Comment({ trackId, comment, artistId, replyToArtistId });
+            await newComment.save();
+            return newComment
         }
     }
 }

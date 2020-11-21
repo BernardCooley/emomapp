@@ -52,6 +52,7 @@ export const TRACK_COMMENTS = gql`
             trackId
             comment
             replyToArtistId
+            createdAt
             artist {
                 artistName
             }
@@ -84,3 +85,11 @@ export const ADD_NEW_TRACK = gql`
             }
         }
     `;
+
+export const ADD_COMMENT = gql`
+    mutation addComment($trackId: String!, $comment: String!, $artistId: String!, $replyToArtistId: String) {
+        addComment(trackId: $trackId, comment: $comment, artistId: $artistId, replyToArtistId: $replyToArtistId) {
+            id
+        }
+    }
+`;
