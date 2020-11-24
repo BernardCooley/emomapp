@@ -103,3 +103,51 @@ export const ADD_COMMENT = gql`
         }
     }
 `;
+
+export const ADD_ARTIST = gql`
+    mutation addArtist(
+        $artistName: String!,
+        $bio: String,
+        $location: String,
+        $website: String,
+        $artistImageName: String,
+        $facebook: String,
+        $soundcloud: String,
+        $mixcloud: String,
+        $spotify: String,
+        $instagram: String,
+        $twitter: String,
+        $bandcamp: String,
+        $otherSocial: String
+    ) {
+        addArtist(
+            artistName: $artistName,
+            bio: $bio,
+            location: $location,
+            website: $website,
+            artistImageName: $artistImageName,
+            facebook: $facebook,
+            soundcloud: $soundcloud,
+            mixcloud: $mixcloud,
+            spotify: $spotify,
+            instagram: $instagram,
+            twitter: $twitter,
+            bandcamp: $bandcamp,
+            otherSocial: $otherSocial
+        ) {
+            id
+        }
+    }
+`;
+
+export const UPLOAD_IMAGE = gql`
+    mutation uploadImage(
+        $file: Upload!,
+        $artistId: String!
+    ) {
+        uploadImage(
+            file: $file,
+            artistId: $artistId
+        )
+    }
+`;

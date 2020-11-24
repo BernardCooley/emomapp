@@ -8,7 +8,15 @@ const artistSchema = new Schema({
     bio: string,
     location: string,
     website: string,
-    artistImageName: string
+    artistImageName: string,
+    facebook: string,
+    soundcloud: string,
+    mixcloud: string,
+    spotify: string,
+    instagram: string,
+    twitter: string,
+    bandcamp: string,
+    otherSocial: string
 }, { timestamps: true });
 
 export const Artist = mongoose.model("Artist", artistSchema);

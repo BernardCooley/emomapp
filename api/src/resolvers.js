@@ -2,6 +2,16 @@ import { Track } from './models/Track';
 import { Artist } from './models/Artist';
 import { Comment } from './models/Comment';
 import mongoose from 'mongoose';
+import { createWriteStream } from 'fs';
+import { Storage } from '@google-cloud/storage';
+import path from 'path';
+
+const gc = new Storage({
+    keyFilename: path.join(__dirname, '../../keys/emom-84ee4-5357112afa88.json'),
+    projectId: 'emom-84ee4'
+});
+
+const filesBucket = gc.bucket('emom-files');
 
 export const resolvers = {
     Query: {
@@ -64,8 +74,8 @@ export const resolvers = {
             await track.save();
             return track;
         },
-        addArtist: async (_, { artistName, bio, location, website }) => {
-            const artist = new Artist({ artistName, bio, location, website });
+        addArtist: async (_, { artistName, bio, location, website, artistImageName, facebook, soundcloud, mixcloud, spotify, instagram, twitter, bandcamp, otherSocial }) => {
+            const artist = new Artist({ artistName, bio, location, website, artistImageName, facebook, soundcloud, mixcloud, spotify, instagram, twitter, bandcamp, otherSocial });
             await artist.save();
             return artist;
         },
@@ -73,6 +83,22 @@ export const resolvers = {
             const newComment = new Comment({ trackId, comment, artistId, replyToArtistId });
             await newComment.save();
             return newComment
+        },
+        uploadImage: async (_, { file, artistId }) => {
+            const { createReadStream, filename } = await file;
+
+            await new Promise(res => 
+                createReadStream()
+                    .pipe(
+                        filesBucket.file(filename).createWriteStream({
+                            resumable: false,
+                            gzip: true
+                        })
+                    )
+                    .on('finish', res)   
+            )
+
+            return true
         }
     }
 }

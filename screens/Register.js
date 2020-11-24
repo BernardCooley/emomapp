@@ -8,9 +8,11 @@ import ImagePicker from 'react-native-image-picker';
 import { Box } from 'react-native-design-utility';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useDispatch } from 'react-redux';
+import { useMutation } from '@apollo/client';
 
 import formStyles from '../styles/FormStyles';
 import { setSnackbarMessage } from '../Actions/index';
+import { ADD_ARTIST, UPLOAD_IMAGE } from '../queries/graphQlQueries';
 
 
 const RegisterScreen = ({ navigation }) => {
@@ -29,6 +31,9 @@ const RegisterScreen = ({ navigation }) => {
     const [isRegistering, setIsRegistering] = useState(false);
     const [showSocials, setShowSocials] = useState(false);
     const { colors } = useTheme();
+
+    const [addArtist, { loading: artistLoading }] = useMutation(ADD_ARTIST);
+    const [uploadImage, { loading: imageUploadLoading }] = useMutation(UPLOAD_IMAGE);
 
     const [socials, setSocials] = useState([{ name: 'facebook', url: '' }, { name: 'instagram', url: '' }, { name: 'twitter', url: '' }, { name: 'soundcloud', url: '' }, { name: 'bandcamp', url: '' }, { name: 'spotify', url: '' }
     ]);
@@ -54,6 +59,18 @@ const RegisterScreen = ({ navigation }) => {
             valid: false
         }
     };
+
+    useEffect(() => {
+        if (Object.keys(artistImage).length > 0) {
+            console.log(artistImage);
+            uploadImage({
+                variables: {
+                    file: artistImage,
+                    artistId: 'ryjryjyjryjyrskyskyt'
+                }
+            });
+        }
+    }, [artistImage]);
 
     useEffect(() => {
         validate();
@@ -109,10 +126,37 @@ const RegisterScreen = ({ navigation }) => {
         setArtistImage({});
     }
 
+    const createArtist = async artistId => {
+        addArtist({
+            variables: {
+                artistName: artist,
+                bio: bio,
+                location: location,
+                website: website,
+                artistImageName: '',
+                facebook: socials.facebook,
+                soundcloud: socials.soundcloud,
+                mixcloud: socials.mixcloud,
+                spotify: socials.spotify,
+                instagram: socials.instagram,
+                twitter: socials.twitter,
+                bandcamp: socials.bandcamp,
+                otherSocial: socials.otherSocial,
+                userId: artistId
+            }
+        });
+    }
+
     const register = async () => {
         setIsRegistering(true);
         auth().createUserWithEmailAndPassword(email, password).then(async newUserData => {
             await newUserData.user.sendEmailVerification().then(async () => {
+
+                createArtist(newUserData.user.uid);
+
+
+
+
                 await firestore().collection('users').doc(newUserData.user.uid).set({
                     artist: artist,
                     bio: bio,

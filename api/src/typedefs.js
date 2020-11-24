@@ -31,7 +31,15 @@ export const typeDefs = gql`
         artistImageName: String,
         userTracks: [Track],
         createdAt: DateTime,
-        updatedAt: DateTime
+        updatedAt: DateTime,
+        facebook: String,
+        soundcloud: String,
+        mixcloud: String,
+        spotify: String,
+        instagram: String,
+        twitter: String,
+        bandcamp: String,
+        otherSocial: String
     }
     
     type Comment {
@@ -46,6 +54,7 @@ export const typeDefs = gql`
     }
 
     type Query {
+        files: [String]
         tracks(
             _id: String,
             _artistId: String,
@@ -68,6 +77,10 @@ export const typeDefs = gql`
         ): [Track]
     }
     type Mutation {
+        uploadImage(
+            file: Upload!,
+            artistId: String!
+        ): Boolean
         addTrack(
             album: String,
             artistId: String!,
@@ -80,7 +93,16 @@ export const typeDefs = gql`
             artistName: String!,
             bio: String,
             location: String,
-            website: String
+            website: String,
+            artistImageName: String,
+            facebook: String,
+            soundcloud: String,
+            mixcloud: String,
+            spotify: String,
+            instagram: String,
+            twitter: String,
+            bandcamp: String,
+            otherSocial: String
         ): Artist!
         addComment(
             trackId: String!
