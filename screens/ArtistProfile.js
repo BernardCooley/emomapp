@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, Linking } from 'react-native';
 import { Text, IconButton, Title, Divider, Avatar, Subheading, useTheme } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import firestore from '@react-native-firebase/firestore';
 import TracksList from '../components/TracksList';
 import PropTypes from 'prop-types';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -17,11 +16,7 @@ const ArtistProfileScreen = ({ navigation, route }) => {
     const [currentProfileTracks, setCurrentProfileTracks] = useState({});
 
     useEffect(() => {
-        if (artistId && artistId.length > 0) {
-            firestore().collection('users').doc(artistId).get().then(response => {
-                setCurrentProfile(response.data());
-            })
-        }
+        
     }, [artistId]);
 
     useEffect(() => {

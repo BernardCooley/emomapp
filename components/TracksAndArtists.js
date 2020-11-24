@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from "@react-navigation/native";
 import PropTypes from 'prop-types';
 import { Title, Searchbar, ActivityIndicator, Text, useTheme, FAB, IconButton } from 'react-native-paper';
-import firestore from '@react-native-firebase/firestore';
 import { useQuery } from '@apollo/client';
 
 import { setActivityIndicator, setSnackbarMessage, artists, setFilterSortMenu } from '../Actions/index';
@@ -93,29 +92,7 @@ const TracksAndArtists = ({ navigation, listType }) => {
     }
 
     const search = async () => {
-        // if (searchQuery.length > 0) {
-        //     Keyboard.dismiss();
-        //     dispatch(setActivityIndicator(true));
-
-        //     await firestoreRef.get().then(response => {
-        //         const allData = response.docs.map(doc => doc.data());
-        //         let filteredData = [];
-
-        //         if (listType === 'artists') {
-        //             filteredData = allData.filter(artist => contains(artist.artist, searchQuery));
-        //             dispatch(artists(filteredData));
-        //             dispatch(artists(filteredData));
-        //             dispatch(setActivityIndicator(false));
-        //         } else {
-        //             filteredData = allData.filter(track => contains(track.artist, searchQuery) || contains(track.title, searchQuery));
-        //         }
-
-        //         setShowingSearchResults(true);
-        //     });
-
-        // } else {
-        //     dispatch(setSnackbarMessage(`Search box is empty`));
-        // }
+        
     }
 
     const goToTop = () => {

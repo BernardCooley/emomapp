@@ -4,7 +4,6 @@ import { Title, Text, Avatar, IconButton, useTheme } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import firestore from '@react-native-firebase/firestore';
 import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import auth from '@react-native-firebase/auth';
@@ -23,7 +22,6 @@ const MusicPlayer = ({ navigation }) => {
     const playerImageSize = useSelector(state => state.playerImageSize);
     const { colors } = useTheme();
     const { position, bufferedPosition, duration } = useTrackPlayerProgress();
-    const tracksRef = firestore().collection('tracks');
     const dispatch = useDispatch();
     const [nextDisabled, setNextDisabled] = useState(false);
     const [previousDisabled, setPreviousDisabled] = useState(false);
@@ -67,14 +65,6 @@ const MusicPlayer = ({ navigation }) => {
 
     const nextTrack = () => {
         playerContext.next();
-    }
-
-    const shuffle = () => {
-
-    }
-
-    const repeat = () => {
-
     }
 
     const convertToMins = seconds => {

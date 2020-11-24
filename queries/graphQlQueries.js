@@ -87,8 +87,18 @@ export const ADD_NEW_TRACK = gql`
     `;
 
 export const ADD_COMMENT = gql`
-    mutation addComment($trackId: String!, $comment: String!, $artistId: String!, $replyToArtistId: String) {
-        addComment(trackId: $trackId, comment: $comment, artistId: $artistId, replyToArtistId: $replyToArtistId) {
+    mutation addComment(
+        $trackId: String!,
+        $comment: String!,
+        $artistId: String!,
+        $replyToArtistId: String
+    ) {
+        addComment(
+            trackId: $trackId,
+            comment: $comment,
+            artistId: $artistId,
+            replyToArtistId: $replyToArtistId
+        ) {
             id
         }
     }
