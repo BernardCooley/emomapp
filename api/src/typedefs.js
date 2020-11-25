@@ -97,6 +97,7 @@ export const typeDefs = gql`
             bio: String,
             location: String,
             website: String,
+            id: ID,
             artistImageName: String,
             facebook: String,
             soundcloud: String,

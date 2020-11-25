@@ -128,7 +128,7 @@ const RegisterScreen = ({ navigation }) => {
                 twitter: socials['twitter'],
                 bandcamp: socials['bandcamp'],
                 otherSocial: socials['otherSocial'],
-                artistId: artistId
+                id: artistId
             }
         });
     }
@@ -163,12 +163,8 @@ const RegisterScreen = ({ navigation }) => {
                                 email: email,
                                 password: password
                             });
-                    }).catch(e => {
-                        alert('File upload failed. Please try again');
-                    });
-                }).catch(e => {
-                    alert('Add artist failed. Please try again');
-                });
+                    })
+                })
             });
         }).catch(error => {
             setIsRegistering(false);
