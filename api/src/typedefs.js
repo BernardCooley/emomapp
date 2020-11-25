@@ -3,6 +3,10 @@ import { gql } from 'apollo-server-express';
 export const typeDefs = gql`
     scalar DateTime
 
+    type File {
+        url: String!
+    }
+
     input Social {
         name: String!,
         url: String!
@@ -54,7 +58,6 @@ export const typeDefs = gql`
     }
 
     type Query {
-        files: [String]
         tracks(
             _id: String,
             _artistId: String,
@@ -78,9 +81,8 @@ export const typeDefs = gql`
     }
     type Mutation {
         uploadImage(
-            file: Upload!,
-            artistId: String!
-        ): Boolean
+            file: Upload!
+        ): String
         addTrack(
             album: String,
             artistId: String!,

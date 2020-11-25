@@ -84,7 +84,7 @@ export const resolvers = {
             await newComment.save();
             return newComment
         },
-        uploadImage: async (_, { file, artistId }) => {
+        uploadImage: async (_, { file }) => {
             const { createReadStream, filename } = await file;
 
             await new Promise(res => 

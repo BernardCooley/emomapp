@@ -62,11 +62,9 @@ const RegisterScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (Object.keys(artistImage).length > 0) {
-            console.log(artistImage);
             uploadImage({
                 variables: {
-                    file: artistImage,
-                    artistId: 'ryjryjyjryjyrskyskyt'
+                    file: artistImage
                 }
             });
         }
