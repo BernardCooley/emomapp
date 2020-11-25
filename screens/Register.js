@@ -2,17 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, LogBox } from 'react-native';
 import { TextInput, Button, Text, Avatar, IconButton, ActivityIndicator, Switch, Divider, useTheme } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
 import ImagePicker from 'react-native-image-picker';
 import { Box } from 'react-native-design-utility';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/client';
+import { ReactNativeFile } from 'apollo-upload-client';
 
 import formStyles from '../styles/FormStyles';
 import { setSnackbarMessage } from '../Actions/index';
 import { ADD_ARTIST, UPLOAD_IMAGE } from '../queries/graphQlQueries';
+import GooglePlacesInput from '../components/GooglePlacesInput';
 
 
 const RegisterScreen = ({ navigation }) => {
@@ -35,8 +34,16 @@ const RegisterScreen = ({ navigation }) => {
     const [addArtist, { loading: artistLoading }] = useMutation(ADD_ARTIST);
     const [uploadImage, { loading: imageUploadLoading }] = useMutation(UPLOAD_IMAGE);
 
-    const [socials, setSocials] = useState([{ name: 'facebook', url: '' }, { name: 'instagram', url: '' }, { name: 'twitter', url: '' }, { name: 'soundcloud', url: '' }, { name: 'bandcamp', url: '' }, { name: 'spotify', url: '' }
-    ]);
+    const [socials, setSocials] = useState({
+        facebook: '',
+        instagram: '',
+        twitter: '',
+        soundcloud: '',
+        bandcamp: '',
+        spotify: '',
+        mixcloud: '',
+        otherSocial: ''
+    });
 
     const [formIsValid, setFormIsValid] = useState(false);
 
@@ -61,30 +68,10 @@ const RegisterScreen = ({ navigation }) => {
     };
 
     useEffect(() => {
-        if (Object.keys(artistImage).length > 0) {
-            uploadImage({
-                variables: {
-                    file: artistImage
-                }
-            });
-        }
-    }, [artistImage]);
-
-    useEffect(() => {
         validate();
     }, [artist, email, password, artistImage, bio]);
 
     const showHideSocials = () => setShowSocials(!showSocials);
-
-    const setSocialUrl = (socialPlatform, value) => {
-        const updatedSocials = socials.map(social => {
-            if (social.name === socialPlatform) {
-                social.url = value
-            }
-            return social
-        })
-        setSocials(updatedSocials);
-    }
 
     const lauchFileUploader = async () => {
         ImagePicker.showImagePicker(options, (response) => {
@@ -103,7 +90,8 @@ const RegisterScreen = ({ navigation }) => {
                         uri: response.uri,
                         name: response.fileName,
                         path: response.path,
-                        ext: split
+                        ext: split,
+                        type: response.type
                     })
                 } else {
                     dispatch(setSnackbarMessage(`Only jpeg, jpg, png allowed.`));
@@ -132,83 +120,54 @@ const RegisterScreen = ({ navigation }) => {
                 location: location,
                 website: website,
                 artistImageName: '',
-                facebook: socials.facebook,
-                soundcloud: socials.soundcloud,
-                mixcloud: socials.mixcloud,
-                spotify: socials.spotify,
-                instagram: socials.instagram,
-                twitter: socials.twitter,
-                bandcamp: socials.bandcamp,
-                otherSocial: socials.otherSocial,
-                userId: artistId
+                facebook: socials['facebook'],
+                soundcloud: socials['soundcloud'],
+                mixcloud: socials['mixcloud'],
+                spotify: socials['spotify'],
+                instagram: socials['instagram'],
+                twitter: socials['twitter'],
+                bandcamp: socials['bandcamp'],
+                otherSocial: socials['otherSocial'],
+                artistId: artistId
             }
         });
+    }
+
+    const addImage = artistId => {
+        if (Object.keys(artistImage).length > 0) {
+            const file = new ReactNativeFile({
+                uri: artistImage.uri,
+                name: artistImage.name,
+                type: artistImage.type,
+                ext: artistImage.ext
+            });
+
+            uploadImage({
+                variables: {
+                    file: file,
+                    artistId: artistId
+                }
+            });
+        }
     }
 
     const register = async () => {
         setIsRegistering(true);
         auth().createUserWithEmailAndPassword(email, password).then(async newUserData => {
             await newUserData.user.sendEmailVerification().then(async () => {
-
-                createArtist(newUserData.user.uid);
-
-
-
-
-                await firestore().collection('users').doc(newUserData.user.uid).set({
-                    artist: artist,
-                    bio: bio,
-                    socials: socials,
-                    website: website,
-                    location: location,
-                    userId: newUserData.user.uid
-                }).then(async () => {
-                    let reference = null;
-
-                    if (artistImage.name) {
-                        reference = storage().ref(`/artistImages/${newUserData.user.uid}.${artistImage.ext}`);
-
-                        await reference.putFile(`file://${artistImage.path}`).then(async response => {
-                            await getDownloadUrl(response).then(url => {
-                                storeArtistDetails(url, newUserData.user.uid).then(result => {
-                                    if (result) {
-                                        setIsRegistering(false);
-                                        navigation.push('EmailVerification',
-                                            loginDetails = {
-                                                email: email,
-                                                password: password
-                                            });
-                                    }
-                                })
-                            }).catch(error => {
-                                setIsRegistering(false);
-                                console.log('GET DOWNLOAD URL ===============>', error);
+                createArtist(newUserData.user.uid).then(() => {
+                    addImage(newUserData.user.uid).then(() => {
+                        setIsRegistering(false);
+                        navigation.push('EmailVerification',
+                            loginDetails = {
+                                email: email,
+                                password: password
                             });
-                        }).catch(error => {
-                            setIsRegistering(false);
-                            console.log('IMAGE UPLOAD ============>', error);
-                        });
-                    } else {
-                        reference = storage().ref(`default.png`);
-
-                        await getDownloadUrl().then(url => {
-                            storeArtistDetails(url, newUserData.user.uid).then(result => {
-                                if (result) {
-                                    setIsRegistering(false);
-                                    navigation.push('EmailVerification', {
-                                        email: email,
-                                        password: password
-                                    });
-                                }
-                            })
-                        }).catch(error => {
-                            setIsRegistering(false);
-                            console.log('GET DOWNLOAD URL ============>', error);
-                        });
-                    }
-                }).catch(error => {
-                    setIsRegistering(false);
-                    console.log('ADD USER ===============>', error);
+                    }).catch(e => {
+                        alert('File upload failed. Please try again');
+                    });
+                }).catch(e => {
+                    alert('Add artist failed. Please try again');
                 });
             });
         }).catch(error => {
@@ -220,27 +179,6 @@ const RegisterScreen = ({ navigation }) => {
         });
     }
 
-    const storeArtistDetails = async (url, userId) => {
-        return await firestore().collection('users').doc(userId).update({
-            artistImageUrl: url
-        }).then(() => {
-            return true;
-        }).catch(error => {
-            console.log('STORE ARTIST DETAILS =============>', error);
-            return false
-        })
-    }
-
-    const getDownloadUrl = async (response) => {
-        const file = response ? `${response.metadata.fullPath}` : 'default.png';
-
-        return await storage().ref(file).getDownloadURL().then(async url => {
-            return url;
-        }).catch(error => {
-            console.log('GET DOWNLOAD URL =============>', error);
-        })
-    }
-
     return (
         <>
             {isRegistering ?
@@ -249,9 +187,11 @@ const RegisterScreen = ({ navigation }) => {
                 </Box> :
                 <>
                     <SafeAreaView>
-                        <ScrollView contentContainerStyle={{
-                            flexGrow: 1,
-                            justifyContent: 'space-between'
+                        <ScrollView
+                            keyboardShouldPersistTaps='handled'
+                            contentContainerStyle={{
+                                flexGrow: 1,
+                                justifyContent: 'space-between'
                         }}>
                             <View style={styles.container}>
                                 <View style={styles.formContainer}>
@@ -293,53 +233,8 @@ const RegisterScreen = ({ navigation }) => {
                                         </View> :
                                         <IconButton style={styles.uploadButton} animated icon="camera" size={30} onPress={lauchFileUploader} />
                                     }
-                                    <Divider />
 
-                                    <GooglePlacesAutocomplete
-                                        suppressDefaultStyles
-                                        styles={{
-                                            textInputContainer: {
-                                                width: "100%"
-                                            },
-                                            description: {
-                                                fontWeight: "bold"
-                                            },
-                                            predefinedPlacesDescription: {
-                                                color: "#1faadb"
-                                            },
-                                            textInput: {
-                                                backgroundColor: 'white',
-                                                padding: 5,
-                                                borderRadius: 4,
-                                                margin: 10,
-                                                fontSize: 20
-                                            },
-                                            row: {
-                                                backgroundColor: '#FFFFFF',
-                                                padding: 13,
-                                                height: 44,
-                                                flexDirection: 'row',
-                                                marginLeft: 15,
-                                                fontSize: 20
-                                            },
-                                            separator: {
-                                                height: 0.5,
-                                                backgroundColor: '#c8c7cc',
-                                            },
-                                        }}
-                                        disableScroll
-                                        placeholder='City (optional)'
-                                        onPress={(data, details = null) => {
-                                            setLocation(details.description);
-                                        }}
-                                        query={{
-                                            key: 'AIzaSyCLP-1eAvH9SK8Q-Gf7UgLqojEoD_NBQeM',
-                                            language: 'en',
-                                            types: '(cities)'
-                                        }}
-                                    />
-
-                                    <Divider />
+                                    <GooglePlacesInput/>
 
                                     <View style={styles.switchContainer}>
                                         <Text style={styles.customLabel}>Socials (optional)</Text>
@@ -348,14 +243,13 @@ const RegisterScreen = ({ navigation }) => {
                                     {showSocials &&
                                         <View style={styles.socialFieldList}>
                                             {
-                                                socials.map((social, index) => (
+                                                Object.keys(socials).map((key, index) => (
                                                     <TextInput
                                                         key={index}
                                                         style={{ ...styles.socialInput, ...styles.input }}
-                                                        label={social.name.charAt(0).toUpperCase() + social.name.slice(1)}
-                                                        value={social.url}
-                                                        onChangeText={url => setSocialUrl(social.name, url)}
-                                                        multiline
+                                                        label={key.charAt(0).toUpperCase() + key.slice(1)}
+                                                        value={socials[key]}
+                                                        onChangeText={val => setSocials(socials => ({...socials, [key]: val}))}
                                                     />
                                                 ))
                                             }

@@ -142,10 +142,12 @@ export const ADD_ARTIST = gql`
 
 export const UPLOAD_IMAGE = gql`
     mutation uploadImage(
-        $file: Upload!
+        $file: Upload!,
+        $artistId: String!
     ) {
         uploadImage(
-            file: $file
+            file: $file,
+            artistId: $artistId
         )
     }
 `;
