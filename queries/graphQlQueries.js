@@ -119,7 +119,7 @@ export const ADD_ARTIST = gql`
         $twitter: String,
         $bandcamp: String,
         $otherSocial: String,
-        $id: String
+        $_id: String
     ) {
         addArtist(
             artistName: $artistName,
@@ -135,7 +135,7 @@ export const ADD_ARTIST = gql`
             twitter: $twitter,
             bandcamp: $bandcamp,
             otherSocial: $otherSocial,
-            id: $id
+            _id: $_id
         ) {
             id
         }

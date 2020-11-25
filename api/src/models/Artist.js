@@ -8,7 +8,7 @@ const artistSchema = new Schema({
     bio: string,
     location: string,
     website: string,
-    id: mongoose.Types.ObjectId(),
+    _id: string,
     artistImageName: string,
     facebook: string,
     soundcloud: string,
