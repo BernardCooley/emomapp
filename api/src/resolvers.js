@@ -69,6 +69,7 @@ export const resolvers = {
     },
     Track: {
         artist: async (_parent) => {
+            // TODO get tracks after track upload is complete
             return await Artist.findById(_parent.artistId);
         }
     },
