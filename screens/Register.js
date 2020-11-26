@@ -4,7 +4,7 @@ import { TextInput, Button, Text, Avatar, IconButton, ActivityIndicator, Switch,
 import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-picker';
 import { Box } from 'react-native-design-utility';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from '@apollo/client';
 import { ReactNativeFile } from 'apollo-upload-client';
 
@@ -26,11 +26,12 @@ const RegisterScreen = ({ navigation }) => {
     const [artistImage, setArtistImage] = useState({});
     const [bio, setBio] = useState('');
     const [website, setWebsite] = useState('');
-    const [location, setLocation] = useState('');
     const [isRegistering, setIsRegistering] = useState(false);
     const [showSocials, setShowSocials] = useState(false);
     const [newArtist, setNewArtist] = useState({});
     const { colors } = useTheme();
+    const location = useSelector(state => state.location);
+    const [formattedLocation, setFormattedLocation] = useState('');
 
     const [
         addArtist,
@@ -59,6 +60,15 @@ const RegisterScreen = ({ navigation }) => {
         mixcloud: '',
         otherSocial: ''
     });
+
+    useEffect(() => {
+        if(location) {
+            let split = location.formatted_address.split(', ');
+            split = split[split.length - 1];
+            const loc = `${location.name}, ${split}`
+            setFormattedLocation(loc);
+        }
+    }, [location]);
 
     const [formIsValid, setFormIsValid] = useState(false);
 
@@ -148,7 +158,7 @@ const RegisterScreen = ({ navigation }) => {
             variables: {
                 artistName: artist,
                 bio: bio,
-                location: location,
+                location: formattedLocation,
                 website: website,
                 artistImageName: `artist_image-${artistId}.jpg`,
                 facebook: socials['facebook'],

@@ -6,6 +6,14 @@ const reducers = {
             default:
                 return state;
         }
+    },
+    location: (state = '', action) => {
+        switch (action.type) {
+            case 'LOCATION':
+                return state = action.payload;
+            default:
+                return state;
+        }
     }
 }
 

@@ -130,3 +130,10 @@ export const setSortAndFilterOptions = sortAndFilterOptions => {
         payload: sortAndFilterOptions
     };
 };
+
+export const setLocation = location => {
+    return {
+        type: 'LOCATION',
+        payload: location
+    };
+};

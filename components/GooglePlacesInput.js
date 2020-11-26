@@ -1,8 +1,12 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
 import PlacesInput from '../customModules/react-native-places-input';
+import { useDispatch } from 'react-redux';
+
+import { setLocation } from '../Actions/index';
 
 const GooglePlacesInput = () => {
+    const dispatch = useDispatch();
 
     return (
         <PlacesInput
@@ -26,7 +30,7 @@ const GooglePlacesInput = () => {
             googleApiKey={'AIzaSyCLP-1eAvH9SK8Q-Gf7UgLqojEoD_NBQeM'}
             onSelect={place => {
                 Keyboard.dismiss();
-                console.log(place);
+                dispatch(setLocation(place.result));
             }}
         />
     )

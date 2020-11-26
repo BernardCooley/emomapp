@@ -24,7 +24,8 @@ const allReducers = combineReducers({
     activityIndicator: screenReducers.activityIndicator,
     netConnected: reducers.netConnected,
     filterSortMenu: screenReducers.filterSortMenu,
-    sortAndFilterOptions: musicReducers.sortAndFilterOptions
+    sortAndFilterOptions: musicReducers.sortAndFilterOptions,
+    location: reducers.location
 });
 
 const rootReducer = (state, action) => {
