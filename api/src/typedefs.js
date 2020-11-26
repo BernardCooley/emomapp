@@ -31,7 +31,6 @@ export const typeDefs = gql`
         bio: String,
         location: String,
         website: String,
-        id: ID,
         artistImageName: String,
         userTracks: [Track],
         createdAt: DateTime,
@@ -43,7 +42,8 @@ export const typeDefs = gql`
         instagram: String,
         twitter: String,
         bandcamp: String,
-        otherSocial: String
+        otherSocial: String,
+        id: ID,
     }
     
     type Comment {
@@ -97,7 +97,6 @@ export const typeDefs = gql`
             bio: String,
             location: String,
             website: String,
-            _id: ID,
             artistImageName: String,
             facebook: String,
             soundcloud: String,
@@ -106,7 +105,8 @@ export const typeDefs = gql`
             instagram: String,
             twitter: String,
             bandcamp: String,
-            otherSocial: String
+            otherSocial: String,
+            _id: ID
         ): Artist!
         addComment(
             trackId: String!

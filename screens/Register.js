@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, LogBox } from 'react-native';
-import { TextInput, Button, Text, Avatar, IconButton, ActivityIndicator, Switch, Divider, useTheme } from 'react-native-paper';
+import { TextInput, Button, Text, Avatar, IconButton, ActivityIndicator, Switch, useTheme } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-picker';
 import { Box } from 'react-native-design-utility';
@@ -29,10 +29,25 @@ const RegisterScreen = ({ navigation }) => {
     const [location, setLocation] = useState('');
     const [isRegistering, setIsRegistering] = useState(false);
     const [showSocials, setShowSocials] = useState(false);
+    const [newArtist, setNewArtist] = useState({});
     const { colors } = useTheme();
 
-    const [addArtist, { loading: artistLoading }] = useMutation(ADD_ARTIST);
-    const [uploadImage, { loading: imageUploadLoading }] = useMutation(UPLOAD_IMAGE);
+    const [
+        addArtist,
+        {
+            loading: artistLoading,
+            error: artistError,
+            data: artistData
+        }
+    ] = useMutation(ADD_ARTIST);
+    const [
+        uploadImage,
+        {
+            loading: imageUploadLoading,
+            error: imageUploadError,
+            data: imageUploadData
+        }
+    ] = useMutation(UPLOAD_IMAGE);
 
     const [socials, setSocials] = useState({
         facebook: '',
@@ -70,6 +85,22 @@ const RegisterScreen = ({ navigation }) => {
     useEffect(() => {
         validate();
     }, [artist, email, password, artistImage, bio]);
+
+    useEffect(() => {
+        if (artistData) {
+            addImage(newArtist.user.uid);
+            setIsRegistering(false);
+            navigation.push('EmailVerification',
+                {
+                    email: email,
+                    password: password
+                })
+        } else if (artistError) {
+            console.log(artistError);
+            alert('Something went wrong. Please try again.');
+            newArtist.user.delete();
+        }
+    }, [artistLoading]);
 
     const showHideSocials = () => setShowSocials(!showSocials);
 
@@ -112,14 +143,14 @@ const RegisterScreen = ({ navigation }) => {
         setArtistImage({});
     }
 
-    const createArtist = async artistId => {
+    const createArtist = artistId => {
         addArtist({
             variables: {
                 artistName: artist,
                 bio: bio,
                 location: location,
                 website: website,
-                artistImageName: '',
+                artistImageName: `artist_image-${artistId}.jpg`,
                 facebook: socials['facebook'],
                 soundcloud: socials['soundcloud'],
                 mixcloud: socials['mixcloud'],
@@ -128,7 +159,7 @@ const RegisterScreen = ({ navigation }) => {
                 twitter: socials['twitter'],
                 bandcamp: socials['bandcamp'],
                 otherSocial: socials['otherSocial'],
-                id: artistId
+                _id: artistId
             }
         });
     }
@@ -153,19 +184,14 @@ const RegisterScreen = ({ navigation }) => {
 
     const register = async () => {
         setIsRegistering(true);
-        auth().createUserWithEmailAndPassword(email, password).then(async newUserData => {
-            await newUserData.user.sendEmailVerification().then(async () => {
-                createArtist(newUserData.user.uid).then(() => {
-                    addImage(newUserData.user.uid).then(() => {
-                        setIsRegistering(false);
-                        navigation.push('EmailVerification',
-                            loginDetails = {
-                                email: email,
-                                password: password
-                            });
-                    })
-                })
-            });
+        auth().createUserWithEmailAndPassword(email, password).then(async newArtistData => {
+            setNewArtist(newArtistData);
+            await newArtistData.user.sendEmailVerification().then(() => {
+                createArtist(newArtistData.user.uid);
+            }).catch(error => {
+                console.log('DELETE USER =============>', error)
+                newArtistData.user.delete();
+            })
         }).catch(error => {
             setIsRegistering(false);
             console.log('REGISTER USER =============>', error);
@@ -188,7 +214,7 @@ const RegisterScreen = ({ navigation }) => {
                             contentContainerStyle={{
                                 flexGrow: 1,
                                 justifyContent: 'space-between'
-                        }}>
+                            }}>
                             <View style={styles.container}>
                                 <View style={styles.formContainer}>
                                     <TextInput
@@ -230,7 +256,7 @@ const RegisterScreen = ({ navigation }) => {
                                         <IconButton style={styles.uploadButton} animated icon="camera" size={30} onPress={lauchFileUploader} />
                                     }
 
-                                    <GooglePlacesInput/>
+                                    <GooglePlacesInput />
 
                                     <View style={styles.switchContainer}>
                                         <Text style={styles.customLabel}>Socials (optional)</Text>
@@ -245,7 +271,7 @@ const RegisterScreen = ({ navigation }) => {
                                                         style={{ ...styles.socialInput, ...styles.input }}
                                                         label={key.charAt(0).toUpperCase() + key.slice(1)}
                                                         value={socials[key]}
-                                                        onChangeText={val => setSocials(socials => ({...socials, [key]: val}))}
+                                                        onChangeText={val => setSocials(socials => ({ ...socials, [key]: val }))}
                                                     />
                                                 ))
                                             }

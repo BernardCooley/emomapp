@@ -1,12 +1,11 @@
 import { Track } from './models/Track';
 import { Artist } from './models/Artist';
 import { Comment } from './models/Comment';
-import mongoose from 'mongoose';
 import { Storage } from '@google-cloud/storage';
 import path from 'path';
 
 const gc = new Storage({
-    keyFilename: path.join(__dirname, '../../keys/emom-84ee4-68f5ffe6909e.json'),
+    keyFilename: path.join(__dirname, '../../keys/emom-84ee4-f4c716cf82e5.json'),
     projectId: 'emom-84ee4'
 });
 
@@ -103,7 +102,6 @@ export const resolvers = {
             bio,
             location,
             website,
-            _id,
             artistImageName,
             facebook,
             soundcloud,
@@ -112,14 +110,14 @@ export const resolvers = {
             instagram,
             twitter,
             bandcamp,
-            otherSocial
+            otherSocial,
+            _id
         }) => {
             const artist = new Artist({
                 artistName,
                 bio,
                 location,
                 website,
-                _id,
                 artistImageName,
                 facebook,
                 soundcloud,
@@ -128,7 +126,8 @@ export const resolvers = {
                 instagram,
                 twitter,
                 bandcamp,
-                otherSocial
+                otherSocial,
+                _id
             });
             await artist.save();
             return artist;
@@ -152,7 +151,7 @@ export const resolvers = {
             file,
             artistId
         }) => {
-            const { createReadStream, filename, mimeType } = await file;
+            const { createReadStream, filename } = await file;
 
             let ext = filename.split('.');
             ext = ext[ext.length - 1];
@@ -163,7 +162,7 @@ export const resolvers = {
                 createReadStream()
                     .pipe(
                         filesBucket.file(path).createWriteStream({
-                            resumable: false,
+                            resumable: true,
                             gzip: true
                         })
                     )

@@ -8,7 +8,6 @@ const artistSchema = new Schema({
     bio: string,
     location: string,
     website: string,
-    _id: string,
     artistImageName: string,
     facebook: string,
     soundcloud: string,
@@ -17,7 +16,8 @@ const artistSchema = new Schema({
     instagram: string,
     twitter: string,
     bandcamp: string,
-    otherSocial: string
+    otherSocial: string,
+    _id: string,
 }, { timestamps: true });
 
 export const Artist = mongoose.model("Artist", artistSchema);
