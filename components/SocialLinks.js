@@ -30,10 +30,22 @@ const SocialLinks = ({ socials }) => {
             <View style={styles.socialLinks}>
                 {
                     Object.keys(socials).map((key, index) => (
-                        <View key={index}>
-                            {socials[key].url.length > 0 &&
-                                <TouchableOpacity onPress={() => openUrl(socials[key].url)}>
-                                    <IconButton color={socialIconColours[socials[key].name]} animated icon={socials[key].name} size={30} />
+                        <View style={styles.socialLinks} key={index}>
+                            {socials[key].length > 0 &&
+                                <TouchableOpacity onPress={() => openUrl(socials[key])}>
+
+                                    {key === 'mixcloud' || key === 'otherSocial' ? 
+                                        <>
+                                        {key === 'mixcloud' &&
+                                        // TODO image not showing
+                                            <IconButton color={socialIconColours[key]} animated icon={require('../assets/icons/mixcloud_logo.svg')} size={30} />
+                                        }
+                                        {key === 'otherSocial' &&
+                                            <></>
+                                        }
+                                        </> :
+                                        <IconButton color={socialIconColours[key]} animated icon={key} size={30} />
+                                    }
                                 </TouchableOpacity>
                             }
                         </View>
@@ -45,7 +57,7 @@ const SocialLinks = ({ socials }) => {
 }
 
 SocialLinks.propTypes = {
-    socials: PropTypes.array
+    socials: PropTypes.object
 }
 
 const styles = StyleSheet.create({

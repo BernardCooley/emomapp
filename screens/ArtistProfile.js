@@ -5,25 +5,43 @@ import { useSelector } from 'react-redux';
 import TracksList from '../components/TracksList';
 import PropTypes from 'prop-types';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useQuery } from '@apollo/client';
 
 import SocialLinks from '../components/SocialLinks';
+import { ARTIST_PROFILE } from '../queries/graphQlQueries';
+
+const socialsList = [
+    'facebook',
+    'soundcloud',
+    'mixcloud',
+    'spotify',
+    'instagram',
+    'twitter',
+    'bandcamp',
+    'otherSocial'
+]
 
 const ArtistProfileScreen = ({ navigation, route }) => {
     const { artistId } = route.params;
     const { colors } = useTheme();
     const allTracks = useSelector(state => state.tracks);
-    const [currentProfile, setCurrentProfile] = useState({});
     const [currentProfileTracks, setCurrentProfileTracks] = useState({});
+    const [socials, setSocials] = useState({});
 
-    useEffect(() => {
-        
-    }, [artistId]);
-
-    useEffect(() => {
-        if (currentProfile) {
-            setCurrentProfileTracks(allTracks.filter(track => track.artistId === currentProfile.userId));
+    const { loading, error, data: artistProfileData, refetch } = useQuery(
+        ARTIST_PROFILE,
+        {
+            variables: {
+                id: artistId
+            }
         }
-    }, [currentProfile]);
+    );
+
+    useEffect(() => {
+        if (artistProfileData) {
+            getSocials();
+        }
+    }, [loading]);
 
     const goBack = () => {
         navigation.goBack();
@@ -39,9 +57,18 @@ const ArtistProfileScreen = ({ navigation, route }) => {
         });
     }
 
+    const getSocials = () => {
+        setSocials(Object.keys(artistProfileData.artists[0])
+            .filter(key => socialsList.includes(key))
+            .reduce((obj, key) => {
+                obj[key] = artistProfileData.artists[0][key];
+                return obj;
+            }, {}));
+    }
+
     return (
         <>
-            {currentProfile ?
+            {artistProfileData ?
                 <SafeAreaView>
                     <ScrollView style={styles.scrollView} contentContainerStyle={{
                         flexGrow: 1,
@@ -49,39 +76,40 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                     }}>
                         <View style={styles.container}>
                             <IconButton style={styles.closeButton} animated icon="close" size={25} onPress={goBack} />
-                            <Title style={StyleSheet.title}>{currentProfile.artist}</Title>
+                            <Title style={StyleSheet.title}>{artistProfileData.artists[0].artistName}</Title>
                             <Divider />
-                            <Avatar.Image style={styles.artistImage} size={300} source={{ uri: currentProfile.artistImageUrl }} />
+                            <Avatar.Image style={styles.artistImage} size={300} source={{ uri: artistProfileData.artists[0].artistImageName }} />
                             <Divider />
-                            {currentProfile.bio && currentProfile.bio.length > 0 ?
+                            {artistProfileData.artists[0].bio.length > 0 &&
                                 <>
                                     <Subheading style={styles.subHeading}>Bio</Subheading>
-                                    <Text style={styles.detailText}>{currentProfile.bio}</Text>
+                                    <Text style={styles.detailText}>{artistProfileData.artists[0].bio}</Text>
                                     <Divider />
-                                </> : null
+                                </>
                             }
-                            {currentProfile.location && currentProfile.location.length > 0 ?
+                            {artistProfileData.artists[0].location.length > 0 &&
                                 <>
                                     <Subheading style={styles.subHeading}>Location</Subheading>
-                                    <Text style={styles.detailText}>{currentProfile.location}</Text>
+                                    <Text style={styles.detailText}>{artistProfileData.artists[0].location}</Text>
                                     <Divider />
-                                </> : null
+                                </>
                             }
-                            {currentProfile.website && currentProfile.website.length > 0 ?
+                            {artistProfileData.artists[0].website.length > 0 &&
                                 <View style={styles.link}>
                                     <Subheading style={styles.subHeading}>Website</Subheading>
-                                    <TouchableOpacity onPress={() => openUrl(currentProfile.website)}>
-                                        <Text style={{...styles.detailText, ...styles.linkText, color: colors.primary}}>{currentProfile.website}</Text>
+                                    <TouchableOpacity onPress={() => openUrl(artistProfileData.artists[0].website)}>
+                                        <Text style={{ ...styles.detailText, ...styles.linkText, color: colors.primary }}>{artistProfileData.artists[0].website}</Text>
                                     </TouchableOpacity>
                                     <Divider />
-                                </View> : null
+                                </View>
                             }
-                            {currentProfile.socials && Object.keys(currentProfile.socials).filter(key => currentProfile.socials[key].url.length > 0).length > 0 ?
+
+                            {Object.keys(socials).length > 0 ?
                                 <>
                                     <Subheading style={styles.subHeading}>Socials</Subheading>
-                                    <SocialLinks socials={currentProfile.socials} />
+                                    <SocialLinks socials={socials} />
                                     <Divider />
-                                </> : null
+                                </>: null
                             }
                         </View>
                         <View>
@@ -104,7 +132,8 @@ const ArtistProfileScreen = ({ navigation, route }) => {
 
 ArtistProfileScreen.propTypes = {
     tracks: PropTypes.object,
-    navigation: PropTypes.object
+    navigation: PropTypes.object,
+    socials: PropTypes.object
 }
 
 const styles = StyleSheet.create({

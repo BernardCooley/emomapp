@@ -3,6 +3,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { useTheme, FAB } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { StyleSheet } from 'react-native';
+import auth from '@react-native-firebase/auth';
 
 import TracksScreen from '../screens/Tracks';
 import ArtistsScreen from '../screens/Artists';
@@ -17,7 +18,13 @@ const ExploreScreen = ({ navigation }) => {
 
     useEffect(() => {
         dispatch(setNavigation(navigation));
-    }, [])
+    }, []);
+
+    const artistProfile = () => {
+        navigation.push('Profile', {
+            artistId: auth().currentUser.uid
+        });
+    }
 
     return (
         <>
@@ -38,7 +45,7 @@ const ExploreScreen = ({ navigation }) => {
                     animated
                     icon="account-outline"
                     style={{...styles.settingsIcon, ...styles.fab, backgroundColor: colors.primary}}
-                    onPress={() => navigation.navigate('Account')}
+                    onPress={artistProfile}
                 />
             }
         </>

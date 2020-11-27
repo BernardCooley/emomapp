@@ -30,6 +30,34 @@ export const ALL_ARTISTS_ALL_DETAILS = gql`
     }
 `
 
+export const ARTIST_PROFILE = gql`
+    query Artists($id: String!) {
+        artists(_id: $id) {
+            artistName
+            bio
+            location
+            website
+            artistImageName
+            userTracks {
+                artistId
+                title
+                id
+                imageName
+                duration
+            }
+            facebook
+            soundcloud
+            mixcloud
+            spotify
+            instagram
+            twitter
+            bandcamp
+            otherSocial
+            id
+        } 
+    }
+`
+
 export const ALL_TRACKS_TRACKLIST = gql`
     query Tracks {
         tracks {
