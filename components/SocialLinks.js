@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Linking } from 'react-native';
+import { View, Image, StyleSheet, Linking } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PropTypes from 'prop-types';
@@ -25,6 +25,16 @@ const SocialLinks = ({ socials }) => {
         });
     }
 
+    const socialIcon = platform => {
+        if (platform === 'mixcloud') {
+            return <Image style={styles.socialIcon} source={require('../assets/icons/mixcloud_icon.png')}/>
+        }
+        else if (platform === 'otherSocial') {
+            return <IconButton color={socialIconColours[platform]} animated icon='account-network' size={30} />
+        }
+        return <IconButton color={socialIconColours[platform]} animated icon={platform} size={30} />
+    }
+
     return (
         <>
             <View style={styles.socialLinks}>
@@ -33,19 +43,7 @@ const SocialLinks = ({ socials }) => {
                         <View style={styles.socialLinks} key={index}>
                             {socials[key].length > 0 &&
                                 <TouchableOpacity onPress={() => openUrl(socials[key])}>
-
-                                    {key === 'mixcloud' || key === 'otherSocial' ? 
-                                        <>
-                                        {key === 'mixcloud' &&
-                                        // TODO image not showing
-                                            <IconButton color={socialIconColours[key]} animated icon={require('../assets/icons/mixcloud_logo.svg')} size={30} />
-                                        }
-                                        {key === 'otherSocial' &&
-                                            <></>
-                                        }
-                                        </> :
-                                        <IconButton color={socialIconColours[key]} animated icon={key} size={30} />
-                                    }
+                                    <View>{socialIcon(key)}</View>
                                 </TouchableOpacity>
                             }
                         </View>
@@ -65,8 +63,12 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-around',
         width: '100%'
+    },
+    socialIcon: {
+        height: 30,
+        width : 30
     }
 });
 
