@@ -54,6 +54,7 @@ export const ARTIST_PROFILE = gql`
             bandcamp
             otherSocial
             id
+            createdAt
         } 
     }
 `

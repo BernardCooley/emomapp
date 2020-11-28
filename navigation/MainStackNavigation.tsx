@@ -10,6 +10,7 @@ import HomeScreen from '../screens/Home';
 import MusicScreen from '../screens/Music';
 import EmailVerificationScreen from '../screens/EmailVerification';
 import ForgotPasswordScreen from '../screens/ForgotPassword';
+import AccountScreen from '../screens/Account';
 
 const MainStack = createStackNavigator();
 
@@ -28,7 +29,10 @@ const MainStackNavigator = () => {
             <MainStack.Screen name='Tabs' component={MainTabNavigator} />
             <MainStack.Screen name='ExploreTabs' component={ExploreScreen} />
             <MainStack.Screen name='Music' component={MusicScreen} />
-            <MainStack.Screen name="Profile" component={ArtistProfileScreen} initialParams={{ artistId: '' }} />
+            <MainStack.Screen name="Profile" component={ArtistProfileScreen} initialParams={{
+                artistId: ''
+            }} />
+            <MainStack.Screen name="Account" component={AccountScreen} />
         </MainStack.Navigator>
     )
 }

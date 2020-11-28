@@ -21,8 +21,12 @@ const ExploreScreen = ({ navigation }) => {
     }, []);
 
     const artistProfile = () => {
-        navigation.push('Profile', {
-            artistId: auth().currentUser.uid
+        navigation.push('Account', {
+            screen: 'Profile',
+            params: {
+                artistId: auth().currentUser.uid,
+                isLoggedInUser: true
+            }
         });
     }
 
@@ -44,7 +48,7 @@ const ExploreScreen = ({ navigation }) => {
                 <FAB
                     animated
                     icon="account-outline"
-                    style={{...styles.settingsIcon, ...styles.fab, backgroundColor: colors.primary}}
+                    style={{ ...styles.settingsIcon, ...styles.fab, backgroundColor: colors.primary }}
                     onPress={artistProfile}
                 />
             }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, Linking } from 'react-native';
-import { Text, IconButton, Title, Divider, Avatar, Subheading, useTheme } from 'react-native-paper';
-import { useSelector } from 'react-redux';
+import { Text, IconButton, Title, Divider, Avatar, Subheading, useTheme, Button } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
 import TracksList from '../components/TracksList';
 import PropTypes from 'prop-types';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -9,6 +9,10 @@ import { useQuery } from '@apollo/client';
 
 import SocialLinks from '../components/SocialLinks';
 import { ARTIST_PROFILE } from '../queries/graphQlQueries';
+import { dateFormat } from '../functions/dateFormat';
+import { getImageUrl } from '../functions/getImageUrl';
+import { setTrackUploadModalOpen } from '../Actions/index';
+import TrackUploadModal from '../components/TrackUploadModal';
 
 const socialsList = [
     'facebook',
@@ -22,7 +26,8 @@ const socialsList = [
 ]
 
 const ArtistProfileScreen = ({ navigation, route }) => {
-    const { artistId } = route.params;
+    const dispatch = useDispatch();
+    const { artistId, isLoggedInUser } = route.params;
     const { colors } = useTheme();
     const allTracks = useSelector(state => state.tracks);
     const [currentProfileTracks, setCurrentProfileTracks] = useState({});
@@ -66,6 +71,10 @@ const ArtistProfileScreen = ({ navigation, route }) => {
             }, {}));
     }
 
+    const openTrackUploadModal = () => {
+        dispatch(setTrackUploadModalOpen(true));
+    }
+
     return (
         <>
             {artistProfileData ?
@@ -75,10 +84,12 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                         justifyContent: 'space-between'
                     }}>
                         <View style={styles.container}>
-                            <IconButton style={styles.closeButton} animated icon="close" size={25} onPress={goBack} />
-                            <Title style={StyleSheet.title}>{artistProfileData.artists[0].artistName}</Title>
+                            {!isLoggedInUser && 
+                                <IconButton style={styles.closeButton} animated icon="close" size={25} onPress={goBack} />
+                            }
+                            <Title style={StyleSheet.title}>{artistProfileData.aid, StyleSheet.title}{artistProfileData.imageName}</Title>
                             <Divider />
-                            <Avatar.Image style={styles.artistImage} size={300} source={{ uri: artistProfileData.artists[0].artistImageName }} />
+                            <Avatar.Image style={styles.artistImage} size={300} source={{ uri: getImageUrl(artistProfileData.artists[0].id, artistProfileData.artists[0].artistImageName) }} />
                             <Divider />
                             {artistProfileData.artists[0].bio.length > 0 &&
                                 <>
@@ -94,6 +105,13 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                                     <Divider />
                                 </>
                             }
+                            {Object.keys(socials).length > 0 ?
+                                <>
+                                    <Subheading style={styles.subHeading}>Socials</Subheading>
+                                    <SocialLinks socials={socials} />
+                                    <Divider />
+                                </> : null
+                            }
                             {artistProfileData.artists[0].website.length > 0 &&
                                 <View style={styles.link}>
                                     <Subheading style={styles.subHeading}>Website</Subheading>
@@ -104,21 +122,23 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                                 </View>
                             }
 
-                            {Object.keys(socials).length > 0 ?
-                                <>
-                                    <Subheading style={styles.subHeading}>Socials</Subheading>
-                                    <SocialLinks socials={socials} />
-                                    <Divider />
-                                </>: null
-                            }
+                            <Subheading style={styles.subHeading}>Date joined</Subheading>
+                            <Text style={styles.detailText}>{dateFormat(artistProfileData.artists[0].createdAt)}</Text>
+                            <Divider />
                         </View>
-                        <View>
+                        <View style={styles.tracksContainer}>
                             <Subheading style={styles.tracksDetail}>Tracks</Subheading>
                             {currentProfileTracks.length > 0 ?
-                                <TracksList tracks={currentProfileTracks} navigation={navigation} /> :
-                                <Text style={styles.tracksDetail}>None</Text>
+                                <TracksList tracks={currentProfileTracks} navigation={navigation} /> : 
+                                <View>
+                                    <Text style={styles.tracksDetail}>None</Text>
+                                </View>
+                            }
+                            {isLoggedInUser && artistProfileData.artists[0].userTracks.length < 3 ?
+                                <Button onPress={openTrackUploadModal} color={colors.primary} mode='outlined'>Manage tracks</Button> : null
                             }
                         </View>
+                        <TrackUploadModal />
                     </ScrollView>
 
                 </SafeAreaView> :
@@ -137,6 +157,9 @@ ArtistProfileScreen.propTypes = {
 }
 
 const styles = StyleSheet.create({
+    tracksContainer: {
+        marginBottom: 20
+    },
     container: {
         flex: 1,
         justifyContent: 'space-between',

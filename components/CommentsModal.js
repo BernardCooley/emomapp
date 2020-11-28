@@ -10,6 +10,7 @@ import modalStyles from '../styles/ModalStyles';
 import { TRACK_COMMENTS, ADD_COMMENT } from '../queries/graphQlQueries';
 import formStyles from '../styles/FormStyles';
 import { setSnackbarMessage } from '../Actions/index';
+import { dateFormat } from '../functions/dateFormat';
 
 
 const CommentsModal = ({ trackId }) => {
@@ -44,19 +45,6 @@ const CommentsModal = ({ trackId }) => {
         dispatch(commentType(''));
     }
 
-    const formatDate = d => {
-        const date = new Date(d);
-
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-        const day = date.getDate();
-        const monthName = monthNames[date.getMonth()];
-        let year = date.getFullYear().toString();
-        year = year.substring(2, year.length);
-
-        return `${day} ${monthName} '${year}`;
-    }
-
     const postComment = () => {
         addComment({
             variables: {
@@ -84,7 +72,7 @@ const CommentsModal = ({ trackId }) => {
                                 <View style={styles.commentContainer} key={index}>
                                     <View style={styles.userAndDateContainer}>
                                         <Text style={styles.commentUser}>{comment.artist.artistName}</Text>
-                                        <Text style={styles.date}>{formatDate(comment.createdAt)}</Text>
+                                        <Text style={styles.date}>{dateFormat(comment.createdAt)}</Text>
                                     </View>
                                     <View style={styles.commentTextContainer}>
                                         <Text style={styles.commentText}>
