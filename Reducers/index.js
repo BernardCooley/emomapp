@@ -25,7 +25,8 @@ const allReducers = combineReducers({
     netConnected: reducers.netConnected,
     filterSortMenu: screenReducers.filterSortMenu,
     sortAndFilterOptions: musicReducers.sortAndFilterOptions,
-    location: reducers.location
+    location: reducers.location,
+    trackUploadModalOpen: screenReducers.trackUploadModalOpen
 });
 
 const rootReducer = (state, action) => {

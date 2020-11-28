@@ -15,13 +15,14 @@ const modalStyles = {
         justifyContent: 'flex-start',
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
         borderRadius: 10,
-        height: '90%',
+        height: 'auto',
         paddingTop: 10
     },
     closeIcon: {
         position: 'absolute',
         top: 8,
-        right: 8
+        right: 8,
+        zIndex: 100
     }
 }
 

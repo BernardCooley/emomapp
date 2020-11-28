@@ -84,6 +84,11 @@ export const typeDefs = gql`
             file: Upload!,
             artistId: String!
         ): String
+        uploadTrack(
+            file: Upload!,
+            artistId: String!,
+            trackId: String!
+        ): String
         addTrack(
             album: String,
             artistId: String!,

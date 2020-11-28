@@ -23,10 +23,11 @@ const formStyles = {
         justifyContent: 'space-between',
         paddingTop: 10,
         padding: 8,
-        backgroundColor: 'white'
+        backgroundColor: 'transparent',
+        width: '100%'
     },
     input: {
-        backgroundColor: 'white',
+        backgroundColor: 'transparent',
         padding: 5,
         borderRadius: 4,
         margin: 10,

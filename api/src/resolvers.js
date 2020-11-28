@@ -171,6 +171,32 @@ export const resolvers = {
             )
 
             return `https://storage.cloud.google.com/emom-files/${path}`
+        },
+        // TODO upload track
+        uploadTrack: async (_, {
+            file,
+            artistId,
+            trackId
+        }) => {
+            const { createReadStream, filename } = await file;
+
+            let ext = filename.split('.');
+            ext = ext[ext.length - 1];
+
+            const path = `${artistId}/tracks/${trackId}/${trackId}.${ext}`;
+
+            await new Promise(res =>
+                createReadStream()
+                    .pipe(
+                        filesBucket.file(path).createWriteStream({
+                            resumable: true,
+                            gzip: true
+                        })
+                    )
+                    .on('finish', res)
+            )
+
+            return `https://storage.cloud.google.com/emom-files/${path}`
         }
     }
 }

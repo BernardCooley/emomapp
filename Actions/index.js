@@ -137,3 +137,10 @@ export const setLocation = location => {
         payload: location
     };
 };
+
+export const setTrackUploadModalOpen = trackUploadModalOpen => {
+    return {
+        type: 'TRACK_UPLOAD_MODAL_OPEN',
+        payload: trackUploadModalOpen
+    };
+};

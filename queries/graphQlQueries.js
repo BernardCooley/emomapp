@@ -182,3 +182,17 @@ export const UPLOAD_IMAGE = gql`
         )
     }
 `;
+
+export const UPLOAD_TRACK = gql`
+    mutation uploadTrack(
+        $file: Upload!,
+        $artistId: String!,
+        $trackId: String!
+    ) {
+        uploadTrack(
+            file: $file,
+            artistId: $artistId,
+            trackId: $trackId
+        )
+    }
+`;

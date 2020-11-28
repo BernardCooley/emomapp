@@ -138,7 +138,7 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                                 <Button onPress={openTrackUploadModal} color={colors.primary} mode='outlined'>Manage tracks</Button> : null
                             }
                         </View>
-                        <TrackUploadModal />
+                        <TrackUploadModal trackAmount={artistProfileData.artists[0].userTracks.length} artistId={artistId} />
                     </ScrollView>
 
                 </SafeAreaView> :
@@ -153,7 +153,9 @@ const ArtistProfileScreen = ({ navigation, route }) => {
 ArtistProfileScreen.propTypes = {
     tracks: PropTypes.object,
     navigation: PropTypes.object,
-    socials: PropTypes.object
+    socials: PropTypes.object,
+    trackAmount: PropTypes.number,
+    artistId: PropTypes.string
 }
 
 const styles = StyleSheet.create({
