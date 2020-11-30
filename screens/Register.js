@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, LogBox } from 'react-native';
 import { TextInput, Button, Text, Avatar, IconButton, ActivityIndicator, Switch, useTheme } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
-import ImagePicker from 'react-native-image-picker';
 import { Box } from 'react-native-design-utility';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from '@apollo/client';
-import { ReactNativeFile } from 'apollo-upload-client';
 
 import formStyles from '../styles/FormStyles';
 import { setSnackbarMessage } from '../Actions/index';
-import { ADD_ARTIST, UPLOAD_IMAGE } from '../queries/graphQlQueries';
+import { ADD_ARTIST } from '../queries/graphQlQueries';
 import GooglePlacesInput from '../components/GooglePlacesInput';
+import useUploadImage from '../hooks/useUploadImage';
+import useImagePicker from '../hooks/useImagePicker';
 
 
 const RegisterScreen = ({ navigation }) => {
@@ -23,7 +23,6 @@ const RegisterScreen = ({ navigation }) => {
     const [artist, setArtistName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [artistImage, setArtistImage] = useState({});
     const [bio, setBio] = useState('');
     const [website, setWebsite] = useState('');
     const [isRegistering, setIsRegistering] = useState(false);
@@ -32,6 +31,8 @@ const RegisterScreen = ({ navigation }) => {
     const { colors } = useTheme();
     const location = useSelector(state => state.location);
     const [formattedLocation, setFormattedLocation] = useState('');
+    const [url, addImage, imageError] = useUploadImage();
+    const [artistImage, lauchFileUploader, removeImage] = useImagePicker();
 
     const [
         addArtist,
@@ -41,14 +42,6 @@ const RegisterScreen = ({ navigation }) => {
             data: artistData
         }
     ] = useMutation(ADD_ARTIST);
-    const [
-        uploadImage,
-        {
-            loading: imageUploadLoading,
-            error: imageUploadError,
-            data: imageUploadData
-        }
-    ] = useMutation(UPLOAD_IMAGE);
 
     const [socials, setSocials] = useState({
         facebook: '',
@@ -72,14 +65,6 @@ const RegisterScreen = ({ navigation }) => {
 
     const [formIsValid, setFormIsValid] = useState(false);
 
-    const options = {
-        title: 'Select artist image',
-        storageOptions: {
-            skipBackup: true,
-            path: 'images',
-        },
-    };
-
     const errors = {
         artist: {
             valid: false
@@ -98,7 +83,7 @@ const RegisterScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (artistData) {
-            addImage(newArtist.user.uid);
+            addImage(newArtist.user.uid, artistImage);
             setIsRegistering(false);
             navigation.push('EmailVerification',
                 {
@@ -114,43 +99,12 @@ const RegisterScreen = ({ navigation }) => {
 
     const showHideSocials = () => setShowSocials(!showSocials);
 
-    const lauchFileUploader = async () => {
-        ImagePicker.showImagePicker(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            } else {
-                let split = response.path.split('.');
-                split = split[split.length - 1];
-
-                if (split === 'jpeg' || split === 'jpg' || split === 'png') {
-                    setArtistImage({
-                        uri: response.uri,
-                        name: response.fileName,
-                        path: response.path,
-                        ext: split,
-                        type: response.type
-                    })
-                } else {
-                    dispatch(setSnackbarMessage(`Only jpeg, jpg, png allowed.`));
-                }
-            }
-        });
-    }
-
     const validate = () => {
         errors.artist.valid = artist.length > 0;
         errors.email.valid = /\S+@\S+\.\S+/.test(email);
         errors.password.valid = password.length >= 6;
 
         errors.artist.valid && errors.email.valid && errors.password.valid ? setFormIsValid(true) : setFormIsValid(false);
-    }
-
-    const removeImage = () => {
-        setArtistImage({});
     }
 
     const createArtist = artistId => {
@@ -172,24 +126,6 @@ const RegisterScreen = ({ navigation }) => {
                 _id: artistId
             }
         });
-    }
-
-    const addImage = artistId => {
-        if (Object.keys(artistImage).length > 0) {
-            const file = new ReactNativeFile({
-                uri: artistImage.uri,
-                name: artistImage.name,
-                type: artistImage.type,
-                ext: artistImage.ext
-            });
-
-            uploadImage({
-                variables: {
-                    file: file,
-                    artistId: artistId
-                }
-            });
-        }
     }
 
     const register = async () => {

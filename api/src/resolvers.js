@@ -95,6 +95,7 @@ export const resolvers = {
                 title,
                 duration
             });
+            console.log(track);
             await track.save();
             return track;
         },

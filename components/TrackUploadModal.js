@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { Title, IconButton, Modal, Portal, Provider, Text, Button, useTheme, TextInput } from 'react-native-paper';
+import { Title, IconButton, Modal, Portal, Text, Button, useTheme, TextInput, Avatar } from 'react-native-paper';
 import DocumentPicker from 'react-native-document-picker';
 import { useMutation } from '@apollo/client';
-import { ReactNativeFile } from 'apollo-upload-client';
 import { TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ReactNativeFile } from 'apollo-upload-client';
 
 import { setTrackUploadModalOpen } from '../Actions/index';
 import modalStyles from '../styles/ModalStyles';
 import { ADD_NEW_TRACK, UPLOAD_TRACK } from '../queries/graphQlQueries';
 import formStyles from '../styles/FormStyles';
+import useUploadImage from '../hooks/useUploadImage';
+import useImagePicker from '../hooks/useImagePicker';
 
 
 const TrackUploadModal = ({ trackAmount, artistId }) => {
@@ -25,6 +27,8 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
     const [trackGenre, setTrackGenre] = useState('');
     const [trackDescription, setTrackDescription] = useState('');
     const [formValid, setFormValid] = useState(false);
+    const [url, addImage, imageError] = useUploadImage();
+    const [artistImage, lauchFileUploader, removeImage] = useImagePicker();
 
     const [
         addTrack,
@@ -63,14 +67,17 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
     const createTrack = artistId => {
         addTrack({
             variables: {
-                album: $album,
-                artistId: $artistId,
-                description: $description,
-                genre: $genre,
-                title: $title,
-                duration: $duration
+                album: trackAlbum,
+                artistId: artistId,
+                description: trackDescription,
+                genre: trackGenre,
+                title: trackTitle,
+                duration: 350
             }
         });
+        if (Object.keys(artistImage).length > 0) {
+            addImage(artistId, artistImage);
+        }
     }
 
     const openFilePicker = async () => {
@@ -82,13 +89,15 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
             let split = res.uri.split('.');
             split = split[split.length - 1];
 
-            setTrack({
+            const file = new ReactNativeFile({
                 uri: res.uri,
                 name: res.name,
                 ext: split,
                 type: res.type,
                 size: res.size
-            })
+            });
+
+            setTrack(file);
 
 
         } catch (err) {
@@ -99,26 +108,6 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
             }
         }
     }
-
-    const callUploadTrack = () => {
-        const file = new ReactNativeFile({
-            uri: track.uri,
-            name: track.name,
-            type: track.type,
-            ext: track.ext,
-            size: track.size
-        });
-
-        uploadTrack({
-            variables: {
-                file: file,
-                artistId: artistId,
-                trackId: ''
-            }
-        });
-    }
-
-    // TODO upload image
 
     return (
         <Portal>
@@ -163,13 +152,26 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                                         />
 
                                         <TouchableOpacity onPress={openFilePicker} style={styles.uploadContainer}>
-                                            <MaterialCommunityIcons style={styles.trackPickerButton} name="music-box-outline" size={30} />
+                                            <MaterialCommunityIcons style={styles.filePickerButton} name="music-box-outline" size={30} />
                                             <View>
                                                 {track.name && track.name.length > 0 ?
-                                                    <Text style={styles.trackPickerLabel}>{track.name}</Text> :
-                                                    <Text style={styles.trackPickerLabel}>Choose track</Text>
+                                                    <Text style={styles.filePickerLabel}>{track.name}</Text> :
+                                                    <Text style={styles.filePickerLabel}>Choose track</Text>
                                                 }
                                             </View>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity onPress={lauchFileUploader} style={styles.uploadContainer}>
+                                            {!artistImage.uri ?
+                                                <>
+                                                    <MaterialCommunityIcons style={styles.filePickerButton} name="file-image-outline" size={30} />
+                                                    <Text style={styles.filePickerLabel}>Choose image (optional)</Text>
+                                                </> :
+                                                <View style={styles.artistImageContainer}>
+                                                    <Avatar.Image style={styles.artistImage} size={300} source={{ uri: artistImage.uri }} />
+                                                    <Text onPress={removeImage} style={styles.deleteImageButton}>delete</Text>
+                                                </View>
+                                            }
                                         </TouchableOpacity>
 
                                         <Button disabled={!formValid} onPress={createTrack} color={colors.primary} style={styles.uploadButton} mode='outlined'>Upload track</Button>
@@ -212,15 +214,24 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         marginLeft: 5
     },
-    trackPickerLabel: {
+    filePickerLabel: {
         fontSize: 20,
         color: 'gray'
     },
-    trackPickerButton: {
+    filePickerButton: {
         marginRight: 10
     },
     uploadButton: {
         marginTop: 50
+    },
+    deleteImageButton: {
+        color: 'red',
+        marginTop: 10,
+        fontSize: 15
+    },
+    artistImageContainer: {
+        flex: 1,
+        alignItems: 'center'
     }
 });
 
