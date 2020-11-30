@@ -3,10 +3,10 @@ import { StyleSheet, View, SafeAreaView, ScrollView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Title, IconButton, Modal, Portal, Text, Button, useTheme, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
 import DocumentPicker from 'react-native-document-picker';
-import { useMutation } from '@apollo/client';
 import { TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ReactNativeFile } from 'apollo-upload-client';
+import { useMutation } from '@apollo/client';
 
 import { setTrackUploadModalOpen } from '../Actions/index';
 import modalStyles from '../styles/ModalStyles';
@@ -14,6 +14,7 @@ import { ADD_NEW_TRACK, UPLOAD_TRACK } from '../queries/graphQlQueries';
 import formStyles from '../styles/FormStyles';
 import useUploadImage from '../hooks/useUploadImage';
 import useImagePicker from '../hooks/useImagePicker';
+import ManageTracksList from '../components/ManageTracksList';
 
 
 const TrackUploadModal = ({ trackAmount, artistId }) => {
@@ -199,12 +200,15 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                             </SafeAreaView>
                         }
                         {!formOpen &&
-                            <View style={styles.addButon}>
-                                {trackAmount < 3 ?
-                                    <IconButton onPress={() => setFormOpen(true)} animated icon="plus" size={50} /> :
-                                    <Text style={styles.limitLabel}>Track limit reached</Text>
-                                }
-                            </View>
+                            <>
+                                <ManageTracksList artistId={artistId} />
+                                <View style={styles.addButon}>
+                                    {trackAmount < 3 ?
+                                        <IconButton onPress={() => setFormOpen(true)} animated icon="plus" size={50} /> :
+                                        <Text style={styles.limitLabel}>Track limit reached</Text>
+                                    }
+                                </View>
+                            </>
                         }
                     </View> :
                     <View style={styles.modalContentContainer}>

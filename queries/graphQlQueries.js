@@ -59,6 +59,22 @@ export const ARTIST_PROFILE = gql`
     }
 `
 
+export const ARTIST_TRACKS = gql`
+    query Artists($id: String!) {
+        artists(_id: $id) {
+            userTracks {
+                artistId
+                title
+                id
+                imageName
+                duration
+                createdAt
+            }
+            artistName
+        } 
+    }
+`
+
 export const ALL_TRACKS_TRACKLIST = gql`
     query Tracks {
         tracks {
