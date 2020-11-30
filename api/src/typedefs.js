@@ -82,7 +82,9 @@ export const typeDefs = gql`
     type Mutation {
         uploadImage(
             file: Upload!,
-            artistId: String!
+            artistId: String!,
+            isTrackImage: Boolean!,
+            trackId: String
         ): String
         uploadTrack(
             file: Upload!,

@@ -5,7 +5,7 @@ import { Storage } from '@google-cloud/storage';
 import path from 'path';
 
 const gc = new Storage({
-    keyFilename: path.join(__dirname, '../../keys/emom-84ee4-f4c716cf82e5.json'),
+    keyFilename: path.join(__dirname, '../../keys/emom-84ee4-68f5ffe6909e.json'),
     projectId: 'emom-84ee4'
 });
 
@@ -151,14 +151,16 @@ export const resolvers = {
         },
         uploadImage: async (_, {
             file,
-            artistId
+            artistId,
+            isTrackImage,
+            trackId
         }) => {
             const { createReadStream, filename } = await file;
 
             let ext = filename.split('.');
             ext = ext[ext.length - 1];
 
-            const path = `${artistId}/artist_image-${artistId}.${ext}`;
+            const path = isTrackImage && trackId.length > 0 ? `${artistId}/tracks/${trackId}/track_image-${trackId}.${ext}` : `${artistId}/artist_image-${artistId}.${ext}`;
 
             await new Promise(res => 
                 createReadStream()

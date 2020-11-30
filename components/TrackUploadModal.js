@@ -27,15 +27,15 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
     const [trackGenre, setTrackGenre] = useState('');
     const [trackDescription, setTrackDescription] = useState('');
     const [formValid, setFormValid] = useState(false);
-    const [url, addImage, imageError] = useUploadImage();
+    const [uploadadedTrackImageUrl, uploadTrackImage, uploadTrackImageError] = useUploadImage();
     const [artistImage, lauchFileUploader, removeImage] = useImagePicker();
 
     const [
-        addTrack,
+        addTrackDetails,
         {
-            loading: trackLoading,
-            error: trackError,
-            data: trackData
+            loading: addTrackDetailsLoading,
+            error: addTrackDetailsError,
+            data: addtrackDetailsData
         }
     ] = useMutation(ADD_NEW_TRACK);
 
@@ -65,7 +65,7 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
     }
 
     const createTrack = artistId => {
-        addTrack({
+        addTrackDetails({
             variables: {
                 album: trackAlbum,
                 artistId: artistId,
@@ -74,10 +74,11 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                 title: trackTitle,
                 duration: 350
             }
+        }).then(response => {
+            if (artistImage && artistImage.uri) {
+                uploadTrackImage(artistId, artistImage, true, response.data.addTrack.id);
+            }
         });
-        if (Object.keys(artistImage).length > 0) {
-            addImage(artistId, artistImage);
-        }
     }
 
     const openFilePicker = async () => {
@@ -174,7 +175,7 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                                             }
                                         </TouchableOpacity>
 
-                                        <Button disabled={!formValid} onPress={createTrack} color={colors.primary} style={styles.uploadButton} mode='outlined'>Upload track</Button>
+                                        <Button disabled={!formValid} onPress={() => createTrack(artistId)} color={colors.primary} style={styles.uploadButton} mode='outlined'>Upload track</Button>
                                     </View>
                                 </View>
                             </ScrollView>

@@ -24,7 +24,7 @@ const useUploadImage = () => {
         }
     }, [imageUploadLoading]);
 
-    const addImage = (artistId, artistImage) => {
+    const uploadTrackImage = (artistId, artistImage, isTrackImage, trackId) => {
         if (Object.keys(artistImage).length > 0) {
             const file = new ReactNativeFile({
                 uri: artistImage.uri,
@@ -36,14 +36,16 @@ const useUploadImage = () => {
             uploadImage({
                 variables: {
                     file: file,
-                    artistId: artistId
+                    artistId: artistId,
+                    isTrackImage: isTrackImage,
+                    trackId: trackId
                 }
             });
         }
     }
 
 
-    return [url, addImage, dataError];
+    return [url, uploadTrackImage, dataError];
 }
 
 export default useUploadImage;

@@ -110,7 +110,7 @@ export const ADD_NEW_TRACK = gql`
                 title : $title,
                 duration : $duration,
             ) {
-                album
+                id
             }
         }
     `;
@@ -174,11 +174,15 @@ export const ADD_ARTIST = gql`
 export const UPLOAD_IMAGE = gql`
     mutation uploadImage(
         $file: Upload!,
-        $artistId: String!
+        $artistId: String!,
+        $isTrackImage: Boolean!,
+        $trackId: String
     ) {
         uploadImage(
             file: $file,
-            artistId: $artistId
+            artistId: $artistId,
+            isTrackImage: $isTrackImage,
+            trackId: $trackId
         )
     }
 `;

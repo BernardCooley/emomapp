@@ -84,7 +84,7 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                         justifyContent: 'space-between'
                     }}>
                         <View style={styles.container}>
-                            {!isLoggedInUser && 
+                            {!isLoggedInUser &&
                                 <IconButton style={styles.closeButton} animated icon="close" size={25} onPress={goBack} />
                             }
                             <Title style={StyleSheet.title}>{artistProfileData.aid, StyleSheet.title}{artistProfileData.imageName}</Title>
@@ -129,14 +129,12 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                         <View style={styles.tracksContainer}>
                             <Subheading style={styles.tracksDetail}>Tracks</Subheading>
                             {currentProfileTracks.length > 0 ?
-                                <TracksList tracks={currentProfileTracks} navigation={navigation} /> : 
+                                <TracksList tracks={currentProfileTracks} navigation={navigation} /> :
                                 <View>
                                     <Text style={styles.tracksDetail}>None</Text>
                                 </View>
                             }
-                            {isLoggedInUser && artistProfileData.artists[0].userTracks.length < 3 ?
-                                <Button onPress={openTrackUploadModal} color={colors.primary} mode='outlined'>Manage tracks</Button> : null
-                            }
+                            <Button onPress={openTrackUploadModal} color={colors.primary} mode='outlined'>Manage tracks</Button>
                         </View>
                         <TrackUploadModal trackAmount={artistProfileData.artists[0].userTracks.length} artistId={artistId} />
                     </ScrollView>
