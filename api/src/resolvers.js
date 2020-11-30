@@ -175,7 +175,6 @@ export const resolvers = {
 
             return `https://storage.cloud.google.com/emom-files/${path}`
         },
-        // TODO upload track
         uploadTrack: async (_, {
             file,
             artistId,
