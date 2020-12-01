@@ -97,7 +97,7 @@ export const resolvers = {
                 duration
             });
 
-            if(imageExtension.length > 0) {
+            if (imageExtension.length > 0) {
                 track.imageName = `track_image-${track.id}.${imageExtension}`;
             }
 
@@ -167,7 +167,7 @@ export const resolvers = {
 
             const path = isTrackImage && trackId.length > 0 ? `${artistId}/tracks/${trackId}/track_image-${trackId}.${ext}` : `${artistId}/artist_image-${artistId}.${ext}`;
 
-            await new Promise(res => 
+            await new Promise(res =>
                 createReadStream()
                     .pipe(
                         filesBucket.file(path).createWriteStream({
@@ -204,6 +204,26 @@ export const resolvers = {
             )
 
             return `https://storage.cloud.google.com/emom-files/${path}`
+        },
+        deleteTrackDetails: async (_, { trackId }) => {
+            const deleted = await Track.deleteOne({ _id: trackId });
+
+            if (deleted.deletedCount > 0) {
+                return true;
+            }
+
+            return false;
+        },
+        deleteTrackUpload: async (_, { artistId, trackId }) => {
+            const path = `${artistId}/tracks/${trackId}/`;
+
+            const deleted = await filesBucket.deleteFiles({
+                prefix: path
+            }).then(() => {
+                return true;
+            })
+
+            return deleted;
         }
     }
 }

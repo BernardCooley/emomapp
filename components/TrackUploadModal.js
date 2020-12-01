@@ -100,7 +100,8 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
             }).catch(err => {
                 // TODO delete track data
                 console.log('========> Track upload error' ,err);
-                alert('Something went wrong. Please try again.');
+                // TODO log the error
+                alert('Something went wrong. Please try again. The error has been logged.');
             })
         }).catch(err => {
 
@@ -108,7 +109,8 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                 // TODO delete track data
             }
 
-            console.log('========> Track details error', err);
+            console.log('Track details error =====> ', err);
+            // TODO log the error
             alert('Something went wrong. Please try again. The error has been logged.');
         })
     }
@@ -217,10 +219,9 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                         {!formOpen &&
                             <>
                                 <ManageTracksList artistId={artistId} trigRefetch={triggerRefetch} />
-                                <View style={styles.addButon}>
-                                    {trackAmount < 3 ?
-                                        <IconButton onPress={() => setFormOpen(true)} animated icon="plus" size={50} /> :
-                                        <Text style={styles.limitLabel}>Track limit reached</Text>
+                                <View style={styles.addButonContainer}>
+                                    {trackAmount < 3 &&
+                                        <IconButton style={styles.addButton} onPress={() => setFormOpen(true)} animated icon="plus" size={50} />
                                     }
                                 </View>
                             </>
@@ -285,15 +286,21 @@ const styles = StyleSheet.create({
         position: 'relative',
         top: 250
     },
-    uploadingLabel: {
-        marginTop: 30
-    },
-    addButon: {
+    addButonContainer: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
-        height: '100%'
+        position: 'absolute',
+        bottom: 0
+    },
+    addButton: {
+        position: 'absolute',
+        right: -30,
+        bottom: -40
+    },
+    uploadingLabel: {
+        marginTop: 30
     }
 });
 

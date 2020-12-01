@@ -1,22 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Title, Button, Text, IconButton, useTheme, Divider, Avatar } from 'react-native-paper';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { useQuery } from '@apollo/client';
+import { View, StyleSheet } from 'react-native';
+import { Button, Text, Divider, Avatar, Dialog, Paragraph } from 'react-native-paper';
+import { useQuery, useMutation } from '@apollo/client';
 
-import { ARTIST_TRACKS } from '../queries/graphQlQueries';
+import { ARTIST_TRACKS, DELETE_TRACK_DETAILS, DELETE_TRACK_UPLOAD } from '../queries/graphQlQueries';
 import { dateFormat } from '../functions/dateFormat';
 import { getImageUrl } from '../functions/getImageUrl';
 
 const ManageTracksList = ({ artistId, trigRefetch }) => {
-    const [state, setState] = useState('');
+    const [showDialog, setShowDialog] = useState(false);
+    const [clickedTrackId, setClickedTrackId] = useState('');
 
     const { loading, error, data, refetch } = useQuery(ARTIST_TRACKS, {
         variables: {
             id: artistId
         }
     });
+
+    const [
+        deleteTrackDetails,
+        {
+            loading: deleteTrackDetailsLoading,
+            error: deleteTrackDetailsError,
+            data: deletetrackDetailsData
+        }
+    ] = useMutation(DELETE_TRACK_DETAILS);
+
+    const [
+        deleteTrackUpload,
+        {
+            loading: deleteTrackUploadLoading,
+            error: deleteTrackUploadError,
+            data: deletetrackUploadData
+        }
+    ] = useMutation(DELETE_TRACK_UPLOAD);
 
     useEffect(() => {
         console.log('Refetch');
@@ -31,8 +48,42 @@ const ManageTracksList = ({ artistId, trigRefetch }) => {
         console.log(trackId);
     }
 
-    const deleteTrack = trackId => {
-        console.log(trackId);
+    const deleteTrack = () => {
+        deleteTrackDetails({
+            variables: {
+                trackId: clickedTrackId
+            }
+        }).then(deleteTrackDetailsResponse => {
+            if (deleteTrackDetailsResponse) {
+                deleteTrackUpload({
+                    variables: {
+                        artistId: artistId,
+                        trackId: clickedTrackId
+                    }
+                }).then(() => {
+                    refetch();
+                    setShowDialog(false);
+                    setClickedTrackId('');
+                }).catch(err => {
+                    setShowDialog(false);
+                    setClickedTrackId('');
+                    console.log('Track upload delete error =====>', err);
+                    // TODO log the error
+                    alert('Something went wrong. Please try again. The error has been logged.');
+                });
+            }
+        }).catch(err => {
+            setShowDialog(false);
+            setClickedTrackId('');
+            console.log('Track details delete error =====>', err);
+            // TODO log the error
+            alert('Something went wrong. Please try again. The error has been logged.');
+        });
+    }
+
+    const confirmDelete = trackId => {
+        setClickedTrackId(trackId);
+        setShowDialog(true);
     }
 
     return (
@@ -41,12 +92,30 @@ const ManageTracksList = ({ artistId, trigRefetch }) => {
                 <View style={styles.track} key={index}>
                     <View style={styles.trackDetailsContainer}>
                         <View style={styles.trackDetails}>
-                            <Text><Text style={styles.trackDetailTitle}>Title: </Text>{track.title}</Text>
-                            <Text><Text style={styles.trackDetailTitle}>Album: </Text>{track.album}</Text>
-                            <Text><Text style={styles.trackDetailTitle}>Genre: </Text>{track.genre}</Text>
-                            <Text><Text style={styles.trackDetailTitle}>Description: </Text>{track.description}</Text>
-                            <Text><Text style={styles.trackDetailTitle}>Duration: </Text>{track.duration}</Text>
-                            <Text><Text style={styles.trackDetailTitle}>Uploaded: </Text>{dateFormat(track.createdAt)}</Text>
+                            <Text>
+                                <Text style={styles.trackDetailTitle}>Title: </Text>
+                                {track.title}
+                            </Text>
+                            <Text>
+                                <Text style={styles.trackDetailTitle}>Album: </Text>
+                                {track.album}
+                            </Text>
+                            <Text>
+                                <Text style={styles.trackDetailTitle}>Genre: </Text>
+                                {track.genre}
+                            </Text>
+                            <Text>
+                                <Text style={styles.trackDetailTitle}>Description: </Text>
+                                {track.description}
+                            </Text>
+                            <Text>
+                                <Text style={styles.trackDetailTitle}>Duration: </Text>
+                                {track.duration}
+                            </Text>
+                            <Text>
+                                <Text style={styles.trackDetailTitle}>Uploaded: </Text>
+                                {dateFormat(track.createdAt)}
+                            </Text>
                         </View>
                         <View style={styles.trackImage}>
                             {track.imageName.length > 0 &&
@@ -55,13 +124,23 @@ const ManageTracksList = ({ artistId, trigRefetch }) => {
                         </View>
                     </View>
                     <View style={styles.trackButtons}>
-                            <Button onPress={() => editTrack(track.id)}>Edit</Button>
-                            <Button onPress={() => playTrack(track.id)}>Play</Button>
-                            <Button onPress={() => deleteTrack(track.id)}>Delete</Button>
+                        <Button onPress={() => editTrack(track.id)}>Edit</Button>
+                        <Button onPress={() => playTrack(track.id)}>Play</Button>
+                        <Button onPress={() => confirmDelete(track.id)}>Delete</Button>
                     </View>
                     <Divider style={styles.divider} />
                 </View>
             ))}
+            <Dialog visible={showDialog} onDismiss={() => setShowDialog(false)}>
+                <Dialog.Title>Delete track</Dialog.Title>
+                <Dialog.Content>
+                    <Paragraph>Are you sure?</Paragraph>
+                </Dialog.Content>
+                <Dialog.Actions>
+                    <Button onPress={deleteTrack}>Yes, delete</Button>
+                    <Button onPress={() => setShowDialog(false)}>Cancel</Button>
+                </Dialog.Actions>
+            </Dialog>
         </View>
     )
 };

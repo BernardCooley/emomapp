@@ -80,6 +80,13 @@ export const typeDefs = gql`
         ): [Track]
     }
     type Mutation {
+        deleteTrackDetails(
+            trackId: String!
+        ): Boolean
+        deleteTrackUpload(
+            artistId: String!
+            trackId: String!
+        ): Boolean
         uploadImage(
             file: Upload!,
             artistId: String!,

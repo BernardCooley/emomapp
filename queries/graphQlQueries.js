@@ -220,3 +220,25 @@ export const UPLOAD_TRACK = gql`
         )
     }
 `;
+
+export const DELETE_TRACK_DETAILS = gql`
+    mutation deleteTrackDetails(
+        $trackId: String!
+    ) {
+        deleteTrackDetails(
+            trackId: $trackId
+        )
+    }
+`;
+
+export const DELETE_TRACK_UPLOAD = gql`
+    mutation deleteTrackUpload(
+        $artistId: String!,
+        $trackId: String!
+    ) {
+        deleteTrackUpload(
+            artistId: $artistId
+            trackId: $trackId
+        )
+    }
+`;
