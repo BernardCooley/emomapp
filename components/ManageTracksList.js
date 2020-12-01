@@ -44,10 +44,6 @@ const ManageTracksList = ({ artistId, trigRefetch }) => {
         console.log(trackId);
     }
 
-    const playTrack = trackId => {
-        console.log(trackId);
-    }
-
     const deleteTrack = () => {
         deleteTrackDetails({
             variables: {
@@ -125,7 +121,6 @@ const ManageTracksList = ({ artistId, trigRefetch }) => {
                     </View>
                     <View style={styles.trackButtons}>
                         <Button onPress={() => editTrack(track.id)}>Edit</Button>
-                        <Button onPress={() => playTrack(track.id)}>Play</Button>
                         <Button onPress={() => confirmDelete(track.id)}>Delete</Button>
                     </View>
                     <Divider style={styles.divider} />

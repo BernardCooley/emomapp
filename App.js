@@ -2,7 +2,7 @@ import React from 'react';
 import 'react-native-gesture-handler';
 import rootReducer from './Reducers';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux'
+import { createStore } from 'redux';
 import { DefaultTheme, Provider as PaperProvider, configureFonts } from 'react-native-paper';
 import Main from './components/Main';
 import { ApolloProvider } from '@apollo/client';
