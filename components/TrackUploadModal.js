@@ -27,6 +27,7 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
     const [trackAlbum, setTrackAlbum] = useState('');
     const [trackGenre, setTrackGenre] = useState('');
     const [trackDescription, setTrackDescription] = useState('');
+    const [triggerRefetch, setTriggerRefetch] = useState(false);
     const [formValid, setFormValid] = useState(false);
     const [uploadadedTrackImageUrl, uploadTrackImage, uploadTrackImageError] = useUploadImage();
     const [artistImage, lauchFileUploader, removeImage] = useImagePicker();
@@ -94,6 +95,7 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                     uploadTrackImage(artistId, artistImage, true, response.data.addTrackDetails.id);
                     clearForm();
                     setFormOpen(false);
+                    setTriggerRefetch(!triggerRefetch);
                 }
             }).catch(err => {
                 // TODO delete track data
@@ -214,7 +216,7 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                         }
                         {!formOpen &&
                             <>
-                                <ManageTracksList artistId={artistId} />
+                                <ManageTracksList artistId={artistId} trigRefetch={triggerRefetch} />
                                 <View style={styles.addButon}>
                                     {trackAmount < 3 ?
                                         <IconButton onPress={() => setFormOpen(true)} animated icon="plus" size={50} /> :
