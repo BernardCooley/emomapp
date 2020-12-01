@@ -7,6 +7,7 @@ import { useQuery } from '@apollo/client';
 
 import { ARTIST_TRACKS } from '../queries/graphQlQueries';
 import { dateFormat } from '../functions/dateFormat';
+import { getImageUrl } from '../functions/getImageUrl';
 
 const ManageTracksList = ({ artistId }) => {
     const [state, setState] = useState('');
@@ -16,13 +17,6 @@ const ManageTracksList = ({ artistId }) => {
             id: artistId
         }
     });
-
-    useEffect(() => {
-        console.log(loading);
-        if (data) {
-            console.log(data.artists[0].userTracks);
-        }
-    }, [loading]);
 
     return (
         <View style={styles.container}>
@@ -38,7 +32,9 @@ const ManageTracksList = ({ artistId }) => {
                             <Text>Date uploaded: {dateFormat(track.createdAt)}</Text>
                         </View>
                         <View style={styles.trackImage}>
-                            <Avatar.Image source={{ uri: playerContext.currentTrack.trackImage }} size={playerImageSize} style={styles.image}></Avatar.Image>
+                            {track.imageName.length > 0 &&
+                                <Avatar.Image style={styles.artistImage} size={110} source={{ uri: getImageUrl(data.artists[0].id, track.imageName, track.id) }} />
+                            }
                         </View>
                     </View>
                     <Divider style={styles.divider} />
@@ -76,6 +72,9 @@ const styles = StyleSheet.create({
         width: '60%'
     },
     trackImage: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         borderWidth: 1,
         width: '40%'
     }

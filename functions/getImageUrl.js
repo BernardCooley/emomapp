@@ -1,4 +1,7 @@
-export const getImageUrl = (artistId, imageName) => {
+export const getImageUrl = (artistId, imageName, trackId) => {
     const baseStorageUrl = 'https://storage.googleapis.com/emom-files/';
-    return `${baseStorageUrl}${artistId}/${imageName}`;
+
+    const url = `${baseStorageUrl}${artistId}${trackId ? `/tracks/${trackId}` : ``}/${imageName}`;
+
+    return url;
 }

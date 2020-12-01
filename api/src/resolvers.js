@@ -79,13 +79,14 @@ export const resolvers = {
         }
     },
     Mutation: {
-        addTrack: async (_, {
+        addTrackDetails: async (_, {
             album,
             artistId,
             description,
             genre,
             title,
-            duration
+            duration,
+            imageExtension
         }) => {
             const track = new Track({
                 album,
@@ -95,7 +96,11 @@ export const resolvers = {
                 title,
                 duration
             });
-            console.log(track);
+
+            if(imageExtension.length > 0) {
+                track.imageName = `track_image-${track.id}.${imageExtension}`;
+            }
+
             await track.save();
             return track;
         },

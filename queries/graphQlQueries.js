@@ -69,8 +69,10 @@ export const ARTIST_TRACKS = gql`
                 imageName
                 duration
                 createdAt
+                imageName
             }
             artistName
+            id
         } 
     }
 `
@@ -110,21 +112,23 @@ export const TRACK_COMMENTS = gql`
 
 
 export const ADD_NEW_TRACK = gql`
-        mutation addTrack(
+        mutation addTrackDetails(
             $album: String, 
             $artistId: String!, 
             $description: String, 
             $genre: String,
             $title: String!, 
-            $duration: Int!
+            $duration: Int!,
+            $imageExtension: String
         ) {
-            addTrack(
+            addTrackDetails(
                 album : $album,
                 artistId : $artistId,
                 description : $description,
                 genre : $genre,
                 title : $title,
                 duration : $duration,
+                imageExtension: $imageExtension
             ) {
                 id
             }

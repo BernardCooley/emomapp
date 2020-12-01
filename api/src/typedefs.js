@@ -91,13 +91,14 @@ export const typeDefs = gql`
             artistId: String!,
             trackId: String!
         ): String
-        addTrack(
+        addTrackDetails(
             album: String,
             artistId: String!,
             description: String,
             genre: String,
             title: String!,
-            duration: Int!
+            duration: Int!,
+            imageExtension: String
         ): Track!
         addArtist(
             artistName: String!,

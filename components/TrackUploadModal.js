@@ -79,23 +79,36 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                 description: trackDescription,
                 genre: trackGenre,
                 title: trackTitle,
-                duration: 350
+                duration: 350,
+                imageExtension: artistImage && artistImage.ext ? artistImage.ext : ''
             }
         }).then(response => {
             uploadTrack({
                 variables: {
                     file: track,
                     artistId: artistId,
-                    trackId: response.data.addTrack.id
+                    trackId: response.data.addTrackDetails.id
                 }
             }).then(() => {
                 if (artistImage && artistImage.uri) {
-                    uploadTrackImage(artistId, artistImage, true, response.data.addTrack.id);
+                    uploadTrackImage(artistId, artistImage, true, response.data.addTrackDetails.id);
                     clearForm();
                     setFormOpen(false);
                 }
-            });
-        });
+            }).catch(err => {
+                // TODO delete track data
+                console.log('========> Track upload error' ,err);
+                alert('Something went wrong. Please try again.');
+            })
+        }).catch(err => {
+
+            if(err.toString().indexOf('TypeError') !== -1) {
+                // TODO delete track data
+            }
+
+            console.log('========> Track details error', err);
+            alert('Something went wrong. Please try again. The error has been logged.');
+        })
     }
 
     const openFilePicker = async () => {
