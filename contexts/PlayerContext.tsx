@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import RNTrackPlayer, { State as TrackPlayerState, STATE_PAUSED, STATE_PLAYING, STATE_STOPPED, Track } from 'react-native-track-player';
-import { useSelector } from 'react-redux';
 
 interface PlayerContextType {
     isPlaying: boolean;
@@ -36,7 +35,6 @@ export const PlayerContextProvider: React.FC = props => {
     const [playerState, setPlayerState] = useState<null | TrackPlayerState>(null);
     const [currentTrack, setCurrentTrack] = useState<null | Track>(null);
     const [trackQueue, setTrackQueue] = useState<Array<null | Track>>(null);
-    const trackFilters = useSelector(state => state.trackListFilters);
 
     useEffect(() => {
         const listener = RNTrackPlayer.addEventListener(

@@ -7,11 +7,11 @@ import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useQuery, useMutation } from '@apollo/client';
 
+import { useAccountContext } from '../contexts/AccountContext';
 import formStyles from '../styles/FormStyles';
 import useImagePicker from '../hooks/useImagePicker';
 import { ADD_NEW_TRACK, UPLOAD_TRACK } from '../queries/graphQlQueries';
 import useUploadImage from '../hooks/useUploadImage';
-import { useAccountContext } from '../contexts/AccountContext';
 
 const TrackUploadForm = ({ artistId }) => {
     const accountContext = useAccountContext();
@@ -55,9 +55,9 @@ const TrackUploadForm = ({ artistId }) => {
     }, [track, trackTitle]);
 
     useEffect(() => {
-        if(trackUploadLoading) {
+        if (trackUploadLoading) {
             accountContext.updateUploading(true);
-        }else {
+        } else {
             accountContext.updateUploading(false);
         }
     }, [trackUploadLoading]);
@@ -127,13 +127,13 @@ const TrackUploadForm = ({ artistId }) => {
                 }
             }).catch(err => {
                 // TODO delete track data
-                console.log('========> Track upload error' ,err);
+                console.log('========> Track upload error', err);
                 // TODO log the error
                 alert('Something went wrong. Please try again. The error has been logged.');
             })
         }).catch(err => {
 
-            if(err.toString().indexOf('TypeError') !== -1) {
+            if (err.toString().indexOf('TypeError') !== -1) {
                 // TODO delete track data
             }
 
@@ -141,6 +141,10 @@ const TrackUploadForm = ({ artistId }) => {
             // TODO log the error
             alert('Something went wrong. Please try again. The error has been logged.');
         })
+    }
+
+    const showHideForm = show => {
+        accountContext.toggleForm(show);
     }
 
     return (
@@ -202,13 +206,17 @@ const TrackUploadForm = ({ artistId }) => {
                             }
                         </TouchableOpacity>
 
-                        <Button disabled={!formValid} onPress={() => createTrack(artistId)} color={colors.primary} style={styles.uploadButton} mode='outlined'>Upload track</Button>
+                        <View style={styles.buttonContainer}>
+                            <Button disabled={!formValid} onPress={() => createTrack(artistId)} color={colors.primary} style={styles.formButton} mode='outlined'>Upload track</Button>
+                            <Button onPress={() => showHideForm(false)} color={colors.primary} style={styles.formButton} mode='outlined'>Cancel</Button>
+                        </View>
                     </View>
                 </View>
             </ScrollView>
         </SafeAreaView>
     )
 };
+// TODO cancel button not working
 
 TrackUploadForm.propTypes = {
 
@@ -241,9 +249,14 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 15
     },
-    uploadButton: {
+    formButton: {
         marginTop: 50
     },
+    buttonContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    }
 });
 
 export default TrackUploadForm;

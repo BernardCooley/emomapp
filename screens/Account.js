@@ -1,4 +1,4 @@
- import React from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useTheme } from 'react-native-paper';
@@ -29,7 +29,7 @@ const AccountScreen = ({ navigation }) => {
                 <AccountTab.Screen name="Account" component={AccountSettings} />
             </AccountTab.Navigator>
         </>
-      );
+    );
 }
 
 const styles = StyleSheet.create({

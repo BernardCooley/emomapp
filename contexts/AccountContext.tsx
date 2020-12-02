@@ -1,20 +1,20 @@
-import React, { useContext, useState } from 'react';
+import React, { FC, createContext, useContext, useState, useEffect } from 'react';
 
 interface AccountContextType {
     isFormOpen: Boolean,
     isUploading: Boolean,
     updateUploading: (uploading: Boolean) => void,
-    updateFormOpen: (openClose: Boolean) => void
+    toggleForm: (toggle: Boolean) => void
 };
 
-export const AccountContext = React.createContext<AccountContextType>({
+export const AccountContext = createContext<AccountContextType>({
     isFormOpen: false,
     isUploading: false,
     updateUploading: () => null,
-    updateFormOpen: () => null
+    toggleForm: () => null
 });
 
-export const PlayerContextProvider: React.FC = props => {
+export const AccountContextProvider: FC = props => {
     const [formOpen, setFormOpen] = useState<Boolean>(false);
     const [uploading, setUploading] = useState<Boolean>(false);
 
@@ -22,14 +22,14 @@ export const PlayerContextProvider: React.FC = props => {
         setUploading(uploading);
     }
 
-    const updateFormOpen = (openClose: Boolean) => {
-        setFormOpen(openClose);
+    const toggleForm = (toggle: Boolean) => {
+        setFormOpen(toggle);
     }
 
     const value: AccountContextType = {
         isFormOpen: formOpen,
         isUploading: uploading,
-        updateFormOpen,
+        toggleForm,
         updateUploading
     }
 

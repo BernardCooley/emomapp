@@ -3,23 +3,24 @@ import { StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Title, IconButton, Modal, Portal, Text, useTheme, ActivityIndicator } from 'react-native-paper';
 
+import { useAccountContext } from '../contexts/AccountContext';
 import { setTrackUploadModalOpen } from '../Actions/index';
 import modalStyles from '../styles/ModalStyles';
 import ManageTracksList from '../components/ManageTracksList';
 import TrackUploadForm from '../components/TrackUploadForm';
-import { useAccountContext } from '../contexts/AccountContext';
 
 
 const TrackUploadModal = ({ trackAmount, artistId }) => {
-    const accountContext = useAccountContext();
     const { colors } = useTheme();
     const dispatch = useDispatch();
     const trackUploadModalOpen = useSelector(state => state.trackUploadModalOpen);
     const [formOpen, setFormOpen] = useState(false);
     const [triggerRefetch, setTriggerRefetch] = useState(false);
+    const accountContext = useAccountContext();
 
     const closeModal = () => {
         dispatch(setTrackUploadModalOpen(false));
+        accountContext.toggleForm(false);
     }
 
 
@@ -30,13 +31,13 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                 <Title style={styles.modalTitle}>Manage tracks</Title>
                 {!accountContext.isUploading ?
                     <View style={styles.modalContentContainer}>
-                        {formOpen ?
+                        {accountContext.isFormOpen ?
                             <TrackUploadForm artistId={artistId} /> :
                             <>
                                 <ManageTracksList artistId={artistId} trigRefetch={triggerRefetch} />
                                 <View style={styles.addButonContainer}>
                                     {trackAmount < 3 &&
-                                        <IconButton style={styles.addButton} onPress={() => setFormOpen(true)} animated icon="plus" size={50} />
+                                        <IconButton style={styles.addButton} onPress={() => accountContext.toggleForm(true)} animated icon="plus" size={50} />
                                     }
                                 </View>
                             </>
