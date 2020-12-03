@@ -1,27 +1,37 @@
-import React, { FC, createContext, useContext, useState, useEffect } from 'react';
+import React, { FC, createContext, useContext, useState } from 'react';
 
 interface AccountContextType {
     isManageTracksModalOpen: Boolean,
-    isFormOpen: Boolean,
-    isUploading: Boolean,
     toggleManageTracksModal: (toggle: Boolean) => void,
+    isFormOpen: Boolean,
     updateUploading: (uploading: Boolean) => void,
-    toggleForm: (toggle: Boolean) => void
+    isUploading: Boolean,
+    toggleForm: (toggle: Boolean) => void,
+    isEditing: Boolean,
+    toggleEditing: (toggle: Boolean) => void,
+    editTrackDetails: Object,
+    updateEditTrackDetails: (details: Object) => void
 };
 
 export const AccountContext = createContext<AccountContextType>({
     isManageTracksModalOpen: false,
-    isFormOpen: false,
-    isUploading: false,
     toggleManageTracksModal: () => null,
+    isFormOpen: false,
     updateUploading: () => null,
-    toggleForm: () => null
+    isUploading: false,
+    toggleForm: () => null,
+    isEditing: false,
+    toggleEditing: () => null,
+    editTrackDetails: {},
+    updateEditTrackDetails: () => null
 });
 
 export const AccountContextProvider: FC = props => {
     const [manageTracksModalOpen, setManageTracksModalOpen] = useState<Boolean>(false);
     const [formOpen, setFormOpen] = useState<Boolean>(false);
     const [uploading, setUploading] = useState<Boolean>(false);
+    const [editing, setEditing] = useState<Boolean>(false);
+    const [trackDetails, setTrackDetails] = useState<Object>({});
 
     const updateUploading = (uploading: Boolean) => {
         setUploading(uploading);
@@ -35,13 +45,25 @@ export const AccountContextProvider: FC = props => {
         setManageTracksModalOpen(toggle);
     }
 
+    const toggleEditing = (toggle: Boolean) => {
+        setEditing(toggle);
+    }
+
+    const updateEditTrackDetails = (details: Object) => {
+        setTrackDetails(details);
+    }
+
     const value: AccountContextType = {
         isManageTracksModalOpen: manageTracksModalOpen,
-        isFormOpen: formOpen,
-        isUploading: uploading,
         toggleManageTracksModal,
+        isFormOpen: formOpen,
         updateUploading,
-        toggleForm
+        isUploading: uploading,
+        toggleForm,
+        isEditing: editing,
+        toggleEditing,
+        editTrackDetails: trackDetails,
+        updateEditTrackDetails
     }
 
     return (

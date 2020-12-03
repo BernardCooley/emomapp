@@ -44,6 +44,9 @@ const ManageTracksList = ({ artistId, trigRefetch, trackAmount }) => {
     }, [trigRefetch]);
 
     const editTrack = trackId => {
+        accountContext.updateEditTrackDetails(data.artists[0].userTracks.filter(track => track.id === trackId)[0]);
+        accountContext.toggleEditing(true);
+        accountContext.toggleForm(true);
         console.log(trackId);
     }
 

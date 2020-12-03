@@ -11,10 +11,9 @@ import formStyles from '../styles/FormStyles';
 import useImagePicker from '../hooks/useImagePicker';
 import { ADD_NEW_TRACK, UPLOAD_TRACK } from '../queries/graphQlQueries';
 import useUploadImage from '../hooks/useUploadImage';
-import { useTracksContext } from '../contexts/TracksContext';
+import { getImageUrl } from '../functions/getImageUrl';
 
 const TrackUploadForm = ({ artistId }) => {
-    const tracksContext = useTracksContext();
     const accountContext = useAccountContext();
     const { colors } = useTheme();
     const [trackTitle, setTrackTitle] = useState('');
@@ -23,6 +22,7 @@ const TrackUploadForm = ({ artistId }) => {
     const [trackDescription, setTrackDescription] = useState('');
     const [track, setTrack] = useState({});
     const [formValid, setFormValid] = useState(false);
+    const [imageUri, setImageUri] = useState('');
 
     const [uploadadedTrackImageUrl, uploadTrackImage, uploadTrackImageError] = useUploadImage();
     const [artistImage, lauchFileUploader, removeImage] = useImagePicker();
@@ -46,10 +46,21 @@ const TrackUploadForm = ({ artistId }) => {
     ] = useMutation(UPLOAD_TRACK);
 
     useEffect(() => {
-        if (Object.keys(track).length > 0 && trackTitle.length > 0) {
-            setFormValid(true);
+        console.log(accountContext.editTrackDetails);
+        if (Object.keys(accountContext.editTrackDetails).length > 0) {
+            setTrackTitle(accountContext.editTrackDetails.title);
+            setTrackAlbum(accountContext.editTrackDetails.album);
+            setTrackGenre(accountContext.editTrackDetails.genre);
+            setTrackDescription(accountContext.editTrackDetails.description);
+            setTrackTitle(accountContext.editTrackDetails.title);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (accountContext.isEditing) {
+            trackTitle.length > 0 ? setFormValid(true) : setFormValid(false);
         } else {
-            setFormValid(false);
+            Object.keys(track).length > 0 && trackTitle.length > 0 ? setFormValid(true) : setFormValid(false);
         }
     }, [track, trackTitle]);
 
@@ -62,6 +73,18 @@ const TrackUploadForm = ({ artistId }) => {
         }
     }, [trackUploadLoading]);
 
+    useEffect(() => {
+        if (accountContext.isEditing) {
+            if (artistImage.uri) {
+                setImageUri(artistImage.uri);
+            } else if (accountContext.editTrackDetails.imageName) {
+                setImageUri(getImageUrl(accountContext.editTrackDetails.artistId, accountContext.editTrackDetails.imageName, accountContext.editTrackDetails.id));
+            } else {
+                setImageUri('');
+            }
+        }
+    }, [accountContext.editTrackDetails, artistImage]);
+
     const clearForm = () => {
         setTrackTitle('');
         setTrackAlbum('');
@@ -69,6 +92,16 @@ const TrackUploadForm = ({ artistId }) => {
         setTrackDescription('');
         setTrack({});
         removeImage();
+    }
+
+    const deleteImage = () => {
+        if (accountContext.isEditing) {
+            accountContext.updateEditTrackDetails(
+                { ...accountContext.editTrackDetails, imageName: '' }
+            );
+        } else {
+            removeImage();
+        }
     }
 
     const openFilePicker = async () => {
@@ -97,44 +130,54 @@ const TrackUploadForm = ({ artistId }) => {
     }
 
     const createTrack = artistId => {
-        addTrackDetails({
-            variables: {
-                album: trackAlbum,
-                artistId: artistId,
-                description: trackDescription,
-                genre: trackGenre,
-                title: trackTitle,
-                duration: 350,
-                imageExtension: artistImage && artistImage.ext ? artistImage.ext : ''
-            }
-        }).then(response => {
-            uploadTrack({
+        if (accountContext.isEditing) {
+            // TODO update existing records
+        } else {
+            addTrackDetails({
                 variables: {
-                    file: track,
+                    album: trackAlbum,
                     artistId: artistId,
-                    trackId: response.data.addTrackDetails.id
+                    description: trackDescription,
+                    genre: trackGenre,
+                    title: trackTitle,
+                    duration: 350,
+                    imageExtension: artistImage && artistImage.ext ? artistImage.ext : ''
                 }
-            }).then(() => {
-                if (artistImage && artistImage.uri) {
-                    uploadTrackImage(artistId, artistImage, true, response.data.addTrackDetails.id);
-                    clearForm();
-                }
+            }).then(response => {
+                uploadTrack({
+                    variables: {
+                        file: track,
+                        artistId: artistId,
+                        trackId: response.data.addTrackDetails.id
+                    }
+                }).then(() => {
+                    if (artistImage && artistImage.uri) {
+                        uploadTrackImage(artistId, artistImage, true, response.data.addTrackDetails.id);
+                        clearForm();
+                    }
+                }).catch(err => {
+                    // TODO delete track data
+                    console.log('========> Track upload error', err);
+                    // TODO log the error
+                    alert('Something went wrong. Please try again. The error has been logged.');
+                })
             }).catch(err => {
-                // TODO delete track data
-                console.log('========> Track upload error', err);
+
+                if (err.toString().indexOf('TypeError') !== -1) {
+                    // TODO delete track data
+                }
+
+                console.log('Track details error =====> ', err);
                 // TODO log the error
                 alert('Something went wrong. Please try again. The error has been logged.');
-            })
-        }).catch(err => {
+            });
+        }
+    }
 
-            if (err.toString().indexOf('TypeError') !== -1) {
-                // TODO delete track data
-            }
-
-            console.log('Track details error =====> ', err);
-            // TODO log the error
-            alert('Something went wrong. Please try again. The error has been logged.');
-        })
+    const cancelUpload = () => {
+        accountContext.toggleForm(false);
+        accountContext.toggleEditing(false);
+        accountContext.updateEditTrackDetails({});
     }
 
     return (
@@ -180,32 +223,34 @@ const TrackUploadForm = ({ artistId }) => {
                                 multiline
                             />
 
-                            <TouchableOpacity onPress={openFilePicker} style={styles.uploadContainer}>
-                                <MaterialCommunityIcons style={styles.filePickerButton} name="music-box-outline" size={30} />
-                                <View>
-                                    {track.name && track.name.length > 0 ?
-                                        <Text style={styles.filePickerLabel}>{track.name}</Text> :
-                                        <Text style={styles.filePickerLabel}>Choose track</Text>
-                                    }
-                                </View>
-                            </TouchableOpacity>
+                            {!accountContext.isEditing &&
+                                <TouchableOpacity onPress={openFilePicker} style={styles.uploadContainer}>
+                                    <MaterialCommunityIcons style={styles.filePickerButton} name="music-box-outline" size={30} />
+                                    <View>
+                                        {track.name && track.name.length > 0 ?
+                                            <Text style={styles.filePickerLabel}>{track.name}</Text> :
+                                            <Text style={styles.filePickerLabel}>Choose track</Text>
+                                        }
+                                    </View>
+                                </TouchableOpacity>
+                            }
 
                             <TouchableOpacity onPress={lauchFileUploader} style={styles.uploadContainer}>
-                                {!artistImage.uri ?
+                                {imageUri.length > 0 ?
+                                    <View style={styles.artistImageContainer}>
+                                        <Avatar.Image style={styles.artistImage} size={300} source={{ uri: imageUri }} />
+                                        <Text onPress={deleteImage} style={styles.deleteImageButton}>delete</Text>
+                                    </View> :
                                     <>
                                         <MaterialCommunityIcons style={styles.filePickerButton} name="file-image-outline" size={30} />
                                         <Text style={styles.filePickerLabel}>Choose image (optional)</Text>
-                                    </> :
-                                    <View style={styles.artistImageContainer}>
-                                        <Avatar.Image style={styles.artistImage} size={300} source={{ uri: artistImage.uri }} />
-                                        <Text onPress={removeImage} style={styles.deleteImageButton}>delete</Text>
-                                    </View>
+                                    </>
                                 }
                             </TouchableOpacity>
 
                             <View style={styles.buttonContainer}>
-                                <Button onPress={() => accountContext.toggleForm(false)} color={colors.primary} style={styles.formButton} mode='outlined'>Cancel</Button>
-                                <Button disabled={!formValid} onPress={() => createTrack(artistId)} color={colors.primary} style={styles.formButton} mode={formValid ? 'contained' : 'outlined'}>Upload track</Button>
+                                <Button onPress={cancelUpload} color={colors.primary} style={styles.formButton} mode='outlined'>Cancel</Button>
+                                <Button disabled={!formValid} onPress={() => createTrack(artistId)} color={colors.primary} style={styles.formButton} mode={formValid ? 'contained' : 'outlined'}>{accountContext.isEditing ? 'Save' : 'Upload track'}</Button>
                             </View>
                         </View>
                     }

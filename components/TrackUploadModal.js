@@ -14,8 +14,9 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
     const closeModal = () => {
         accountContext.toggleManageTracksModal(false);
         accountContext.toggleForm(false);
+        accountContext.toggleEditing(false);
+        accountContext.updateEditTrackDetails({});
     }
-
 
     return (
         <Portal>

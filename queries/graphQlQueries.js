@@ -70,6 +70,9 @@ export const ARTIST_TRACKS = gql`
                 duration
                 createdAt
                 imageName
+                album
+                genre
+                description
             }
             artistName
             id
