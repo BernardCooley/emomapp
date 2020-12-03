@@ -1,17 +1,3 @@
-export const currentScreen = screenName => {
-    return {
-        type: 'CURRENT_SCREEN',
-        payload: screenName
-    };
-};
-
-export const user = user => {
-    return {
-        type: 'USER',
-        payload: user
-    };
-};
-
 export const queueModalVisible = visible => {
     return {
         type: 'QUEUE_MODAL_VISIBLE',
@@ -33,13 +19,6 @@ export const setNavigation = navigation => {
     };
 };
 
-export const setSnackbarMessage = snackbarMessage => {
-    return {
-        type: 'SNACKBAR_MESSAGE',
-        payload: snackbarMessage
-    };
-};
-
 export const setListenedTracks = listenedTracks => {
     return {
         type: 'LISTENED_TRACKS',
@@ -51,13 +30,6 @@ export const setFavouritedTracks = favouritedTracks => {
     return {
         type: 'FAVOURITED_TRACKS',
         payload: favouritedTracks
-    };
-};
-
-export const setActivityIndicator = activityIndicator => {
-    return {
-        type: 'ACTIVITY_INDICATOR',
-        payload: activityIndicator
     };
 };
 

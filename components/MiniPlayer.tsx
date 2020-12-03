@@ -6,14 +6,15 @@ import { usePlayerContext } from '../contexts/PlayerContext';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
 import { Avatar, useTheme } from 'react-native-paper';
+import { useNavigationContext } from '../contexts/NavigationContext';
 
 const MiniPlayer = () => {
+    const navigationContext = useNavigationContext();
     const { colors } = useTheme();
-    const currentScreen = useSelector(state => state.currentScreen);
     const navigation = useSelector(state => state.navigation);
     const playerContext = usePlayerContext();
 
-    if (playerContext.isEmpty || !playerContext.currentTrack || currentScreen === 'Music') {
+    if (playerContext.isEmpty || !playerContext.currentTrack || navigationContext.currentScreen === 'Music') {
         return null;
     }
 

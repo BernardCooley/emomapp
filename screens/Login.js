@@ -2,17 +2,14 @@ import React, { useRef, useState, useEffect } from 'react';
 import { StyleSheet, View, Keyboard } from 'react-native';
 import { TextInput, Button, Text, ActivityIndicator } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
-import { useSelector, useDispatch } from 'react-redux';
 
 import formStyles from '../styles/FormStyles';
-import { setSnackbarMessage, setActivityIndicator } from '../Actions/index';
+import { useNavigationContext } from '../contexts/NavigationContext';
 
 
 const LoginScreen = ({ route, navigation }) => {
-    const dispatch = useDispatch();
+    const navigationContext = useNavigationContext();
     const { fromVerificationPage, emailFromRoute, passwordFromRoute } = route.params;
-    const user = useSelector(state => state.user);
-    const activityIndicator = useSelector(state => state.activityIndicator);
     const emailRef = useRef();
     const passwordRef = useRef();
     const [email, setEmail] = useState(emailFromRoute ? emailFromRoute : '');
@@ -33,7 +30,7 @@ const LoginScreen = ({ route, navigation }) => {
             navigation.push('Tabs', { screen: 'Explore' });
         }
         if (fromVerificationPage) {
-            dispatch(setSnackbarMessage('Verification email sent'));
+            navigationContext.updateSnackbarMessage('Verification email sent');
         }
     }, []);
 
@@ -44,15 +41,9 @@ const LoginScreen = ({ route, navigation }) => {
         errors.email.valid && errors.password.valid ? setFormIsValid(true) : setFormIsValid(false);
     }, [email, password]);
 
-    useEffect(() => {
-        if (user) {
-
-        }
-    }, [user]);
-
     const login = async () => {
         Keyboard.dismiss();
-        dispatch(setActivityIndicator(true));
+        navigationContext.updateActivityIndicator(true);
         await auth().signInWithEmailAndPassword(email, password).then(async () => {
             if (auth().currentUser.emailVerified) {
                 navigation.navigate('Tabs', { screen: 'Explore' });
@@ -60,17 +51,17 @@ const LoginScreen = ({ route, navigation }) => {
                 console.log('NOT Verified');
                 navigation.push('EmailVerification');
             }
-            dispatch(setActivityIndicator(false));
+            navigationContext.updateActivityIndicator(false);
         }).catch(error => {
             if (error.code === 'auth/user-not-found') {
-                dispatch(setSnackbarMessage('Email and/or password incorrect. Please try again'));
+                navigationContext.updateSnackbarMessage('Email and/or password incorrect. Please try again');
             }
         });
     }
 
     return (
         <>
-            {activityIndicator ?
+            {navigationContext.activityIndicator ?
                 <ActivityIndicator style={styles.activityIndicatorContainer} size='large' />
                 :
                 <View style={styles.container}>

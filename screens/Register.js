@@ -7,14 +7,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from '@apollo/client';
 
 import formStyles from '../styles/FormStyles';
-import { setSnackbarMessage } from '../Actions/index';
 import { ADD_ARTIST } from '../queries/graphQlQueries';
 import GooglePlacesInput from '../components/GooglePlacesInput';
 import useUploadImage from '../hooks/useUploadImage';
 import useImagePicker from '../hooks/useImagePicker';
+import { useNavigationContext } from '../contexts/NavigationContext';
 
 
 const RegisterScreen = ({ navigation }) => {
+    const navigationContext = useNavigationContext();
     const dispatch = useDispatch();
     LogBox.ignoreLogs([
         'VirtualizedLists should never be nested' // TODO: Remove when fixed
@@ -142,7 +143,7 @@ const RegisterScreen = ({ navigation }) => {
             setIsRegistering(false);
             console.log('REGISTER USER =============>', error);
             if (error.code === 'auth/email-already-in-use') {
-                dispatch(setSnackbarMessage('Email address already in use!'));
+                navigationContext.updateSnackbarMessage('Email address already in use!');
             }
         });
     }

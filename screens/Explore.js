@@ -1,19 +1,20 @@
 import React, { useEffect } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useTheme, FAB } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 import TracksScreen from '../screens/Tracks';
 import ArtistsScreen from '../screens/Artists';
 import { setNavigation } from '../Actions/index';
+import { useNavigationContext } from '../contexts/NavigationContext';
 
 const ExploreScreen = ({ navigation }) => {
+    const navigationContext = useNavigationContext();
     const dispatch = useDispatch();
     const { colors } = useTheme();
     const ExploreTab = createMaterialTopTabNavigator();
-    const currScreen = useSelector(state => state.currentScreen);
 
 
     useEffect(() => {
@@ -44,7 +45,7 @@ const ExploreScreen = ({ navigation }) => {
                 <ExploreTab.Screen name="Tracks" component={TracksScreen} />
                 <ExploreTab.Screen name="Artists" component={ArtistsScreen} />
             </ExploreTab.Navigator>
-            {currScreen !== 'Account' &&
+            {navigationContext.currentScreen !== 'Account' &&
                 <FAB
                     animated
                     icon="account-outline"

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, BackHandler, Alert, SafeAreaView, RefreshControl, Keyboard, View, ScrollView, Dimensions } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useFocusEffect } from "@react-navigation/native";
 import PropTypes from 'prop-types';
 import { Title, Searchbar, ActivityIndicator, Text, useTheme, FAB, IconButton } from 'react-native-paper';
@@ -10,12 +10,13 @@ import { setFilterSortMenu } from '../Actions/index';
 import ArtistsList from '../components/ArtistsList';
 import TracksList from '../components/TracksList';
 import { ALL_TRACKS_TRACKLIST, ALL_ARTISTS_ALL_DETAILS } from '../queries/graphQlQueries';
+import { useNavigationContext } from '../contexts/NavigationContext';
 
 
 const TracksAndArtists = ({ navigation, listType }) => {
+    const navigationContext = useNavigationContext();
     const { colors } = useTheme();
     const dispatch = useDispatch();
-    const activityIndicator = useSelector(state => state.activityIndicator);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [scroll, setScroll] = useState(null);
@@ -120,7 +121,7 @@ const TracksAndArtists = ({ navigation, listType }) => {
                         />
                         <IconButton onPress={openFilterModal} style={styles.filterIcon} animated icon='filter-variant' size={30} />
                     </View>
-                    {activityIndicator ?
+                {navigationContext.activityIndicator ?
                         <ActivityIndicator style={styles.activityIndicatorContainer} size='large' /> :
                         <>
                             <ScrollView

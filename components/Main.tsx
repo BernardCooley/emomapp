@@ -5,16 +5,16 @@ import TrackPlayer from 'react-native-track-player';
 import { Box } from 'react-native-design-utility';
 import { ActivityIndicator, Snackbar } from 'react-native-paper';
 import { PlayerContextProvider } from '../contexts/PlayerContext';
+import { NavigationContextProvider } from '../contexts/NavigationContext';
 import MainStackNavigator from '../navigation/MainStackNavigation';
-import { useSelector, useDispatch } from 'react-redux';
-import auth from '@react-native-firebase/auth';
-import { user, currentScreen, setSnackbarMessage } from '../Actions/index';
+import { useDispatch } from 'react-redux';
+import { useNavigationContext } from '../contexts/NavigationContext';
 
 const Main = () => {
+    const navigationContext = useNavigationContext();
     const routeNameRef = useRef();
     const navigationRef = useRef();
     const dispatch = useDispatch();
-    const snackbarMessage = useSelector(state => state.snackbarMessage);
 
     const [isReady, setIsReady] = useState(false);
 
@@ -39,36 +39,29 @@ const Main = () => {
         });
     }, []);
 
-
-    useEffect(() => {
-        auth().onAuthStateChanged(onAuthStateChanged);
-    }, []);
-
-    const onAuthStateChanged = (loggedInUser) => {
-        dispatch(user(loggedInUser));
-    }
-
     return (
         <>
             {isReady ?
+                <NavigationContextProvider>
                     <PlayerContextProvider>
                         <NavigationContainer
                             ref={navigationRef}
                             onReady={() => routeNameRef.current = navigationRef.current.getCurrentRoute().name}
                             onStateChange={() => {
-                                const currentRouteName = navigationRef.current.getCurrentRoute().name
-                                dispatch(currentScreen(currentRouteName));
+                                const currentRouteName = navigationRef.current.getCurrentRoute().name;
+                                navigationContext.updateCurrentScreen(currentRouteName);
                                 routeNameRef.current = currentRouteName;
                             }}>
                             <Snackbar
-                                visible={snackbarMessage.length > 0}
+                                visible={navigationContext.snackbarMessage.length > 0}
                                 duration={2000}
-                                onDismiss={() => dispatch(setSnackbarMessage(''))}>
-                                {snackbarMessage}
+                                onDismiss={() => navigationContext.updateSnackbarMessage('')}>
+                                {navigationContext.snackbarMessage}
                             </Snackbar>
                             <MainStackNavigator />
                         </NavigationContainer>
                     </PlayerContextProvider>
+                </NavigationContextProvider>
                 : (
                     <Box f={1} center>
                         <ActivityIndicator size='large' />

@@ -5,14 +5,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client';
 
-import { commentsModalVisible, commentType, setSnackbarMessage } from '../Actions/index';
+import { commentsModalVisible, commentType } from '../Actions/index';
 import modalStyles from '../styles/ModalStyles';
 import { TRACK_COMMENTS, ADD_COMMENT } from '../queries/graphQlQueries';
 import formStyles from '../styles/FormStyles';
 import { dateFormat } from '../functions/dateFormat';
+import { useNavigationContext } from '../contexts/NavigationContext';
 
 
 const CommentsModal = ({ trackId }) => {
+    const navigationContext = useNavigationContext();
     const { colors } = useTheme();
     const dispatch = useDispatch();
     const isCommentsModalVisible = useSelector(state => state.commentsModalVisible);
@@ -33,7 +35,7 @@ const CommentsModal = ({ trackId }) => {
             setReplyToArtistId('');
             setShowCommentBox(false);
             setNewComment('');
-            dispatch(setSnackbarMessage('Comment added'));
+            navigationContext.updateSnackbarMessage('Comment added');
             refetch();
         }
     }, [commentLoading]);

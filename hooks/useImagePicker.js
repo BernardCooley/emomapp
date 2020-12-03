@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import ImagePicker from 'react-native-image-picker';
 
+import { useNavigationContext } from '../contexts/NavigationContext';
+
 
 const useImagePicker = () => {
+    const navigationContext = useNavigationContext();
     const [image, setImage] = useState({});
 
     const options = {
@@ -34,7 +37,7 @@ const useImagePicker = () => {
                         type: response.type
                     })
                 } else {
-                    dispatch(setSnackbarMessage(`Only jpeg, jpg, png allowed.`));
+                    navigationContext.updateSnackbarMessage(`Only jpeg, jpg, png allowed.`);
                 }
             }
         });

@@ -2,30 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Keyboard } from 'react-native';
 import { Button, Text, IconButton, TextInput, ActivityIndicator } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
-import { useDispatch, useSelector } from 'react-redux';
 
 import formStyles from '../styles/FormStyles';
-import { setSnackbarMessage, setActivityIndicator } from '../Actions/index';
+import { useNavigationContext } from '../contexts/NavigationContext';
 
 const ForgotPasswordScreen = ({ navigation, route }) => {
-    const activityIndicator = useSelector(state => state.activityIndicator);
-    const dispatch = useDispatch();
+    const navigationContext = useNavigationContext();
     const { emailFromLogin } = route.params;
     const [email, setEmail] = useState(emailFromLogin ? emailFromLogin : '');
     const [formIsValid, setFormIsValid] = useState(false);
 
     const resetPassword = () => {
         Keyboard.dismiss();
-        dispatch(setActivityIndicator(true));
+        navigationContext.updateActivityIndicator(true);
         auth().sendPasswordResetEmail(email).then(function () {
-            dispatch(setSnackbarMessage(`Password reset email sent to: ${email}`));
+            navigationContext.updateSnackbarMessage(`Password reset email sent to: ${email}`);
             navigation.push('Login', {
                 emailFromRoute: email
             });
-            dispatch(setActivityIndicator(false));
+            navigationContext.updateActivityIndicator(false);
         }).catch(function (error) {
             if (error.code === 'auth/user-not-found') {
-                dispatch(setSnackbarMessage('Email address doesnt exist. Please try again.'));
+                navigationContext.updateSnackbarMessage('Email address doesnt exist. Please try again.');
             }
             console.log('PASSWORD RESET EMAIL ===============>', error);
         });
@@ -37,7 +35,7 @@ const ForgotPasswordScreen = ({ navigation, route }) => {
 
     return (
         <>
-            {activityIndicator ?
+            {navigationContext.activityIndicator ?
                 <ActivityIndicator style={styles.activityIndicatorContainer} size='large' /> :
                 <View style={styles.container}>
                     <View style={styles.backToLoginContainer}>
