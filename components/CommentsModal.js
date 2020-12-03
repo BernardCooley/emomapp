@@ -5,11 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useQuery, useMutation } from '@apollo/client';
 
-import { commentsModalVisible, commentType, commentIndex } from '../Actions/index';
+import { commentsModalVisible, commentType, setSnackbarMessage } from '../Actions/index';
 import modalStyles from '../styles/ModalStyles';
 import { TRACK_COMMENTS, ADD_COMMENT } from '../queries/graphQlQueries';
 import formStyles from '../styles/FormStyles';
-import { setSnackbarMessage } from '../Actions/index';
 import { dateFormat } from '../functions/dateFormat';
 
 
@@ -41,7 +40,6 @@ const CommentsModal = ({ trackId }) => {
 
     const closeModal = () => {
         dispatch(commentsModalVisible(false));
-        dispatch(commentIndex(-1))
         dispatch(commentType(''));
     }
 

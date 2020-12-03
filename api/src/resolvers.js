@@ -5,7 +5,7 @@ import { Storage } from '@google-cloud/storage';
 import path from 'path';
 
 const gc = new Storage({
-    keyFilename: path.join(__dirname, '../../keys/emom-84ee4-68f5ffe6909e.json'),
+    keyFilename: path.join(__dirname, '../../keys/emom-84ee4-f4c716cf82e5.json'),
     projectId: 'emom-84ee4'
 });
 

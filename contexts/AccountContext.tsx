@@ -1,20 +1,25 @@
 import React, { FC, createContext, useContext, useState, useEffect } from 'react';
 
 interface AccountContextType {
+    isManageTracksModalOpen: Boolean,
     isFormOpen: Boolean,
     isUploading: Boolean,
+    toggleManageTracksModal: (toggle: Boolean) => void,
     updateUploading: (uploading: Boolean) => void,
     toggleForm: (toggle: Boolean) => void
 };
 
 export const AccountContext = createContext<AccountContextType>({
+    isManageTracksModalOpen: false,
     isFormOpen: false,
     isUploading: false,
+    toggleManageTracksModal: () => null,
     updateUploading: () => null,
     toggleForm: () => null
 });
 
 export const AccountContextProvider: FC = props => {
+    const [manageTracksModalOpen, setManageTracksModalOpen] = useState<Boolean>(false);
     const [formOpen, setFormOpen] = useState<Boolean>(false);
     const [uploading, setUploading] = useState<Boolean>(false);
 
@@ -26,9 +31,15 @@ export const AccountContextProvider: FC = props => {
         setFormOpen(toggle);
     }
 
+    const toggleManageTracksModal = (toggle: Boolean) => {
+        setManageTracksModalOpen(toggle);
+    }
+
     const value: AccountContextType = {
+        isManageTracksModalOpen: manageTracksModalOpen,
         isFormOpen: formOpen,
         isUploading: uploading,
+        toggleManageTracksModal,
         updateUploading,
         toggleForm
     }

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Title, Searchbar, ActivityIndicator, Text, useTheme, FAB, IconButton } from 'react-native-paper';
 import { useQuery } from '@apollo/client';
 
-import { setActivityIndicator, setSnackbarMessage, artists, setFilterSortMenu } from '../Actions/index';
+import { setFilterSortMenu } from '../Actions/index';
 import ArtistsList from '../components/ArtistsList';
 import TracksList from '../components/TracksList';
 import { ALL_TRACKS_TRACKLIST, ALL_ARTISTS_ALL_DETAILS } from '../queries/graphQlQueries';

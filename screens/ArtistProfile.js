@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, Linking } from 'react-native';
 import { Text, IconButton, Title, Divider, Avatar, Subheading, useTheme, Button } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import TracksList from '../components/TracksList';
 import PropTypes from 'prop-types';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -11,8 +11,8 @@ import SocialLinks from '../components/SocialLinks';
 import { ARTIST_PROFILE } from '../queries/graphQlQueries';
 import { dateFormat } from '../functions/dateFormat';
 import { getImageUrl } from '../functions/getImageUrl';
-import { setTrackUploadModalOpen } from '../Actions/index';
 import TrackUploadModal from '../components/TrackUploadModal';
+import { useAccountContext } from '../contexts/AccountContext';
 
 const socialsList = [
     'facebook',
@@ -26,10 +26,10 @@ const socialsList = [
 ]
 
 const ArtistProfileScreen = ({ navigation, route }) => {
+    const accountContext = useAccountContext();
     const dispatch = useDispatch();
     const { artistId, isLoggedInUser } = route.params;
     const { colors } = useTheme();
-    const allTracks = useSelector(state => state.tracks);
     const [currentProfileTracks, setCurrentProfileTracks] = useState({});
     const [socials, setSocials] = useState({});
 
@@ -72,7 +72,7 @@ const ArtistProfileScreen = ({ navigation, route }) => {
     }
 
     const openTrackUploadModal = () => {
-        dispatch(setTrackUploadModalOpen(true));
+        accountContext.toggleManageTracksModal(true);
     }
 
     return (

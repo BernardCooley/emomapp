@@ -38,11 +38,10 @@ const screenReducers = {
             default:
                 return state;
         }
-    }
-    ,
-    trackUploadModalOpen: (state = false, action) => {
+    },
+    location: (state = '', action) => {
         switch (action.type) {
-            case 'TRACK_UPLOAD_MODAL_OPEN':
+            case 'LOCATION':
                 return state = action.payload;
             default:
                 return state;

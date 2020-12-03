@@ -8,7 +8,7 @@ import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import auth from '@react-native-firebase/auth';
 
-import { commentsModalVisible, queueModalVisible, trackComments} from '../Actions/index';
+import { commentsModalVisible, queueModalVisible} from '../Actions/index';
 import Progress from './Progress';
 import QueueModal from '../components/QueueModal';
 import CommentsModal from '../components/CommentsModal';
