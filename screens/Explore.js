@@ -9,9 +9,11 @@ import TracksScreen from '../screens/Tracks';
 import ArtistsScreen from '../screens/Artists';
 import { setNavigation } from '../Actions/index';
 import { useNavigationContext } from '../contexts/NavigationContext';
+import { useTracksContext } from '../contexts/TracksContext';
 
 const ExploreScreen = ({ navigation }) => {
     const navigationContext = useNavigationContext();
+    const tracksContext = useTracksContext();
     const dispatch = useDispatch();
     const { colors } = useTheme();
     const ExploreTab = createMaterialTopTabNavigator();
@@ -20,6 +22,10 @@ const ExploreScreen = ({ navigation }) => {
     useEffect(() => {
         dispatch(setNavigation(navigation));
     }, []);
+
+    useEffect(() => {
+        tracksContext.triggerRefetch(!tracksContext.refetch);
+    }, [navigationContext.currentScreen]);
 
     const artistProfile = () => {
         navigation.push('Account', {

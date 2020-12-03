@@ -23,8 +23,6 @@ const TrackUploadForm = ({ artistId }) => {
     const [trackDescription, setTrackDescription] = useState('');
     const [track, setTrack] = useState({});
     const [formValid, setFormValid] = useState(false);
-    const [formOpen, setFormOpen] = useState(false);
-    const [triggerRefetch, setTriggerRefetch] = useState(false);
 
     const [uploadadedTrackImageUrl, uploadTrackImage, uploadTrackImageError] = useUploadImage();
     const [artistImage, lauchFileUploader, removeImage] = useImagePicker();
@@ -59,8 +57,6 @@ const TrackUploadForm = ({ artistId }) => {
         if (trackUploadLoading) {
             accountContext.updateUploading(true);
         } else if (!trackUploadLoading && trackUploadData) {
-            // TODO trigger from higher up
-            tracksContext.triggerRefetch(!tracksContext.refetch);
             accountContext.toggleForm(false);
             accountContext.updateUploading(false);
         }
@@ -122,8 +118,6 @@ const TrackUploadForm = ({ artistId }) => {
                 if (artistImage && artistImage.uri) {
                     uploadTrackImage(artistId, artistImage, true, response.data.addTrackDetails.id);
                     clearForm();
-                    setFormOpen(false);
-                    setTriggerRefetch(!triggerRefetch);
                 }
             }).catch(err => {
                 // TODO delete track data
@@ -211,7 +205,7 @@ const TrackUploadForm = ({ artistId }) => {
 
                             <View style={styles.buttonContainer}>
                                 <Button onPress={() => accountContext.toggleForm(false)} color={colors.primary} style={styles.formButton} mode='outlined'>Cancel</Button>
-                                <Button disabled={!formValid} onPress={() => createTrack(artistId)} color={colors.primary} style={styles.formButton} mode='outlined'>Upload track</Button>
+                                <Button disabled={!formValid} onPress={() => createTrack(artistId)} color={colors.primary} style={styles.formButton} mode={formValid ? 'contained' : 'outlined'}>Upload track</Button>
                             </View>
                         </View>
                     }
