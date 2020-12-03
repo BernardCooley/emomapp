@@ -9,7 +9,7 @@ import { useMutation } from '@apollo/client';
 import { useAccountContext } from '../contexts/AccountContext';
 import formStyles from '../styles/FormStyles';
 import useImagePicker from '../hooks/useImagePicker';
-import { ADD_NEW_TRACK, UPLOAD_TRACK } from '../queries/graphQlQueries';
+import { ADD_NEW_TRACK, UPLOAD_TRACK, UPDATE_TRACK } from '../queries/graphQlQueries';
 import useUploadImage from '../hooks/useUploadImage';
 import { getImageUrl } from '../functions/getImageUrl';
 
@@ -45,8 +45,16 @@ const TrackUploadForm = ({ artistId }) => {
         }
     ] = useMutation(UPLOAD_TRACK);
 
+    const [
+        updateTrack,
+        {
+            loading: updateTrackLoading,
+            error: updateTrackError,
+            data: updateTrackData
+        }
+    ] = useMutation(UPDATE_TRACK);
+
     useEffect(() => {
-        console.log(accountContext.editTrackDetails);
         if (Object.keys(accountContext.editTrackDetails).length > 0) {
             setTrackTitle(accountContext.editTrackDetails.title);
             setTrackAlbum(accountContext.editTrackDetails.album);
@@ -131,7 +139,24 @@ const TrackUploadForm = ({ artistId }) => {
 
     const createTrack = artistId => {
         if (accountContext.isEditing) {
-            // TODO update existing records
+            updateTrack({
+                variables: {
+                    // TODO not updating
+                    title: trackTitle !== accountContext.editTrackDetails.title ? trackTitle : '',
+                    album: trackAlbum !== accountContext.editTrackDetails.album ? trackAlbum : '',
+                    genre: trackGenre !== accountContext.editTrackDetails.genre ? trackGenre : '',
+                    description: trackDescription !== accountContext.editTrackDetails.description ? trackDescription : '',
+                }
+            }).then(response => {
+                if(response) {
+                    alert('updated');
+                }
+            }).catch(err => {
+                // TODO delete track data
+                console.log('========> Track details update error', err);
+                // TODO log the error
+                alert('Something went wrong. Please try again. The error has been logged.');
+            })
         } else {
             addTrackDetails({
                 variables: {

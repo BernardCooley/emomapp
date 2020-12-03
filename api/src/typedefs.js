@@ -80,6 +80,14 @@ export const typeDefs = gql`
         ): [Track]
     }
     type Mutation {
+        updateTrack(
+            trackId: String!,
+            title: String,
+            album: String,
+            genre: String,
+            description: String,
+            imageName: String
+        ): Boolean
         deleteTrackDetails(
             trackId: String!
         ): Boolean

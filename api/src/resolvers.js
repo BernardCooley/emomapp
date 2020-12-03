@@ -224,6 +224,24 @@ export const resolvers = {
             })
 
             return deleted;
+        },
+        updateTrack: async (_, args) => {
+            const filter = { _id: args.trackId };
+            const options = {};
+
+            Object.keys(args).forEach(key => {
+                if(args[key] && args[key].length > 0 && key !== 'trackId') {
+                    options[key] = args[key]
+                }
+            });
+
+            try {
+                await Track.findOneAndUpdate(filter, options);
+            } catch (err) {
+                return false
+            };
+
+            return true;
         }
     }
 }

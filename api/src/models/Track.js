@@ -9,7 +9,6 @@ const trackSchema = new Schema({
     artistId: string,
     description: string,
     genre: string,
-    title: string,
     duration: string,
     imageName: string
 }, { timestamps: true });

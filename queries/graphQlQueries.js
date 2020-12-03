@@ -245,3 +245,23 @@ export const DELETE_TRACK_UPLOAD = gql`
         )
     }
 `;
+
+export const UPDATE_TRACK = gql`
+    mutation updateTrack(
+        $trackId: String!,
+        $title: String,
+        $album: String,
+        $genre: String,
+        $description: String,
+        $imageName: String
+    ) {
+        updateTrack(
+            trackId: $trackId,
+            title: $title,
+            album: $album,
+            genre: $genre,
+            description: $description,
+            imageName: $imageName
+        )
+    }
+`;
