@@ -33,14 +33,7 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
                     <View style={styles.modalContentContainer}>
                         {accountContext.isFormOpen ?
                             <TrackUploadForm artistId={artistId} /> :
-                            <>
-                                <ManageTracksList artistId={artistId} trigRefetch={triggerRefetch} />
-                                <View style={styles.addButonContainer}>
-                                    {trackAmount < 3 &&
-                                        <IconButton style={styles.addButton} onPress={() => accountContext.toggleForm(true)} animated icon="plus" size={50} />
-                                    }
-                                </View>
-                            </>
+                            <ManageTracksList artistId={artistId} trigRefetch={triggerRefetch} trackAmount={trackAmount} />
                         }
                     </View> :
                     <View style={styles.modalContentContainer}>

@@ -216,7 +216,6 @@ const TrackUploadForm = ({ artistId }) => {
         </SafeAreaView>
     )
 };
-// TODO cancel button not working
 
 TrackUploadForm.propTypes = {
 

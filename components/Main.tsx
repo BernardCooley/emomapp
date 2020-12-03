@@ -5,7 +5,6 @@ import TrackPlayer from 'react-native-track-player';
 import { Box } from 'react-native-design-utility';
 import { ActivityIndicator, Snackbar } from 'react-native-paper';
 import { PlayerContextProvider } from '../contexts/PlayerContext';
-import { AccountContextProvider } from '../contexts/AccountContext';
 import MainStackNavigator from '../navigation/MainStackNavigation';
 import { useSelector, useDispatch } from 'react-redux';
 import auth from '@react-native-firebase/auth';
@@ -52,7 +51,6 @@ const Main = () => {
     return (
         <>
             {isReady ?
-                <AccountContextProvider>
                     <PlayerContextProvider>
                         <NavigationContainer
                             ref={navigationRef}
@@ -71,7 +69,6 @@ const Main = () => {
                             <MainStackNavigator />
                         </NavigationContainer>
                     </PlayerContextProvider>
-                </AccountContextProvider>
                 : (
                     <Box f={1} center>
                         <ActivityIndicator size='large' />

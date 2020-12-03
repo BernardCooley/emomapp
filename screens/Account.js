@@ -5,6 +5,7 @@ import { useTheme } from 'react-native-paper';
 
 import ArtistProfileScreen from '../screens/ArtistProfile';
 import AccountSettings from '../screens/AccountSettings';
+import { AccountContextProvider } from '../contexts/AccountContext';
 
 
 const AccountScreen = ({ navigation }) => {
@@ -12,7 +13,7 @@ const AccountScreen = ({ navigation }) => {
     const AccountTab = createMaterialTopTabNavigator();
 
     return (
-        <>
+        <AccountContextProvider>
             <AccountTab.Navigator
                 tabBarOptions={{
                     indicatorStyle: {
@@ -28,7 +29,7 @@ const AccountScreen = ({ navigation }) => {
                 }} />
                 <AccountTab.Screen name="Account" component={AccountSettings} />
             </AccountTab.Navigator>
-        </>
+        </AccountContextProvider>
     );
 }
 

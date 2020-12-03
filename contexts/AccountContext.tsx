@@ -29,8 +29,8 @@ export const AccountContextProvider: FC = props => {
     const value: AccountContextType = {
         isFormOpen: formOpen,
         isUploading: uploading,
-        toggleForm,
-        updateUploading
+        updateUploading,
+        toggleForm
     }
 
     return (

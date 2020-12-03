@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Text, Divider, Avatar, Dialog, Paragraph } from 'react-native-paper';
+import { Button, Text, Divider, Avatar, Dialog, Paragraph, IconButton } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/client';
 
 import { ARTIST_TRACKS, DELETE_TRACK_DETAILS, DELETE_TRACK_UPLOAD } from '../queries/graphQlQueries';
 import { dateFormat } from '../functions/dateFormat';
 import { getImageUrl } from '../functions/getImageUrl';
+import { useAccountContext } from '../contexts/AccountContext';
 
-const ManageTracksList = ({ artistId, trigRefetch }) => {
+const ManageTracksList = ({ artistId, trigRefetch, trackAmount }) => {
+    const accountContext = useAccountContext();
     const [showDialog, setShowDialog] = useState(false);
     const [clickedTrackId, setClickedTrackId] = useState('');
 
@@ -126,6 +128,11 @@ const ManageTracksList = ({ artistId, trigRefetch }) => {
                     <Divider style={styles.divider} />
                 </View>
             ))}
+            <View style={styles.addButonContainer}>
+                {trackAmount < 3 &&
+                    <IconButton style={styles.addButton} onPress={() => accountContext.toggleForm(true)} animated icon="plus" size={50} />
+                }
+            </View>
             <Dialog visible={showDialog} onDismiss={() => setShowDialog(false)}>
                 <Dialog.Title>Delete track</Dialog.Title>
                 <Dialog.Content>
@@ -180,7 +187,20 @@ const styles = StyleSheet.create({
         marginTop: 10,
         display: 'flex',
         flexDirection: 'row'
-    }
+    },
+    addButonContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        position: 'absolute',
+        bottom: 0
+    },
+    addButton: {
+        position: 'absolute',
+        right: -30,
+        bottom: -40
+    },
 });
 
 export default ManageTracksList;
