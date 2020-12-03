@@ -11,9 +11,11 @@ import ArtistsList from '../components/ArtistsList';
 import TracksList from '../components/TracksList';
 import { ALL_TRACKS_TRACKLIST, ALL_ARTISTS_ALL_DETAILS } from '../queries/graphQlQueries';
 import { useNavigationContext } from '../contexts/NavigationContext';
+import { useTracksContext } from '../contexts/TracksContext';
 
 
 const TracksAndArtists = ({ navigation, listType }) => {
+    const tracksContext = useTracksContext();
     const navigationContext = useNavigationContext();
     const { colors } = useTheme();
     const dispatch = useDispatch();
@@ -33,6 +35,13 @@ const TracksAndArtists = ({ navigation, listType }) => {
     }
 
     const { loading, error, data, refetch } = useQuery(query);
+
+    useEffect(() => {
+        setTimeout(() => {
+            refetch();
+        }, 500);
+        // TODO trigger refetch from higher up
+    }, [tracksContext.refetch]);
 
     useEffect(() => {
         if (searchQuery.length === 0) {
@@ -144,7 +153,7 @@ const TracksAndArtists = ({ navigation, listType }) => {
                                     <>
                                         {listType === 'artists' ?
                                             <ArtistsList artists={data} navigation={navigation} /> :
-                                            <TracksList tracks={data} navigation={navigation} />
+                                            <TracksList tracks={data.tracks} navigation={navigation} />
                                         }
                                     </> :
                                     <>

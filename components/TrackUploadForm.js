@@ -11,8 +11,10 @@ import formStyles from '../styles/FormStyles';
 import useImagePicker from '../hooks/useImagePicker';
 import { ADD_NEW_TRACK, UPLOAD_TRACK } from '../queries/graphQlQueries';
 import useUploadImage from '../hooks/useUploadImage';
+import { useTracksContext } from '../contexts/TracksContext';
 
 const TrackUploadForm = ({ artistId }) => {
+    const tracksContext = useTracksContext();
     const accountContext = useAccountContext();
     const { colors } = useTheme();
     const [trackTitle, setTrackTitle] = useState('');
@@ -57,6 +59,8 @@ const TrackUploadForm = ({ artistId }) => {
         if (trackUploadLoading) {
             accountContext.updateUploading(true);
         } else if (!trackUploadLoading && trackUploadData) {
+            // TODO trigger from higher up
+            tracksContext.triggerRefetch(!tracksContext.refetch);
             accountContext.toggleForm(false);
             accountContext.updateUploading(false);
         }

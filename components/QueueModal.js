@@ -22,7 +22,7 @@ const QueueModal = ({ tracks, navigation }) => {
                 <Modal visible={isQueueModalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modalContainerStyles}>
                     <View style={{ ...styles.queueContainer, ...styles.sectionContainer }}>
                         <Title style={styles.modalTitle}>Queue</Title>
-                        <TracksList tracks={tracks} navigation={navigation} listLocation='playerQueue' />
+                        <TracksList tracks={tracks.tracks} navigation={navigation} listLocation='playerQueue' />
                     </View>
                     <Button color={colors.primary} mode='text' onPress={() => playerContext.clearQueue()} style={styles.clearButton}>Clear</Button>
                     <IconButton style={styles.closeIcon} animated icon="close" size={25} onPress={() => dispatch(queueModalVisible(false))} />

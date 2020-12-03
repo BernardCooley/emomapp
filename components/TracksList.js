@@ -1,63 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Avatar, IconButton, List, Divider, Menu, useTheme } from 'react-native-paper';
 import { usePlayerContext } from '../contexts/PlayerContext';
-import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 
-import { setListenedTracks, setFavouritedTracks } from '../Actions/index';
-import useFavAndListened from '../hooks/useFavAndListened';
 import FilterSortTracks from './FilterSortTracks';
 
 
-const TracksList = ({ navigation, listLocation, tracks }) => {
+const TracksList = ({ navigation, listLocation, tracks, artistName }) => {
     const { colors } = useTheme();
-    const [addFavouritedTrack, removeFavouritedTrack, favouritesError] = useFavAndListened(auth().currentUser.uid, 'favourites');
-    const [addListenedTrack, removeListenedTrack, listenedError] = useFavAndListened(auth().currentUser.uid, 'listened');
-    const dispatch = useDispatch();
     const playerContext = usePlayerContext();
     const [showMenu, setShowMenu] = useState(false);
     const [menuLocation, setMenuLocation] = useState({});
     const [clickedTrack, setClickedTrack] = useState('');
-    const usersRef = firestore().collection('users');
-    const allListenedTracks = useSelector(state => state.listenedTracks);
-    const allFavouritedTracks = useSelector(state => state.favouritedTracks);
     
 
     useEffect(() => {
-        const unsubscribe = usersRef.doc(auth().currentUser.uid).onSnapshot(onListenedTracksGetResult, onListenedTracksError);
-
-        const unsubscribe2 = usersRef.doc(auth().currentUser.uid).onSnapshot(onFavouritedTracksGetResult, onFavouritedTracksError);
-
-        return () => {
-            unsubscribe();
-            unsubscribe2();
-        };
+        
     }, []);
-
-    const trackListened = trackId => {
-        return allListenedTracks.includes(trackId);
-    }
-
-    const onListenedTracksGetResult = QuerySnapshot => {
-        const listenedTracks = QuerySnapshot.data().listened ? QuerySnapshot.data().listened : [];
-        dispatch(setListenedTracks(listenedTracks));
-    }
-
-    const onListenedTracksError = error => {
-        console.error(error);
-    }
-
-    const onFavouritedTracksGetResult = QuerySnapshot => {
-        const favouritedTracks = QuerySnapshot.data().favourites ? QuerySnapshot.data().favourites : [];
-        dispatch(setFavouritedTracks(favouritedTracks));
-    }
-
-    const onFavouritedTracksError = error => {
-        console.error(error);
-    }
 
     const openMenu = (e, track) => {
         setClickedTrack(track);
@@ -115,15 +75,15 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
     }
 
     const toggleFavOrListened = favOrListened => {
-        if (favOrListened === 'favourites') {
-            allFavouritedTracks.filter(trackId => trackId === clickedTrack.id).length > 0 ? removeFavouritedTrack(clickedTrack.id) : addFavouritedTrack(clickedTrack.id);
-        } else {
-            allListenedTracks.filter(trackId => trackId === clickedTrack.id).length > 0 ? removeListenedTrack(clickedTrack.id) : addListenedTrack(clickedTrack.id);
-        }
+        console.log(favOrListened);
+    }
+
+    const trackListened = trackId => {
+        return true;
     }
 
     const trackFavourited = trackId => {
-        return allFavouritedTracks.includes(trackId);
+        return true;
     }
 
     const getTrackImageUrl = (artistId, trackId, imageName) => {
@@ -134,7 +94,7 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
     const TracksList = () => (
         <>
             {
-                tracks && tracks.tracks.map((track, index) => (
+                tracks && tracks.map((track, index) => (
                     <View key={index}>
                         <List.Item
                             titleNumberOfLines={1}
@@ -145,7 +105,7 @@ const TracksList = ({ navigation, listLocation, tracks }) => {
                             descriptionStyle={{ fontSize: 15 }}
                             style={styles.listItem}
                             title={track.title}
-                            description={track.artist.artistName}
+                            description={track.artist ? track.artist.artistName : artistName}
                             left={() =>
                                 <Avatar.Image style={styles.trackImage} size={40} source={{ uri: getTrackImageUrl(track.artistId, track.id, track.imageName) }} />
                             }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, Linking } from 'react-native';
 import { Text, IconButton, Title, Divider, Avatar, Subheading, useTheme, Button } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
 import TracksList from '../components/TracksList';
 import PropTypes from 'prop-types';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -13,6 +12,7 @@ import { dateFormat } from '../functions/dateFormat';
 import { getImageUrl } from '../functions/getImageUrl';
 import TrackUploadModal from '../components/TrackUploadModal';
 import { useAccountContext } from '../contexts/AccountContext';
+import { useTracksContext } from '../contexts/TracksContext';
 
 const socialsList = [
     'facebook',
@@ -26,11 +26,10 @@ const socialsList = [
 ]
 
 const ArtistProfileScreen = ({ navigation, route }) => {
+    const tracksContext = useTracksContext();
     const accountContext = useAccountContext();
-    const dispatch = useDispatch();
     const { artistId, isLoggedInUser } = route.params;
     const { colors } = useTheme();
-    const [currentProfileTracks, setCurrentProfileTracks] = useState({});
     const [socials, setSocials] = useState({});
 
     const { loading, error, data: artistProfileData, refetch } = useQuery(
@@ -43,6 +42,13 @@ const ArtistProfileScreen = ({ navigation, route }) => {
     );
 
     useEffect(() => {
+        setTimeout(() => {
+            refetch();
+        }, 500);
+    }, [tracksContext.refetch]);
+
+    useEffect(() => {
+        console.log(artistProfileData);
         if (artistProfileData) {
             getSocials();
         }
@@ -128,8 +134,8 @@ const ArtistProfileScreen = ({ navigation, route }) => {
                         </View>
                         <View style={styles.tracksContainer}>
                             <Subheading style={styles.tracksDetail}>Tracks</Subheading>
-                            {currentProfileTracks.length > 0 ?
-                                <TracksList tracks={currentProfileTracks} navigation={navigation} /> :
+                            {artistProfileData.artists[0].userTracks.length > 0 ?
+                                <TracksList tracks={artistProfileData.artists[0].userTracks} artistName={artistProfileData.artists[0].artistName} navigation={navigation} /> :
                                 <View>
                                     <Text style={styles.tracksDetail}>None</Text>
                                 </View>

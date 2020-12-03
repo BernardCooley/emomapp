@@ -6,19 +6,15 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTrackPlayerProgress } from 'react-native-track-player/lib/hooks';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import auth from '@react-native-firebase/auth';
 
 import { commentsModalVisible, queueModalVisible} from '../Actions/index';
 import Progress from './Progress';
 import QueueModal from '../components/QueueModal';
 import CommentsModal from '../components/CommentsModal';
 import Grid from '../components/Grid';
-import useFavAndListened from '../hooks/useFavAndListened';
 import { usePlayerContext } from '../contexts/PlayerContext';
 
 const MusicPlayer = ({ navigation }) => {
-    const [addFavouritedTrack, removeFavouritedTrack, favouritesError] = useFavAndListened(auth().currentUser.uid, 'favourites');
-    const [addListenedTrack, removeListenedTrack, listenedError] = useFavAndListened(auth().currentUser.uid, 'listened');
     const playerImageSize = useSelector(state => state.playerImageSize);
     const { colors } = useTheme();
     const { position, bufferedPosition, duration } = useTrackPlayerProgress();
@@ -27,7 +23,6 @@ const MusicPlayer = ({ navigation }) => {
     const [previousDisabled, setPreviousDisabled] = useState(false);
     const [filteredQueue, setFilteredQueue] = useState([]);
     const playerContext = usePlayerContext();
-    const allFavouritedTracks = useSelector(state => state.favouritedTracks);
 
     useEffect(() => {
         if (playerContext.trackQueue && playerContext.currentTrack) {
@@ -47,7 +42,7 @@ const MusicPlayer = ({ navigation }) => {
 
     useEffect(() => {
         if (playerContext.currentTrack && Math.round(position) / playerContext.currentTrack.duration * 100 > 5) {
-            addListenedTrack(playerContext.currentTrack.id);
+            // TODO set track to listened
         }
     }, [playerContext.currentTrack, position]);
 
@@ -80,15 +75,11 @@ const MusicPlayer = ({ navigation }) => {
     }
 
     const trackFavourited = trackId => {
-        return allFavouritedTracks.includes(trackId);
+        return true
     }
 
     const toggleFavourited = id => {
-        if(allFavouritedTracks.filter(trackId => trackId === id).length > 0) {
-            removeFavouritedTrack(id);
-        }else {
-            addFavouritedTrack(id);
-        }
+        console.log(id);
     }
 
     if (playerContext.isEmpty || !playerContext.currentTrack) {
