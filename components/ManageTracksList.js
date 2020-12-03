@@ -38,8 +38,9 @@ const ManageTracksList = ({ artistId, trigRefetch, trackAmount }) => {
     ] = useMutation(DELETE_TRACK_UPLOAD);
 
     useEffect(() => {
-        console.log('Refetch');
-        refetch();
+        setTimeout(() => {
+            refetch();
+        }, 500);
     }, [trigRefetch]);
 
     const editTrack = trackId => {
@@ -116,8 +117,9 @@ const ManageTracksList = ({ artistId, trigRefetch, trackAmount }) => {
                             </Text>
                         </View>
                         <View style={styles.trackImage}>
-                            {track.imageName.length > 0 &&
-                                <Avatar.Image style={styles.artistImage} size={110} source={{ uri: getImageUrl(data.artists[0].id, track.imageName, track.id) }} />
+                            {track.imageName && track.imageName.length > 0 ?
+                                <Avatar.Image style={styles.artistImage} size={110} source={{ uri: getImageUrl(data.artists[0].id, track.imageName, track.id) }} /> :
+                                null
                             }
                         </View>
                     </View>

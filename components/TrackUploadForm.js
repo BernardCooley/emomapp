@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
-import { Title, Button, Text, IconButton, useTheme, TextInput, Avatar } from 'react-native-paper';
-import PropTypes from 'prop-types';
+import { View, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Dimensions } from 'react-native';
+import { Button, Text, useTheme, TextInput, Avatar, ActivityIndicator } from 'react-native-paper';
 import DocumentPicker from 'react-native-document-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useQuery, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 
 import { useAccountContext } from '../contexts/AccountContext';
 import formStyles from '../styles/FormStyles';
@@ -57,7 +56,8 @@ const TrackUploadForm = ({ artistId }) => {
     useEffect(() => {
         if (trackUploadLoading) {
             accountContext.updateUploading(true);
-        } else {
+        } else if (!trackUploadLoading && trackUploadData) {
+            accountContext.toggleForm(false);
             accountContext.updateUploading(false);
         }
     }, [trackUploadLoading]);
@@ -73,9 +73,7 @@ const TrackUploadForm = ({ artistId }) => {
 
     const openFilePicker = async () => {
         try {
-            const res = await DocumentPicker.pick({
-                type: [DocumentPicker.types.audio],
-            });
+            const res = await DocumentPicker.pick({ type: [DocumentPicker.types.audio] });
 
             let split = res.uri.split('.');
             split = split[split.length - 1];
@@ -89,8 +87,6 @@ const TrackUploadForm = ({ artistId }) => {
             });
 
             setTrack(file);
-
-
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 // User cancelled the picker, exit any dialogs or menus and move on
@@ -143,74 +139,78 @@ const TrackUploadForm = ({ artistId }) => {
         })
     }
 
-    const showHideForm = show => {
-        accountContext.toggleForm(show);
-    }
-
     return (
         <SafeAreaView>
             <ScrollView
                 keyboardShouldPersistTaps='handled'
                 contentContainerStyle={{
                     flexGrow: 1,
-                    justifyContent: 'space-between',
+                    justifyContent: 'space-between'
                 }}>
                 <View style={styles.container}>
-                    <View style={styles.formContainer}>
-                        <TextInput
-                            style={styles.input}
-                            label="Title"
-                            value={trackTitle}
-                            onChangeText={title => setTrackTitle(title)}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            label="Album / EP (optional)"
-                            value={trackAlbum}
-                            onChangeText={album => setTrackAlbum(album)}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            label="Genre (optional)"
-                            value={trackGenre}
-                            onChangeText={genre => setTrackGenre(genre)}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            label="Description (optional)"
-                            value={trackDescription}
-                            onChangeText={description => setTrackDescription(description)}
-                            multiline
-                        />
-
-                        <TouchableOpacity onPress={openFilePicker} style={styles.uploadContainer}>
-                            <MaterialCommunityIcons style={styles.filePickerButton} name="music-box-outline" size={30} />
-                            <View>
-                                {track.name && track.name.length > 0 ?
-                                    <Text style={styles.filePickerLabel}>{track.name}</Text> :
-                                    <Text style={styles.filePickerLabel}>Choose track</Text>
-                                }
+                    {accountContext.isUploading ?
+                        <View style={{ ...styles.modalContentContainer, height: Dimensions.get('window').height / 2 }}>
+                            <View style={styles.activityIndicatorContainer} >
+                                <ActivityIndicator size='large' />
+                                <Text style={styles.uploadingLabel}>Uploading track...</Text>
                             </View>
-                        </TouchableOpacity>
+                        </View> :
+                        <View style={styles.formContainer}>
+                            <TextInput
+                                style={styles.input}
+                                label="Title"
+                                value={trackTitle}
+                                onChangeText={title => setTrackTitle(title)}
+                            />
+                            <TextInput
+                                style={styles.input}
+                                label="Album / EP (optional)"
+                                value={trackAlbum}
+                                onChangeText={album => setTrackAlbum(album)}
+                            />
+                            <TextInput
+                                style={styles.input}
+                                label="Genre (optional)"
+                                value={trackGenre}
+                                onChangeText={genre => setTrackGenre(genre)}
+                            />
+                            <TextInput
+                                style={styles.input}
+                                label="Description (optional)"
+                                value={trackDescription}
+                                onChangeText={description => setTrackDescription(description)}
+                                multiline
+                            />
 
-                        <TouchableOpacity onPress={lauchFileUploader} style={styles.uploadContainer}>
-                            {!artistImage.uri ?
-                                <>
-                                    <MaterialCommunityIcons style={styles.filePickerButton} name="file-image-outline" size={30} />
-                                    <Text style={styles.filePickerLabel}>Choose image (optional)</Text>
-                                </> :
-                                <View style={styles.artistImageContainer}>
-                                    <Avatar.Image style={styles.artistImage} size={300} source={{ uri: artistImage.uri }} />
-                                    <Text onPress={removeImage} style={styles.deleteImageButton}>delete</Text>
+                            <TouchableOpacity onPress={openFilePicker} style={styles.uploadContainer}>
+                                <MaterialCommunityIcons style={styles.filePickerButton} name="music-box-outline" size={30} />
+                                <View>
+                                    {track.name && track.name.length > 0 ?
+                                        <Text style={styles.filePickerLabel}>{track.name}</Text> :
+                                        <Text style={styles.filePickerLabel}>Choose track</Text>
+                                    }
                                 </View>
-                            }
-                        </TouchableOpacity>
+                            </TouchableOpacity>
 
-                        <View style={styles.buttonContainer}>
-                            <Button disabled={!formValid} onPress={() => createTrack(artistId)} color={colors.primary} style={styles.formButton} mode='outlined'>Upload track</Button>
-                            <Button onPress={() => showHideForm(false)} color={colors.primary} style={styles.formButton} mode='outlined'>Cancel</Button>
+                            <TouchableOpacity onPress={lauchFileUploader} style={styles.uploadContainer}>
+                                {!artistImage.uri ?
+                                    <>
+                                        <MaterialCommunityIcons style={styles.filePickerButton} name="file-image-outline" size={30} />
+                                        <Text style={styles.filePickerLabel}>Choose image (optional)</Text>
+                                    </> :
+                                    <View style={styles.artistImageContainer}>
+                                        <Avatar.Image style={styles.artistImage} size={300} source={{ uri: artistImage.uri }} />
+                                        <Text onPress={removeImage} style={styles.deleteImageButton}>delete</Text>
+                                    </View>
+                                }
+                            </TouchableOpacity>
+
+                            <View style={styles.buttonContainer}>
+                                <Button onPress={() => accountContext.toggleForm(false)} color={colors.primary} style={styles.formButton} mode='outlined'>Cancel</Button>
+                                <Button disabled={!formValid} onPress={() => createTrack(artistId)} color={colors.primary} style={styles.formButton} mode='outlined'>Upload track</Button>
+                            </View>
                         </View>
-                    </View>
+                    }
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -255,6 +255,22 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between'
+    },
+    modalContentContainer: {
+        display: 'flex',
+        margin: 'auto'
+    },
+    activityIndicatorContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        position: 'relative',
+        top: -100
+    },
+    uploadingLabel: {
+        marginTop: 30
     }
 });
 

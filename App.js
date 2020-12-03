@@ -7,6 +7,8 @@ import { DefaultTheme, Provider as PaperProvider, configureFonts } from 'react-n
 import Main from './components/Main';
 import { ApolloProvider } from '@apollo/client';
 
+import ContextWrappers from './contexts/ContextWrappers';
+
 import apolloClient from './apolloSetup';
 
 const App = () => {
@@ -40,13 +42,15 @@ const App = () => {
   const store = createStore(rootReducer);
 
   return (
-    <ApolloProvider client={apolloClient}>
-      <PaperProvider theme={theme}>
-        <Provider store={store}>
-          <Main />
-        </Provider>
-      </PaperProvider>
-    </ApolloProvider>
+    <ContextWrappers>
+      <ApolloProvider client={apolloClient}>
+        <PaperProvider theme={theme}>
+          <Provider store={store}>
+            <Main />
+          </Provider>
+        </PaperProvider>
+      </ApolloProvider>
+    </ContextWrappers>
   );
 }
 

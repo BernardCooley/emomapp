@@ -22,20 +22,12 @@ const TrackUploadModal = ({ trackAmount, artistId }) => {
             <Modal visible={accountContext.isManageTracksModalOpen} onDismiss={closeModal} contentContainerStyle={styles.modalContainerStyles}>
                 <IconButton style={styles.closeIcon} animated icon="close" size={25} onPress={closeModal} />
                 <Title style={styles.modalTitle}>Manage tracks</Title>
-                {!accountContext.isUploading ?
-                    <View style={styles.modalContentContainer}>
-                        {accountContext.isFormOpen ?
-                            <TrackUploadForm artistId={artistId} /> :
-                            <ManageTracksList artistId={artistId} trackAmount={trackAmount} />
-                        }
-                    </View> :
-                    <View style={styles.modalContentContainer}>
-                        <View style={styles.activityIndicatorContainer} >
-                            <ActivityIndicator size='large' />
-                            <Text style={styles.uploadingLabel}>Uploading track...</Text>
-                        </View>
-                    </View>
-                }
+                <View style={styles.modalContentContainer}>
+                    {accountContext.isFormOpen ?
+                        <TrackUploadForm artistId={artistId} /> :
+                        <ManageTracksList artistId={artistId} trackAmount={trackAmount} />
+                    }
+                </View>
             </Modal>
         </Portal>
     )
@@ -47,17 +39,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         height: '90%',
         margin: 'auto'
-    },
-    activityIndicatorContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        top: 250
-    },
-    uploadingLabel: {
-        marginTop: 30
     }
 });
 

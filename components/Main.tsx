@@ -4,8 +4,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import TrackPlayer from 'react-native-track-player';
 import { Box } from 'react-native-design-utility';
 import { ActivityIndicator, Snackbar } from 'react-native-paper';
-import { PlayerContextProvider } from '../contexts/PlayerContext';
-import { NavigationContextProvider } from '../contexts/NavigationContext';
 import MainStackNavigator from '../navigation/MainStackNavigation';
 import { useDispatch } from 'react-redux';
 import { useNavigationContext } from '../contexts/NavigationContext';
@@ -42,26 +40,22 @@ const Main = () => {
     return (
         <>
             {isReady ?
-                <NavigationContextProvider>
-                    <PlayerContextProvider>
-                        <NavigationContainer
-                            ref={navigationRef}
-                            onReady={() => routeNameRef.current = navigationRef.current.getCurrentRoute().name}
-                            onStateChange={() => {
-                                const currentRouteName = navigationRef.current.getCurrentRoute().name;
-                                navigationContext.updateCurrentScreen(currentRouteName);
-                                routeNameRef.current = currentRouteName;
-                            }}>
-                            <Snackbar
-                                visible={navigationContext.snackbarMessage.length > 0}
-                                duration={2000}
-                                onDismiss={() => navigationContext.updateSnackbarMessage('')}>
-                                {navigationContext.snackbarMessage}
-                            </Snackbar>
-                            <MainStackNavigator />
-                        </NavigationContainer>
-                    </PlayerContextProvider>
-                </NavigationContextProvider>
+                <NavigationContainer
+                    ref={navigationRef}
+                    onReady={() => routeNameRef.current = navigationRef.current.getCurrentRoute().name}
+                    onStateChange={() => {
+                        const currentRouteName = navigationRef.current.getCurrentRoute().name;
+                        navigationContext.updateCurrentScreen(currentRouteName);
+                        routeNameRef.current = currentRouteName;
+                    }}>
+                    <Snackbar
+                        visible={navigationContext.snackbarMessage.length > 0}
+                        duration={2000}
+                        onDismiss={() => navigationContext.updateSnackbarMessage('')}>
+                        {navigationContext.snackbarMessage}
+                    </Snackbar>
+                    <MainStackNavigator />
+                </NavigationContainer>
                 : (
                     <Box f={1} center>
                         <ActivityIndicator size='large' />
